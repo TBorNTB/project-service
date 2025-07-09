@@ -1,4 +1,4 @@
-package com.sejong.projectservice.application.yorkie.dto;
+package com.sejong.projectservice.application.yorkie.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
