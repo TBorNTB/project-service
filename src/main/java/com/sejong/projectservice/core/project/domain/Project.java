@@ -30,6 +30,7 @@ public class Project {
     private String thumbnailUrl;
     private String contentJson;
     private Long userId;
+    private Long yorkieId;
     private List<SubGoal> subGoals =new ArrayList<>();
     private List<TechStack> techStacks = new ArrayList<>();
     private List<Collaborator> collaborators = new ArrayList<>();
