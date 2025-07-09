@@ -18,6 +18,7 @@ public class ProjectPageResponse {
     int size;
     int element;
     Long totalElements;
+    int page;
 
     public static ProjectPageResponse from(Page<Project> projectPage) {
 
@@ -29,6 +30,7 @@ public class ProjectPageResponse {
                 .projects(projectSimpleInfos)
                 .size(projectPage.getSize())
                 .element(projectPage.getNumber())
+                .page(projectPage.getTotalPages())
                 .totalElements(projectPage.getTotalElements())
                 .build();
     }

@@ -91,6 +91,4 @@ public class ProjectController {
         ProjectPageResponse response = projectService.search(keyword, category, status, pageable);
         return ResponseEntity.ok(response);
     }
-
-
 }
