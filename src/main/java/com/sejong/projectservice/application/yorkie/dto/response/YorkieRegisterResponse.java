@@ -15,12 +15,10 @@ public class YorkieRegisterResponse {
     private Long yorkieId;
     private String message;
 
-    public static YorkieRegisterResponse
-    from(Yorkie yorkie) {
+    public static YorkieRegisterResponse from(Yorkie yorkie) {
         return YorkieRegisterResponse.builder()
                 .projectId(yorkie.getProjectId())
                 .yorkieId(yorkie.getYorkieId())
-                .message("정상적으로 저장되었습니다.")
-                .build();
+                .message("정상적으로 저장되었습니다.").build();
     }
 }

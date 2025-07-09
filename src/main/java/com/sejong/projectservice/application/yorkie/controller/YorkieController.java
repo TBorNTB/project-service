@@ -28,7 +28,7 @@ public class YorkieController {
 
     @GetMapping("/{projectId}")
     public ResponseEntity<YorkieSearchResponse> searchYorkieId(
-            @RequestParam(name="projectId") Long projectId
+            @PathVariable(name="projectId") Long projectId
     ){
         YorkieSearchResponse response = yorkieService.findYorkieId(projectId);
         return ResponseEntity.status(HttpStatus.OK)
