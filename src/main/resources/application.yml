@@ -1,3 +1,50 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    url: jdbc:mysql://${EC2_HOST}:3306/project?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  sql:
+    init:
+      mode: always
+
+  jpa:
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          batch_size: 50
+          default_batch_fetch_size: 100
+        order_inserts: true
+        order_updates: true
+
+  thymeleaf:
+    enabled: false
+
+  cloud:
+    discovery:
+      enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
+
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_DEFAULTZONE}
+    register-with-eureka: true
+    fetch-registry: true
+
+
 spring:
   application:
     name: project-service
