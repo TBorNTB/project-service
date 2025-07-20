@@ -17,6 +17,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(MockBeansConfig.class)
 @AutoConfigureMockMvc
 @WebMvcTest(YorkieController.class)
+@ActiveProfiles("test")
 class YorkieControllerTest {
     @Autowired
     MockMvc mockMvc;
