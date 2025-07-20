@@ -1,9 +1,9 @@
+server:
+  port: 0
+
 spring:
   application:
     name: project-service
-
-  profiles:
-    active: prod  # local 또는 prod 중 선택
 
   datasource:
     url: jdbc:mysql://${EC2_HOST}:3306/project?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
@@ -51,12 +51,9 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 
-server:
-  port: 0
-
-eureka:
-  client:
-    service-url:
-      defaultZone: ${EUREKA_DEFAULTZONE}
-    register-with-eureka: true
-    fetch-registry: true
+#eureka:
+#  client:
+#    service-url:
+#      defaultZone: ${EUREKA_DEFAULTZONE}
+#    register-with-eureka: true
+#    fetch-registry: true
