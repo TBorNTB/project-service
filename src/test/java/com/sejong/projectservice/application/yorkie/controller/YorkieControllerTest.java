@@ -30,7 +30,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import(MockBeansConfig.class)
 @AutoConfigureMockMvc
 @WebMvcTest(YorkieController.class)
-@ActiveProfiles("test")
 class YorkieControllerTest {
     @Autowired
     MockMvc mockMvc;
