@@ -1,5 +1,7 @@
 package com.sejong.projectservice.application.yorkie.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.sejong.projectservice.application.util.JwtUtil;
 import com.sejong.projectservice.application.yorkie.dto.request.CheckYorkieRequest;
 import com.sejong.projectservice.application.yorkie.dto.response.CheckYorkieResponse;
 import java.util.Optional;
@@ -9,6 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class YorkieService {
+
+  private final JwtUtil jwtUtil;
 
   public CheckYorkieResponse checkYorkie(CheckYorkieRequest checkYorkieRequest) {
     if (checkYorkieRequest.getMethod().equals(YorkieMethod.ActivateClient)
@@ -24,14 +28,27 @@ public class YorkieService {
         .map(att -> att.get(0).key)
         .orElseThrow(() -> new IllegalArgumentException("Document ID not found"));
 
-    checkDefaultAccessToken(yorkieDocId, token);
+    try {
+      checkDefaultAccessToken(yorkieDocId, token);
+    } catch (Exception e) {
+      return new CheckYorkieResponse(false, e.getMessage());
+    }
 
     return new CheckYorkieResponse(true, "Valid Token");
   }
 
-  private String checkDefaultAccessToken(String yorkieDocId, String token) {
-    
+  private String checkDefaultAccessToken(String yorkieDocId, String token) throws JsonProcessingException {
+    if (!jwtUtil.validateToken(token)) {
+      throw new RuntimeException("Token is expired or invalid");
+    }
+    String userId = jwtUtil.getUserIdFromToken(token);
+
+    // Todo: yorkieDocumentId, userId(nickname) 으로 Project_User 조회
+    // Project_User(project_id, user_id)
+
+    return userId;
   }
+
 
   public enum YorkieMethod {
     ActivateClient,
