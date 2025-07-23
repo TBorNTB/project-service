@@ -10,15 +10,23 @@ import com.sejong.projectservice.infrastructure.collborator.entity.CollaboratorE
 import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
 import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "project")
@@ -27,105 +35,110 @@ import java.util.List;
 @Getter
 @Builder
 public class ProjectEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
-    private String title;
-    private String description;
+  @Id
+  @Column(name = "project_id")
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(50)")
-    private Category category;
+  @Column(name = "yorkie_document_id", nullable = false, unique = true)
+  private String yorkieDocumentId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(50)")
-    private ProjectStatus projectStatus;
+  private String title;
+  private String description;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+  @Enumerated(EnumType.STRING)
+  @Column(columnDefinition = "VARCHAR(50)")
+  private Category category;
 
-    @Column(nullable = false)
-    private Long userId;
+  @Enumerated(EnumType.STRING)
+  @Column(columnDefinition = "VARCHAR(50)")
+  private ProjectStatus projectStatus;
 
-    private String thumbnailUrl;
+  private LocalDateTime createdAt;
+  private LocalDateTime updatedAt;
 
-    @Column(columnDefinition = "TEXT")
-    private String contentJson;
+  @Column(nullable = false)
+  private Long userId;
 
-    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProjectTechStackEntity> projectTechStacks = new ArrayList<>();
+  private String thumbnailUrl;
 
-    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CollaboratorEntity> collaborators = new ArrayList<>();
+  @Column(columnDefinition = "TEXT")
+  private String contentJson;
 
-    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<SubGoalEntity> subGoals = new ArrayList<>();
+  @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ProjectTechStackEntity> projectTechStacks = new ArrayList<>();
 
-    // createdAt만 제외했습니다.
-    public void updateBasicInfo(Project project){
-        clearAllRelations();
-        this.title = project.getTitle();
-        this.description = project.getDescription();
-        this.category = project.getCategory();
-        this.projectStatus = project.getProjectStatus();
-        this.updatedAt = project.getUpdatedAt();
-        this.thumbnailUrl = project.getThumbnailUrl();
-        this.contentJson = project.getContentJson();
-    }
+  @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<CollaboratorEntity> collaborators = new ArrayList<>();
 
-    public void clearAllRelations() {
-        this.projectTechStacks.clear();
-        this.collaborators.clear();
-        this.subGoals.clear();
-    }
+  @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<SubGoalEntity> subGoals = new ArrayList<>();
 
-    public static ProjectEntity from(Project project) {
-        return ProjectEntity.builder()
-                .title(project.getTitle())
-                .description(project.getDescription())
-                .category(project.getCategory())
-                .projectStatus(project.getProjectStatus())
-                .thumbnailUrl(project.getThumbnailUrl())
-                .contentJson(project.getContentJson())
-                .createdAt(project.getCreatedAt())
-                .updatedAt(project.getUpdatedAt())
-                .projectTechStacks(new ArrayList<>())
-                .collaborators(new ArrayList<>())
-                .subGoals(new ArrayList<>())
-                .userId(project.getUserId())
-                .build();
-    }
+  public static ProjectEntity from(Project project) {
+    return ProjectEntity.builder()
+        .title(project.getTitle())
+        .description(project.getDescription())
+        .category(project.getCategory())
+        .projectStatus(project.getProjectStatus())
+        .thumbnailUrl(project.getThumbnailUrl())
+        .contentJson(project.getContentJson())
+        .createdAt(project.getCreatedAt())
+        .updatedAt(project.getUpdatedAt())
+        .projectTechStacks(new ArrayList<>())
+        .collaborators(new ArrayList<>())
+        .subGoals(new ArrayList<>())
+        .userId(project.getUserId())
+        .build();
+  }
 
-    public Project toDomain() {
+  // createdAt만 제외했습니다.
+  public void updateBasicInfo(Project project) {
+    clearAllRelations();
+    this.title = project.getTitle();
+    this.description = project.getDescription();
+    this.category = project.getCategory();
+    this.projectStatus = project.getProjectStatus();
+    this.updatedAt = project.getUpdatedAt();
+    this.thumbnailUrl = project.getThumbnailUrl();
+    this.contentJson = project.getContentJson();
+  }
 
-        List<Collaborator> collaboratorList = collaborators.stream()
-                .map(CollaboratorEntity::toDomain)
-                .toList();
-        List<TechStack> uniqueTechStackList = projectTechStacks.stream()
-                .map(ProjectTechStackEntity::getTechStackEntity)
-                .map(TechStackEntity::toDomain)
-                .distinct()
-                .toList();
+  public void clearAllRelations() {
+    this.projectTechStacks.clear();
+    this.collaborators.clear();
+    this.subGoals.clear();
+  }
 
-        List<SubGoal> subGoalList = subGoals.stream()
-                .map(SubGoalEntity::toDomain)
-                .toList();
+  public Project toDomain() {
 
-        return Project.builder()
-                .id(this.id)
-                .title(this.title)
-                .description(this.description)
-                .category(this.category)
-                .projectStatus(this.projectStatus)
-                .thumbnailUrl(this.thumbnailUrl)
-                .contentJson(this.contentJson)
-                .createdAt(this.createdAt)
-                .updatedAt(this.updatedAt)
-                .collaborators(collaboratorList)
-                .techStacks(uniqueTechStackList)
-                .subGoals(subGoalList)
-                .userId(this.userId)
-                .build();
-    }
+    List<Collaborator> collaboratorList = collaborators.stream()
+        .map(CollaboratorEntity::toDomain)
+        .toList();
+    List<TechStack> uniqueTechStackList = projectTechStacks.stream()
+        .map(ProjectTechStackEntity::getTechStackEntity)
+        .map(TechStackEntity::toDomain)
+        .distinct()
+        .toList();
+
+    List<SubGoal> subGoalList = subGoals.stream()
+        .map(SubGoalEntity::toDomain)
+        .toList();
+
+    return Project.builder()
+        .id(this.id)
+        .title(this.title)
+        .description(this.description)
+        .category(this.category)
+        .projectStatus(this.projectStatus)
+        .thumbnailUrl(this.thumbnailUrl)
+        .contentJson(this.contentJson)
+        .createdAt(this.createdAt)
+        .updatedAt(this.updatedAt)
+        .collaborators(collaboratorList)
+        .techStacks(uniqueTechStackList)
+        .subGoals(subGoalList)
+        .userId(this.userId)
+        .build();
+  }
 }
