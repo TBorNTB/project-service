@@ -1,5 +1,6 @@
 package com.sejong.projectservice.infrastructure.document.entity;
 
+import com.sejong.projectservice.core.document.Document;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -32,17 +33,56 @@ public class DocumentEntity {
   @Column(name = "yorkie_document_id", nullable = false, unique = true)
   private String yorkieDocumentId;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "project_id", nullable = false)
-  private ProjectEntity projectEntity;
+  @Column(name = "title", nullable = false)
+  private String title;
+
+  @Column(name = "description", nullable = false)
+  private String description;
+
+  @Column(name = "thumbnail_url")
+  private String thumbnailUrl;
+
+  @Column(name = "content", columnDefinition = "TEXT")
+  private String content;
 
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 
-  private String title;
-  private String description;
-  private String thumbnailUrl;
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "project_id", nullable = false)
+  private ProjectEntity projectEntity;
 
-  @Column(columnDefinition = "TEXT")
-  private String content;
+  public static DocumentEntity from(Document document, ProjectEntity projectEntity) {
+    DocumentEntity documentEntity = DocumentEntity.builder()
+        .id(null)
+        .yorkieDocumentId(document.getYorkieDocumentId())
+        .title(document.getTitle())
+        .description(document.getDescription())
+        .thumbnailUrl(document.getThumbnailUrl())
+        .content(document.getContent())
+        .createdAt(document.getCreatedAt())
+        .updatedAt(document.getUpdatedAt())
+        .build();
+
+    documentEntity.assignDocumentEntity(projectEntity);
+    return documentEntity;
+  }
+
+  public Document toDomain() {
+    return Document.builder()
+        .id(id)
+        .yorkieDocumentId(yorkieDocumentId)
+        .title(title)
+        .description(description)
+        .thumbnailUrl(thumbnailUrl)
+        .content(content)
+        .createdAt(createdAt)
+        .updatedAt(updatedAt)
+        .build();
+  }
+
+  private void assignDocumentEntity(ProjectEntity projectEntity) {
+    this.projectEntity = projectEntity;
+    projectEntity.getDocuments().add(this);
+  }
 }

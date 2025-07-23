@@ -1,6 +1,7 @@
 package com.sejong.projectservice.infrastructure.project.entity;
 
 import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.document.Document;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
@@ -85,6 +86,7 @@ public class ProjectEntity {
         .projectTechStacks(new ArrayList<>())
         .collaborators(new ArrayList<>())
         .subGoals(new ArrayList<>())
+        .documents(new ArrayList<>())
         .build();
   }
 
@@ -103,6 +105,7 @@ public class ProjectEntity {
     this.projectTechStacks.clear();
     this.collaborators.clear();
     this.subGoals.clear();
+    this.documents.clear();
   }
 
   public Project toDomain() {
@@ -110,6 +113,7 @@ public class ProjectEntity {
     List<Collaborator> collaboratorList = collaborators.stream()
         .map(CollaboratorEntity::toDomain)
         .toList();
+
     List<TechStack> uniqueTechStackList = projectTechStacks.stream()
         .map(ProjectTechStackEntity::getTechStackEntity)
         .map(TechStackEntity::toDomain)
@@ -118,6 +122,10 @@ public class ProjectEntity {
 
     List<SubGoal> subGoalList = subGoals.stream()
         .map(SubGoalEntity::toDomain)
+        .toList();
+
+    List<Document> documentList = documents.stream()
+        .map(DocumentEntity::toDomain)
         .toList();
 
     return Project.builder()
@@ -132,6 +140,7 @@ public class ProjectEntity {
         .collaborators(collaboratorList)
         .techStacks(uniqueTechStackList)
         .subGoals(subGoalList)
+        .documents(documentList)
         .build();
   }
 }
