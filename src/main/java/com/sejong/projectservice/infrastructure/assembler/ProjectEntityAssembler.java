@@ -7,10 +7,9 @@ import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectT
 import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
 import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
 import com.sejong.projectservice.infrastructure.techstack.repository.TechStackJpaRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -19,19 +18,21 @@ public class ProjectEntityAssembler {
     private final TechStackJpaRepository techStackJpaRepository;
 
     public void assemble(ProjectEntity projectEntity, Project project) {
-
+        List<CollaboratorEntity> collaborators = projectEntity.getCollaborators();
         project.getCollaborators().forEach(
-                c -> CollaboratorEntity.from(c, projectEntity)
+                c -> collaborators.add(CollaboratorEntity.from(c, projectEntity))
         );
 
+        List<SubGoalEntity> subGoals = projectEntity.getSubGoals();
         project.getSubGoals().forEach(
-                s -> SubGoalEntity.from(s, projectEntity)
+                s -> subGoals.add(SubGoalEntity.from(s, projectEntity))
         );
 
+        List<ProjectTechStackEntity> projectTechStacks = projectEntity.getProjectTechStacks();
         project.getTechStacks().stream()
                 .map(t -> techStackJpaRepository.findByName(t.getName())
                         .orElseGet(() -> techStackJpaRepository.save(new TechStackEntity(null, t.getName()))))
-                .forEach(t -> ProjectTechStackEntity.from(projectEntity, t));
+                .forEach(t -> projectTechStacks.add(ProjectTechStackEntity.from(projectEntity, t)));
 
     }
 }
