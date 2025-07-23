@@ -1,6 +1,7 @@
 package com.sejong.projectservice.core.project.domain;
 
 import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.document.Document;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.subgoal.SubGoal;
@@ -19,19 +20,20 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Project {
 
+  private LocalDateTime updatedAt;
+  private LocalDateTime createdAt;
+
   private Long id;
-  private String yorkieDocumentId;
+  private List<Collaborator> collaborators = new ArrayList<>();
+
   private String title;
   private String description;
   private Category category;
   private ProjectStatus projectStatus;
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
   private String thumbnailUrl;
-  private String contentJson;
-  private Long userId;
+
   private List<SubGoal> subGoals = new ArrayList<>();
   private List<TechStack> techStacks = new ArrayList<>();
-  private List<Collaborator> collaborators = new ArrayList<>();
+  private List<Document> documents = new ArrayList<>();
 
 }

@@ -7,6 +7,7 @@ import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
 import com.sejong.projectservice.infrastructure.collborator.entity.CollaboratorEntity;
+import com.sejong.projectservice.infrastructure.document.entity.DocumentEntity;
 import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
 import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
@@ -41,9 +42,6 @@ public class ProjectEntity {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "yorkie_document_id", nullable = false, unique = true)
-  private String yorkieDocumentId;
-
   private String title;
   private String description;
 
@@ -57,9 +55,6 @@ public class ProjectEntity {
 
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
-
-  @Column(nullable = false)
-  private Long userId;
 
   private String thumbnailUrl;
 
@@ -75,6 +70,9 @@ public class ProjectEntity {
   @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
   private List<SubGoalEntity> subGoals = new ArrayList<>();
 
+  @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<DocumentEntity> documents = new ArrayList<>();
+
   public static ProjectEntity from(Project project) {
     return ProjectEntity.builder()
         .title(project.getTitle())
@@ -82,13 +80,11 @@ public class ProjectEntity {
         .category(project.getCategory())
         .projectStatus(project.getProjectStatus())
         .thumbnailUrl(project.getThumbnailUrl())
-        .contentJson(project.getContentJson())
         .createdAt(project.getCreatedAt())
         .updatedAt(project.getUpdatedAt())
         .projectTechStacks(new ArrayList<>())
         .collaborators(new ArrayList<>())
         .subGoals(new ArrayList<>())
-        .userId(project.getUserId())
         .build();
   }
 
@@ -101,7 +97,6 @@ public class ProjectEntity {
     this.projectStatus = project.getProjectStatus();
     this.updatedAt = project.getUpdatedAt();
     this.thumbnailUrl = project.getThumbnailUrl();
-    this.contentJson = project.getContentJson();
   }
 
   public void clearAllRelations() {
@@ -132,13 +127,11 @@ public class ProjectEntity {
         .category(this.category)
         .projectStatus(this.projectStatus)
         .thumbnailUrl(this.thumbnailUrl)
-        .contentJson(this.contentJson)
         .createdAt(this.createdAt)
         .updatedAt(this.updatedAt)
         .collaborators(collaboratorList)
         .techStacks(uniqueTechStackList)
         .subGoals(subGoalList)
-        .userId(this.userId)
         .build();
   }
 }
