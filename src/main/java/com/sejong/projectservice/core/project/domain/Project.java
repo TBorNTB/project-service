@@ -1,7 +1,6 @@
 package com.sejong.projectservice.core.project.domain;
 
-import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.projectuser.ProjectUser;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.subgoal.SubGoal;
@@ -32,6 +31,6 @@ public class Project {
     private Long userId;
     private List<SubGoal> subGoals =new ArrayList<>();
     private List<TechStack> techStacks = new ArrayList<>();
-    private List<Collaborator> collaborators = new ArrayList<>();
+    private List<ProjectUser> projectUsers = new ArrayList<>();
 
 }
