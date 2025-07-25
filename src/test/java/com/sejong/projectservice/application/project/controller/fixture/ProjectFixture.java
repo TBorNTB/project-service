@@ -3,6 +3,7 @@ package com.sejong.projectservice.application.project.controller.fixture;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
+import com.sejong.projectservice.core.common.PageResult;
 import com.sejong.projectservice.core.projectuser.ProjectUser;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
@@ -76,12 +77,8 @@ public class ProjectFixture {
                 createProject("테스트 프로젝트 B", 2L)
         );
 
-        Page<Project> projectPage = new PageImpl<>(
-                projects,
-                PageRequest.of(0, 10),
-                projects.size()
-        );
+        PageResult<Project> projectPageResult = PageResult.from(projects, 10, 0, 1, 2);
 
-        return ProjectPageResponse.from(projectPage);
+        return ProjectPageResponse.from(projectPageResult);
     }
 }
