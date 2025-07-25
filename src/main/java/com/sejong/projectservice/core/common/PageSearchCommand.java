@@ -1,18 +1,24 @@
 package com.sejong.projectservice.core.common;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProjectSearchCommand {
-    private int page;
+public class PageSearchCommand {
     private int size;
-    private String keyword;
+    private int page;
+    private String sort;
+    private String direction;
 
-    public static ProjectSearchCommand of(int page, int size, String keyword) {}
+    public static PageSearchCommand of(int size, int page, String sort, String direction) {
+        return PageSearchCommand.builder()
+                .page(page)
+                .size(size)
+                .sort(sort)
+                .direction(direction)
+                .build();
+    }
+
 }
