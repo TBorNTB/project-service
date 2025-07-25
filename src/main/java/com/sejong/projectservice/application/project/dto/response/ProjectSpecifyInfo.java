@@ -1,6 +1,6 @@
 package com.sejong.projectservice.application.project.dto.response;
 
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.projectuser.ProjectUser;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
@@ -31,7 +31,7 @@ public class ProjectSpecifyInfo {
     private String contentJson;
     private List<SubGoal> subGoals;
     private List<TechStack> techStacks = new ArrayList<>();
-    private List<Collaborator> collaborators = new ArrayList<>();
+    private List<ProjectUser> projectUsers = new ArrayList<>();
 
     public static ProjectSpecifyInfo from(Project project) {
         return ProjectSpecifyInfo.builder()
@@ -46,7 +46,7 @@ public class ProjectSpecifyInfo {
                 .contentJson(project.getContentJson())
                 .subGoals(project.getSubGoals())
                 .techStacks(project.getTechStacks())
-                .collaborators(project.getCollaborators())
+                .projectUsers(project.getProjectUsers())
                 .build();
     }
 }
