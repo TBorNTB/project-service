@@ -12,11 +12,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class ProjectEntityAssembler {
+public class Mapper {
 
     private final TechStackJpaRepository techStackJpaRepository;
 
-    public void assemble(ProjectEntity projectEntity, Project project) {
+    public void map(Project project, ProjectEntity projectEntity) {
 
         project.getCollaborators().stream()
                 .map(CollaboratorEntity::from).forEach(projectEntity::addCollaborator);

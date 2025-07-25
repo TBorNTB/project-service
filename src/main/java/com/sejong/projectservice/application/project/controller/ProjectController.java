@@ -3,6 +3,7 @@ package com.sejong.projectservice.application.project.controller;
 import com.sejong.projectservice.application.project.dto.request.DocumentCreateReq;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.response.DocumentCreateRes;
+import com.sejong.projectservice.application.project.dto.response.DocumentInfoRes;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
@@ -108,6 +109,15 @@ public class ProjectController {
         return ResponseEntity
                 .status(201)
                 .body(response);
+    }
+
+    @GetMapping("/{projectId}/{documentId}")
+    public ResponseEntity<DocumentInfoRes> getDocument(
+            @PathVariable(name = "projectId") Long projectId,
+            @PathVariable(name = "documentId") Long documentId
+    ) {
+        DocumentInfoRes documentInfoRes = projectService.getDocument(projectId, documentId);
+        return ResponseEntity.ok(documentInfoRes);
     }
 
     // Todo: document crud, pageable(cursor/offset), search?

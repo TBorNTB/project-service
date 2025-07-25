@@ -4,7 +4,7 @@ import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
-import com.sejong.projectservice.infrastructure.assembler.ProjectEntityAssembler;
+import com.sejong.projectservice.infrastructure.assembler.Mapper;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +19,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectRepositoryImpl implements ProjectRepository {
 
     private final ProjectJpaRepository projectJpaRepository;
-    private final ProjectEntityAssembler projectAssembler;
+    private final Mapper mapper;
 
     @Override
     public Project save(Project project) {
 
         ProjectEntity projectEntity = ProjectEntity.from(project);
-        projectAssembler.assemble(projectEntity, project);
+        mapper.map(project, projectEntity);
         ProjectEntity entity = projectJpaRepository.save(projectEntity);
         return entity.toDomain();
     }
@@ -53,7 +53,7 @@ public class ProjectRepositoryImpl implements ProjectRepository {
 
         projectEntity.updateBasicInfo(project);
         projectEntity.clearAllRelations();
-        projectAssembler.assemble(projectEntity, project);
+        mapper.map(project, projectEntity);
 
         ProjectEntity responseEntity = projectJpaRepository.save(projectEntity);
         return responseEntity.toDomain();
