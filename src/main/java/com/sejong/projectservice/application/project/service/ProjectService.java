@@ -6,8 +6,11 @@ import com.sejong.projectservice.application.project.dto.response.ProjectPageRes
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.core.assembler.ProjectAssembler;
+import com.sejong.projectservice.core.common.PageResult;
+import com.sejong.projectservice.core.common.PageSearchCommand;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
+import com.sejong.projectservice.core.project.command.ProjectFormCommand;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +26,7 @@ public class ProjectService {
 //    private final UserClient userClient;
 
     @Transactional
-    public ProjectAddResponse register(ProjectFormRequest projectFormRequest, String userId) {
+    public ProjectAddResponse register(ProjectFormCommand projectFormCommand, String userId) {
 //        try {
 //            boolean exists = userClient.exists(userId);
 //            if (!exists) {
@@ -36,25 +39,25 @@ public class ProjectService {
 //        }
         userId = "1";
 
-        Project project = ProjectAssembler.toDomain(projectFormRequest , Long.valueOf(userId));
+        Project project = ProjectAssembler.toDomain(projectFormCommand , Long.valueOf(userId));
         Project savedProject = projectRepository.save(project);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
     }
 
-    public ProjectPageResponse getAllProjects(Pageable pageable) {
+    public ProjectPageResponse getAllProjects(PageSearchCommand pageSearchCommand) {
 
-        Page<Project> projectPage = projectRepository.findAll(pageable);
-        return ProjectPageResponse.from(projectPage);
+        PageResult<Project> pageResult = projectRepository.findAll(pageSearchCommand);
+        return ProjectPageResponse.from(pageResult);
     }
 
-    public ProjectUpdateResponse update(Long projectId, ProjectFormRequest projectFormRequest) {
-        Project project = ProjectAssembler.toDomain(projectFormRequest, null);
+    public ProjectUpdateResponse update(Long projectId, ProjectFormCommand projectFormCommand) {
+        Project project = ProjectAssembler.toDomain(projectFormCommand, null);
         Project updatedProject = projectRepository.update(project , projectId);
         return ProjectUpdateResponse.from(updatedProject.getTitle(), "수정 완료");
     }
 
-    public ProjectPageResponse search(String keyword, Category category, ProjectStatus status, Pageable pageable) {
-        Page<Project> projectPage = projectRepository.searchWithFilters(keyword, category, status, pageable);
+    public ProjectPageResponse search(String keyword, Category category, ProjectStatus status, PageSearchCommand pageSearchCommand) {
+        PageResult<Project> projectPage = projectRepository.searchWithFilters(keyword, category, status, pageSearchCommand);
         return ProjectPageResponse.from(projectPage);
     }
 

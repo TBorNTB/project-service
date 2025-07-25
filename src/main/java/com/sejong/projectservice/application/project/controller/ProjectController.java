@@ -1,17 +1,17 @@
 package com.sejong.projectservice.application.project.controller;
 
+import com.sejong.projectservice.application.mapper.ProjectCommandMapper;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.application.project.service.ProjectService;
+import com.sejong.projectservice.core.common.PageSearchCommand;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
+import com.sejong.projectservice.core.project.command.ProjectFormCommand;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -32,8 +32,8 @@ public class ProjectController {
     public ResponseEntity<ProjectAddResponse> add(
             @RequestBody ProjectFormRequest projectFormRequest,
             @RequestHeader("X-User-ID") String userId) {
-
-        ProjectAddResponse response = projectService.register(projectFormRequest, userId);
+        ProjectFormCommand projectFormCommand = ProjectCommandMapper.toCommand(projectFormRequest);
+        ProjectAddResponse response = projectService.register(projectFormCommand, userId);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -41,11 +41,12 @@ public class ProjectController {
 
     @GetMapping("/all")
     public ResponseEntity<ProjectPageResponse> getAll(
-            @RequestParam(name = "size") int size,
-            @RequestParam(name = "page") int page
+            @RequestParam(name = "size", defaultValue = "10") int size,
+            @RequestParam(name = "page", defaultValue = "0") int page
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        ProjectPageResponse response = projectService.getAllProjects(pageable);
+
+        PageSearchCommand pageSearchCommand = PageSearchCommand.of(size, page, "createdAt", "desc");
+        ProjectPageResponse response = projectService.getAllProjects(pageSearchCommand);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -56,7 +57,8 @@ public class ProjectController {
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody ProjectFormRequest projectFormRequest
     ) {
-        ProjectUpdateResponse response = projectService.update(projectId, projectFormRequest);
+        ProjectFormCommand projectFormCommand = ProjectCommandMapper.toCommand(projectFormRequest);
+        ProjectUpdateResponse response = projectService.update(projectId, projectFormCommand);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
@@ -82,13 +84,8 @@ public class ProjectController {
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "10") int size
     ) {
-        Pageable pageable = PageRequest.of(
-                page,
-                size,
-                Sort.by(Sort.Direction.fromString(direction), sort)
-        );
-
-        ProjectPageResponse response = projectService.search(keyword, category, status, pageable);
+        PageSearchCommand pageSearchCommand = PageSearchCommand.of(size, page, sort, direction);
+        ProjectPageResponse response = projectService.search(keyword, category, status, pageSearchCommand);
         return ResponseEntity.ok(response);
     }
 }
