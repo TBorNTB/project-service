@@ -3,7 +3,8 @@ package com.sejong.projectservice.application.project.controller.fixture;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.common.PageResult;
+import com.sejong.projectservice.core.projectuser.ProjectUser;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
@@ -15,7 +16,6 @@ import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 
@@ -65,7 +65,7 @@ public class ProjectFixture {
                     }
                 """)
                 .userId(userId)
-                .collaborators(List.of(mock(Collaborator.class), mock(Collaborator.class)))
+                .projectUsers(List.of(mock(ProjectUser.class), mock(ProjectUser.class)))
                 .techStacks(List.of(mock(TechStack.class), mock(TechStack.class)))
                 .subGoals(List.of(mock(SubGoal.class), mock(SubGoal.class)))
                 .build();
@@ -77,12 +77,8 @@ public class ProjectFixture {
                 createProject("테스트 프로젝트 B", 2L)
         );
 
-        Page<Project> projectPage = new PageImpl<>(
-                projects,
-                PageRequest.of(0, 10),
-                projects.size()
-        );
+        PageResult<Project> projectPageResult = PageResult.from(projects, 10, 0, 1, 2);
 
-        return ProjectPageResponse.from(projectPage);
+        return ProjectPageResponse.from(projectPageResult);
     }
 }

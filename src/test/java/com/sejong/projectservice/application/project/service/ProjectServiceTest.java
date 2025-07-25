@@ -1,5 +1,6 @@
 package com.sejong.projectservice.application.project.service;
 
+import com.sejong.projectservice.application.mapper.ProjectCommandMapper;
 import com.sejong.projectservice.application.project.controller.fixture.ProjectFixture;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
@@ -7,8 +8,11 @@ import com.sejong.projectservice.application.project.dto.response.ProjectPageRes
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.core.assembler.ProjectAssembler;
+import com.sejong.projectservice.core.common.PageResult;
+import com.sejong.projectservice.core.common.PageSearchCommand;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
+import com.sejong.projectservice.core.project.command.ProjectFormCommand;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -48,12 +52,13 @@ class ProjectServiceTest {
     void 프로젝트를_정상적으로_저장한다() {
         // given
         ProjectFormRequest mockRequest = mock(ProjectFormRequest.class);
+        ProjectFormCommand command = ProjectCommandMapper.toCommand(mockRequest);
         String userId = "1";
         Project project = createProject("테스트제목", Long.valueOf(userId));
         when(projectRepository.save(any(Project.class))).thenReturn(project);
 
         // when
-        ProjectAddResponse response = projectService.register(mockRequest, userId);
+        ProjectAddResponse response = projectService.register(command, userId);
 
         // then
         assertThat(response.getTitle()).isEqualTo("테스트제목");
@@ -63,14 +68,14 @@ class ProjectServiceTest {
     @Test
     void 모든_프로젝트를_반환한다() {
         // given
-        Pageable pageable = PageRequest.of(0, 10);
         Project project1 = createProject("테스트제목1", 1L);
         Project project2 = createProject("테스트제목2", 2L);
-        Page<Project> projectPage = new PageImpl<>(List.of(project1,project2), pageable, 2);
+        PageSearchCommand command = new PageSearchCommand(0, 10, "DESC", "createdAt");
+        PageResult<Project> projectPageResult = PageResult.from(List.of(project1,project2), 10, 0, 1, 2);
 
-        when(projectRepository.findAll(pageable)).thenReturn(projectPage);
+        when(projectRepository.findAll(command)).thenReturn(projectPageResult);
         // when
-        ProjectPageResponse response = projectService.getAllProjects(pageable);
+        ProjectPageResponse response = projectService.getAllProjects(command);
 
         // then
         assertThat(response.getProjects().get(0).getTitle()).isEqualTo("테스트제목1");
@@ -87,7 +92,7 @@ class ProjectServiceTest {
         when(projectRepository.update(any(Project.class), eq(projectId))).thenReturn(project);
 
         // when
-        ProjectUpdateResponse response = projectService.update(projectId, mock(ProjectFormRequest.class));
+        ProjectUpdateResponse response = projectService.update(projectId, mock(ProjectFormCommand.class));
 
         // then
         assertThat(response.getTitle()).isEqualTo("테스트제목1");
@@ -99,15 +104,15 @@ class ProjectServiceTest {
         String keyword = "keyword";
         Category category = Category.REVERSING;
         ProjectStatus status = ProjectStatus.IN_PROGRESS;
-        Pageable pageable = PageRequest.of(0, 10);
         Project project1 = createProject("테스트제목1", 1L);
         Project project2 = createProject("테스트제목2", 2L);
         List<Project> projects = List.of(project1, project2);
-        Page<Project> projectPage = new PageImpl<>(projects, pageable, 2);
-        when(projectRepository.searchWithFilters(keyword, category, status, pageable)).thenReturn(projectPage);
+        PageSearchCommand command = new PageSearchCommand(0, 10, "DESC", "createdAt");
+        PageResult<Project> projectPageResult = PageResult.from(projects, 10, 0, 1, 2);
+        when(projectRepository.searchWithFilters(keyword, category, status, command)).thenReturn(projectPageResult);
 
         // when
-        ProjectPageResponse response = projectService.search(keyword, category, status, pageable);
+        ProjectPageResponse response = projectService.search(keyword, category, status, command);
 
         // then
         assertThat(response.getProjects().get(0).getTitle()).isEqualTo("테스트제목1");

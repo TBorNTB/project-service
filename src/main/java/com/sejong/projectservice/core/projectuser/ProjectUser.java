@@ -1,6 +1,5 @@
-package com.sejong.projectservice.core.collaborator;
+package com.sejong.projectservice.core.projectuser;
 
-import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,12 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Collaborator {
+public class ProjectUser {
     private Long id;
     private String collaboratorName;
 
-    public static Collaborator from(String collaboratorName) {
-        return Collaborator.builder()
+    public static ProjectUser from(String collaboratorName) {
+        return ProjectUser.builder()
                 .id(null)
                 .collaboratorName(collaboratorName)
                 .build();

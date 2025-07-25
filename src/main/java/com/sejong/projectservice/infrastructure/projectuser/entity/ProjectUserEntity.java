@@ -1,6 +1,6 @@
-package com.sejong.projectservice.infrastructure.collborator.entity;
+package com.sejong.projectservice.infrastructure.projectuser.entity;
 
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.projectuser.ProjectUser;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,12 +9,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="collaborator")
+@Table(name="projectuser")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CollaboratorEntity {
+public class ProjectUserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,10 +26,10 @@ public class CollaboratorEntity {
 
     private String collaboratorName;
 
-    public static CollaboratorEntity from(Collaborator collaborator , ProjectEntity projectEntity) {
+    public static ProjectUserEntity from(ProjectUser projectUser, ProjectEntity projectEntity) {
 
-        CollaboratorEntity entity = CollaboratorEntity.builder()
-                .collaboratorName(collaborator.getCollaboratorName())
+        ProjectUserEntity entity = ProjectUserEntity.builder()
+                .collaboratorName(projectUser.getCollaboratorName())
                 .projectEntity(projectEntity)
                 .build();
 
@@ -37,8 +37,8 @@ public class CollaboratorEntity {
         return entity;
     }
 
-    public Collaborator toDomain() {
-        return Collaborator.builder()
+    public ProjectUser toDomain() {
+        return ProjectUser.builder()
                 .id(this.getId())
                 .collaboratorName(this.getCollaboratorName())
                 .build();
@@ -49,10 +49,10 @@ public class CollaboratorEntity {
         projectEntity.getCollaborators().add(this);
     }
 
-    public static CollaboratorEntity withoutProject(Collaborator collaborator) {
-        return CollaboratorEntity.builder()
-                .id(collaborator.getId())
-                .collaboratorName(collaborator.getCollaboratorName())
+    public static ProjectUserEntity withoutProject(ProjectUser projectUser) {
+        return ProjectUserEntity.builder()
+                .id(projectUser.getId())
+                .collaboratorName(projectUser.getCollaboratorName())
                 .build();
     }
 }

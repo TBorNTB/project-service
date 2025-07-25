@@ -1,27 +1,19 @@
 package com.sejong.projectservice.infrastructure.project.repository;
 
-import com.sejong.projectservice.core.assembler.ProjectAssembler;
+import com.sejong.projectservice.core.common.PageResult;
+import com.sejong.projectservice.core.common.PageSearchCommand;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import com.sejong.projectservice.infrastructure.assembler.ProjectEntityAssembler;
-import com.sejong.projectservice.infrastructure.collborator.entity.CollaboratorEntity;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
-import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectTechStackEntity;
-import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
-import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
-import com.sejong.projectservice.infrastructure.techstack.repository.TechStackJpaRepository;
-import com.sejong.projectservice.infrastructure.techstack.repository.TechStackRepositoryImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -40,18 +32,19 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    public Page<Project> findAll(Pageable pageable) {
+    public PageResult<Project> findAll(PageSearchCommand pageSearchCommand) {
+        Pageable pageable = PageRequest.of(
+                pageSearchCommand.getPage(),
+                pageSearchCommand.getSize(),
+                Sort.by(Sort.Direction.valueOf(pageSearchCommand.getDirection().toUpperCase()), pageSearchCommand.getSort())
+        );
         Page<ProjectEntity> pageProjectEntities = projectJpaRepository.findAll(pageable);
         List<Project> projects = pageProjectEntities
                 .stream()
                 .map(ProjectEntity::toDomain)
                 .toList();
 
-        return new PageImpl<>(
-                projects,
-                pageable,
-                pageProjectEntities.getTotalElements()
-        );
+        return PageResult.from(projects,pageProjectEntities.getSize(),pageProjectEntities.getNumber(),pageProjectEntities.getTotalPages(),pageProjectEntities.getTotalElements());
     }
 
     @Override
@@ -69,16 +62,18 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    public Page<Project> searchWithFilters(String keyword, Category category, ProjectStatus status, Pageable pageable) {
+    public PageResult<Project> searchWithFilters(String keyword, Category category, ProjectStatus status, PageSearchCommand pageSearchCommand) {
+        Pageable pageable = PageRequest.of(
+                pageSearchCommand.getPage(),
+                pageSearchCommand.getSize(),
+                Sort.by(Sort.Direction.valueOf(pageSearchCommand.getDirection().toUpperCase()), pageSearchCommand.getSort())
+        );
+
         Page<ProjectEntity> pageProjectEntities = projectJpaRepository.searchWithFilters(keyword, category, status, pageable);
         List<Project> projects = pageProjectEntities.stream()
                 .map(ProjectEntity::toDomain)
                 .toList();
-        return new PageImpl<>(
-                projects,
-                pageable,
-                pageProjectEntities.getTotalElements()
-        );
+        return PageResult.from(projects,pageProjectEntities.getSize(),pageProjectEntities.getNumber(),pageProjectEntities.getTotalPages(),pageProjectEntities.getTotalElements());
     }
 
     @Override

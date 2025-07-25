@@ -1,6 +1,7 @@
 package com.sejong.projectservice.application.project.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sejong.projectservice.application.mapper.ProjectCommandMapper;
 import com.sejong.projectservice.application.project.config.MockBeansConfig;
 import com.sejong.projectservice.application.project.controller.fixture.ProjectFixture;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
@@ -9,8 +10,10 @@ import com.sejong.projectservice.application.project.dto.response.ProjectPageRes
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.application.project.service.ProjectService;
+import com.sejong.projectservice.core.common.PageSearchCommand;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
+import com.sejong.projectservice.core.project.command.ProjectFormCommand;
 import com.sejong.projectservice.core.project.domain.Project;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,9 +66,10 @@ class ProjectControllerTest {
     void 프로젝트를_정상적으로_저장한다() throws Exception {
         //given
         ProjectFormRequest projectFormRequest = createProjectFormRequest("테스트제목");
+        ProjectFormCommand command = ProjectCommandMapper.toCommand(projectFormRequest);
         ProjectAddResponse response = createProjectAddResponse("테스트제목");
         String userId = "123";
-        when(projectService.register(projectFormRequest,userId)).thenReturn(response);
+        when(projectService.register(command,userId)).thenReturn(response);
 
         //when && then
         mockMvc.perform(post("/api/project/add")
@@ -81,8 +85,8 @@ class ProjectControllerTest {
             @RequestParam(name = "size") int size,
             @RequestParam(name = "page") int page
     ) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        ProjectPageResponse response = projectService.getAllProjects(pageable);
+        PageSearchCommand pageSearchCommand = PageSearchCommand.of(size, page, "createdAt", "DESC");
+        ProjectPageResponse response = projectService.getAllProjects(pageSearchCommand);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
@@ -94,8 +98,8 @@ class ProjectControllerTest {
         int page = 0;
         int size = 10;
         ProjectPageResponse response = createProjectPageResponse();
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        when(projectService.getAllProjects(pageable)).thenReturn(response);
+        PageSearchCommand pageSearchCommand = PageSearchCommand.of(size, page, "createdAt", "desc");
+        when(projectService.getAllProjects(pageSearchCommand)).thenReturn(response);
         //when && then
         mockMvc.perform(get("/api/project/all")
                 .param("page", String.valueOf(page))
@@ -110,11 +114,12 @@ class ProjectControllerTest {
         ProjectFormRequest request = ProjectFormRequest.builder()
                 .title("변경된_제목")
                 .build();
+        ProjectFormCommand command = ProjectCommandMapper.toCommand(request);
 
         ProjectUpdateResponse response = ProjectUpdateResponse.from("변경된_제목", "변경이 완료되었습니다.");
         Long projectId = 1L;
 
-        when(projectService.update(projectId, request)).thenReturn(response);
+        when(projectService.update(projectId, command)).thenReturn(response);
 
         //when && then
         mockMvc.perform(put("/api/project/"+projectId)
@@ -155,7 +160,7 @@ class ProjectControllerTest {
                 eq(keyword),
                 eq(Category.valueOf(category)),
                 eq(ProjectStatus.valueOf(status)),
-                any(Pageable.class))
+                any(PageSearchCommand.class))
         ).thenReturn(response);
 
         // when & then

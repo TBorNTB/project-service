@@ -1,12 +1,12 @@
 package com.sejong.projectservice.infrastructure.project.entity;
 
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.projectuser.ProjectUser;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
-import com.sejong.projectservice.infrastructure.collborator.entity.CollaboratorEntity;
+import com.sejong.projectservice.infrastructure.projectuser.entity.ProjectUserEntity;
 import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
 import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
@@ -57,7 +57,7 @@ public class ProjectEntity {
     private List<ProjectTechStackEntity> projectTechStacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CollaboratorEntity> collaborators = new ArrayList<>();
+    private List<ProjectUserEntity> collaborators = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SubGoalEntity> subGoals = new ArrayList<>();
@@ -99,8 +99,8 @@ public class ProjectEntity {
 
     public Project toDomain() {
 
-        List<Collaborator> collaboratorList = collaborators.stream()
-                .map(CollaboratorEntity::toDomain)
+        List<ProjectUser> projectUserList = collaborators.stream()
+                .map(ProjectUserEntity::toDomain)
                 .toList();
         List<TechStack> uniqueTechStackList = projectTechStacks.stream()
                 .map(ProjectTechStackEntity::getTechStackEntity)
@@ -122,7 +122,7 @@ public class ProjectEntity {
                 .contentJson(this.contentJson)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
-                .collaborators(collaboratorList)
+                .projectUsers(projectUserList)
                 .techStacks(uniqueTechStackList)
                 .subGoals(subGoalList)
                 .userId(this.userId)

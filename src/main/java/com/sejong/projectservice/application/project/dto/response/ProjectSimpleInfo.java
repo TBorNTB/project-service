@@ -1,10 +1,9 @@
 package com.sejong.projectservice.application.project.dto.response;
 
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.projectuser.ProjectUser;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -29,12 +28,12 @@ public class ProjectSimpleInfo {
     private LocalDateTime updatedAt;
     private String thumbnailUrl;
     private List<TechStack> techStacks = new ArrayList<>();
-    private List<Collaborator> collaborators = new ArrayList<>();
+    private List<ProjectUser> projectUsers = new ArrayList<>();
     private Integer collaboratorSize;
 
     public static ProjectSimpleInfo from(Project project) {
 
-        List<Collaborator> collaboratorList = project.getCollaborators();
+        List<ProjectUser> projectUserList = project.getProjectUsers();
 
         return ProjectSimpleInfo.builder()
                 .id(project.getId())
@@ -46,8 +45,8 @@ public class ProjectSimpleInfo {
                 .updatedAt(project.getUpdatedAt())
                 .thumbnailUrl(project.getThumbnailUrl())
                 .techStacks(project.getTechStacks())
-                .collaborators(collaboratorList)
-                .collaboratorSize(collaboratorList.size())
+                .projectUsers(projectUserList)
+                .collaboratorSize(projectUserList.size())
                 .build();
     }
 }
