@@ -2,14 +2,21 @@ package com.sejong.projectservice.infrastructure.collborator.entity;
 
 import com.sejong.projectservice.core.collaborator.Collaborator;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name="collaborator")
+@Table(name = "collaborator")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -21,20 +28,15 @@ public class CollaboratorEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="project_id", nullable=false)
+    @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
     private String collaboratorName;
 
-    public static CollaboratorEntity from(Collaborator collaborator , ProjectEntity projectEntity) {
-
-        CollaboratorEntity entity = CollaboratorEntity.builder()
+    public static CollaboratorEntity from(Collaborator collaborator) {
+        return CollaboratorEntity.builder()
                 .collaboratorName(collaborator.getCollaboratorName())
-                .projectEntity(projectEntity)
                 .build();
-
-        entity.assignProjectEntity(projectEntity);
-        return entity;
     }
 
     public Collaborator toDomain() {
@@ -46,13 +48,5 @@ public class CollaboratorEntity {
 
     public void assignProjectEntity(ProjectEntity projectEntity) {
         this.projectEntity = projectEntity;
-        projectEntity.getCollaborators().add(this);
-    }
-
-    public static CollaboratorEntity withoutProject(Collaborator collaborator) {
-        return CollaboratorEntity.builder()
-                .id(collaborator.getId())
-                .collaboratorName(collaborator.getCollaboratorName())
-                .build();
     }
 }

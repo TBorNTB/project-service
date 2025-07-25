@@ -24,46 +24,42 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SubGoalEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  private String content;
+    private String content;
 
-  private Boolean completed;
+    private Boolean completed;
 
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "project_id", nullable = false)
-  private ProjectEntity projectEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private ProjectEntity projectEntity;
 
-  public static SubGoalEntity from(SubGoal subGoal, ProjectEntity projectEntity) {
-    SubGoalEntity subGoalEntity = SubGoalEntity.builder()
-        .id(null)
-        .content(subGoal.getContent())
-        .completed(subGoal.getCompleted())
-        .createdAt(subGoal.getCreatedAt())
-        .updatedAt(subGoal.getUpdatedAt())
-        .build();
+    public static SubGoalEntity from(SubGoal subGoal) {
+        return SubGoalEntity.builder()
+                .id(null)
+                .content(subGoal.getContent())
+                .completed(subGoal.getCompleted())
+                .createdAt(subGoal.getCreatedAt())
+                .updatedAt(subGoal.getUpdatedAt())
+                .build();
+    }
 
-    subGoalEntity.assignProjectEntity(projectEntity);
-    return subGoalEntity;
-  }
+    public SubGoal toDomain() {
+        return SubGoal.builder()
+                .id(id)
+                .content(content)
+                .completed(completed)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
+    }
 
-  public SubGoal toDomain() {
-    return SubGoal.builder()
-        .id(id)
-        .content(content)
-        .completed(completed)
-        .createdAt(createdAt)
-        .updatedAt(updatedAt)
-        .build();
-  }
-
-  private void assignProjectEntity(ProjectEntity projectEntity) {
-    this.projectEntity = projectEntity;
-    projectEntity.getSubGoals().add(this);
-  }
+    public void assignProjectEntity(ProjectEntity projectEntity) {
+        this.projectEntity = projectEntity;
+    }
 }

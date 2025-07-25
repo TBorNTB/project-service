@@ -1,6 +1,6 @@
 package com.sejong.projectservice.infrastructure.document.entity;
 
-import com.sejong.projectservice.core.document.Document;
+import com.sejong.projectservice.core.document.domain.Document;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,64 +25,60 @@ import lombok.NoArgsConstructor;
 @Getter
 public class DocumentEntity {
 
-  @Id
-  @Column(name = "document_id")
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @Column(name = "document_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(name = "yorkie_document_id", nullable = false, unique = true)
-  private String yorkieDocumentId;
+    @Column(name = "yorkie_document_id", nullable = false, unique = true)
+    private String yorkieDocumentId;
 
-  @Column(name = "title", nullable = false)
-  private String title;
+    @Column(name = "title", nullable = false)
+    private String title;
 
-  @Column(name = "description", nullable = false)
-  private String description;
+    @Column(name = "description", nullable = false)
+    private String description;
 
-  @Column(name = "thumbnail_url")
-  private String thumbnailUrl;
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
 
-  @Column(name = "content", columnDefinition = "TEXT")
-  private String content;
+    @Column(name = "content", columnDefinition = "TEXT")
+    private String content;
 
-  private LocalDateTime createdAt;
-  private LocalDateTime updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "project_id", nullable = false)
-  private ProjectEntity projectEntity;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id", nullable = false)
+    private ProjectEntity projectEntity;
 
-  public static DocumentEntity from(Document document, ProjectEntity projectEntity) {
-    DocumentEntity documentEntity = DocumentEntity.builder()
-        .id(null)
-        .yorkieDocumentId(document.getYorkieDocumentId())
-        .title(document.getTitle())
-        .description(document.getDescription())
-        .thumbnailUrl(document.getThumbnailUrl())
-        .content(document.getContent())
-        .createdAt(document.getCreatedAt())
-        .updatedAt(document.getUpdatedAt())
-        .build();
+    public static DocumentEntity from(Document document) {
+        return DocumentEntity.builder()
+                .id(null)
+                .yorkieDocumentId(document.getYorkieDocumentId())
+                .title(document.getTitle())
+                .description(document.getDescription())
+                .thumbnailUrl(document.getThumbnailUrl())
+                .content(document.getContent())
+                .createdAt(document.getCreatedAt())
+                .updatedAt(document.getUpdatedAt())
+                .build();
+    }
 
-    documentEntity.assignDocumentEntity(projectEntity);
-    return documentEntity;
-  }
+    public Document toDomain() {
+        return Document.builder()
+                .id(id)
+                .yorkieDocumentId(yorkieDocumentId)
+                .title(title)
+                .description(description)
+                .thumbnailUrl(thumbnailUrl)
+                .content(content)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
+    }
 
-  public Document toDomain() {
-    return Document.builder()
-        .id(id)
-        .yorkieDocumentId(yorkieDocumentId)
-        .title(title)
-        .description(description)
-        .thumbnailUrl(thumbnailUrl)
-        .content(content)
-        .createdAt(createdAt)
-        .updatedAt(updatedAt)
-        .build();
-  }
-
-  private void assignDocumentEntity(ProjectEntity projectEntity) {
-    this.projectEntity = projectEntity;
-    projectEntity.getDocuments().add(this);
-  }
+    public void assignDocumentEntity(ProjectEntity projectEntity) {
+        this.projectEntity = projectEntity;
+    }
 }
