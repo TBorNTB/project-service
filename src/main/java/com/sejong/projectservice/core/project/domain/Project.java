@@ -1,6 +1,6 @@
 package com.sejong.projectservice.core.project.domain;
 
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.core.document.domain.Document;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;

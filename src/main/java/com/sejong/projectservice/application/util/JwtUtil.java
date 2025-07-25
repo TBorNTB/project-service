@@ -14,46 +14,46 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtUtil {
 
-  @Value("${jwt.secret}")
-  private String jwtSecret;
+    @Value("${jwt.secret}")
+    private String jwtSecret;
 
-  private SecretKey getSigningKey() {
+    private SecretKey getSigningKey() {
 //        return Keys.hmacShaKeyFor(Decoders.BASE64.decode(jwtSecret));
-    return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
-  }
-
-  public boolean validateToken(String token) {
-    try {
-      Claims claims = Jwts.parserBuilder()
-          .setSigningKey(getSigningKey())
-          .build()
-          .parseClaimsJws(token)
-          .getBody();
-
-      // 토큰 만료 시간 확인
-      return !claims.getExpiration().before(new Date());
-    } catch (JwtException | IllegalArgumentException e) {
-      return false;
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
     }
-  }
 
-  public Claims getClaimsFromToken(String token) {
-    return Jwts.parserBuilder()
-        .setSigningKey(getSigningKey())
-        .build()
-        .parseClaimsJws(token)
-        .getBody();
-  }
+    public boolean validateToken(String token) {
+        try {
+            Claims claims = Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token)
+                    .getBody();
 
-  public String getUserIdFromToken(String token) {
-    return getClaimsFromToken(token).get("username", String.class);
-  }
+            // 토큰 만료 시간 확인
+            return !claims.getExpiration().before(new Date());
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
+    }
 
-  public String getUserRoleFromToken(String token) {
-    return getClaimsFromToken(token).get("role", String.class);
-  }
+    public Claims getClaimsFromToken(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+    }
 
-  public String getUserEmailFromToken(String token) {
-    return getClaimsFromToken(token).get("email", String.class);
-  }
+    public String getUserIdFromToken(String token) {
+        return getClaimsFromToken(token).get("userId", String.class);
+    }
+
+    public String getUserRoleFromToken(String token) {
+        return getClaimsFromToken(token).get("role", String.class);
+    }
+
+    public String getUserNameFromToken(String token) {
+        return getClaimsFromToken(token).get("username", String.class);
+    }
 }

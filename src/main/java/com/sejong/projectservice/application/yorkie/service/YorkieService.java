@@ -3,8 +3,11 @@ package com.sejong.projectservice.application.yorkie.service;
 import com.sejong.projectservice.application.util.JwtUtil;
 import com.sejong.projectservice.application.yorkie.dto.request.CheckYorkieRequest;
 import com.sejong.projectservice.application.yorkie.dto.response.CheckYorkieResponse;
+import com.sejong.projectservice.core.collaborator.repository.CollaboratorRepository;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,11 +15,17 @@ import org.springframework.stereotype.Service;
 public class YorkieService {
 
     private final JwtUtil jwtUtil;
+    private final CollaboratorRepository collaboratorRepository;
 
-    public CheckYorkieResponse checkYorkie(CheckYorkieRequest checkYorkieRequest) {
+    public ResponseEntity<CheckYorkieResponse> checkYorkie(CheckYorkieRequest checkYorkieRequest) {
         if (checkYorkieRequest.getMethod().equals(YorkieMethod.ActivateClient)
                 || checkYorkieRequest.getMethod().equals(YorkieMethod.DeactivateClient)) {
-            return new CheckYorkieResponse(true, String.format("Pass %s method", checkYorkieRequest.getMethod()));
+            CheckYorkieResponse response = new CheckYorkieResponse(true,
+                    String.format("Pass %s method", checkYorkieRequest.getMethod()));
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
         }
 
         String token = checkYorkieRequest.getToken();
@@ -28,14 +37,23 @@ public class YorkieService {
                 .orElseThrow(() -> new IllegalArgumentException("Document ID not found"));
 
         if (!jwtUtil.validateToken(token)) {
-            return new CheckYorkieResponse(false, "Valid Token");
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new CheckYorkieResponse(false, "Token is expired or invalid"));
         }
 
-        String userId = jwtUtil.getUserIdFromToken(token);
-        // Todo: yorkieDocumentId, userId(nickname) 으로 Project_User 조회
-        // Project_User(project_id, user_id)
+        String username = jwtUtil.getUserNameFromToken(token);
 
-        return new CheckYorkieResponse(true, "Valid Token");
+        boolean belongTo = collaboratorRepository.existsByDocumentYorkieIdAndUsername(yorkieDocId, username);
+        if (!belongTo) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new CheckYorkieResponse(false, "User does not have access to the document"));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new CheckYorkieResponse(true, "Valid Token"));
     }
 
     public enum YorkieMethod {

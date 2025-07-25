@@ -28,7 +28,7 @@ public class ProjectService {
 //    private final UserClient userClient;
 
     @Transactional
-    public ProjectAddResponse register(ProjectFormRequest projectFormRequest) {
+    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest) {
         Project project = Assembler.toProject(projectFormRequest);
         Project savedProject = projectRepository.save(project);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");

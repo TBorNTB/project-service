@@ -1,7 +1,8 @@
-package com.sejong.projectservice.infrastructure.collborator.entity;
+package com.sejong.projectservice.infrastructure.collaborator.entity;
 
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -16,7 +17,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "collaborator")
+@Table(name = "project_user")
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,6 +26,7 @@ public class CollaboratorEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "project_user_id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)

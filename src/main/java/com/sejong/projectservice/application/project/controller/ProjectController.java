@@ -37,10 +37,10 @@ public class ProjectController {
         return "OK";
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<ProjectAddResponse> add(
+    @PostMapping()
+    public ResponseEntity<ProjectAddResponse> createProject(
             @RequestBody ProjectFormRequest projectFormRequest) {
-        ProjectAddResponse response = projectService.register(projectFormRequest);
+        ProjectAddResponse response = projectService.createProject(projectFormRequest);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -109,4 +109,8 @@ public class ProjectController {
                 .status(201)
                 .body(response);
     }
+
+    // Todo: document crud, pageable(cursor/offset), search?
+//    @PutMapping("{projectId}/{documentId}")
+//    public ResponseEntity<Document>
 }

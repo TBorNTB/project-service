@@ -1,7 +1,7 @@
 package com.sejong.projectservice.infrastructure.assembler;
 
 import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.infrastructure.collborator.entity.CollaboratorEntity;
+import com.sejong.projectservice.infrastructure.collaborator.entity.CollaboratorEntity;
 import com.sejong.projectservice.infrastructure.document.entity.DocumentEntity;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
 import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
