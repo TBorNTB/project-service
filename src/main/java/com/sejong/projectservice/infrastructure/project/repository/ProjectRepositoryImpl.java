@@ -12,7 +12,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 @Repository
 @RequiredArgsConstructor
@@ -43,20 +42,6 @@ public class ProjectRepositoryImpl implements ProjectRepository {
                 pageable,
                 pageProjectEntities.getTotalElements()
         );
-    }
-
-    @Override
-    @Transactional
-    public Project update(Project project, Long projectId) {
-        ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        projectEntity.updateBasicInfo(project);
-        projectEntity.clearAllRelations();
-        mapper.map(project, projectEntity);
-
-        ProjectEntity responseEntity = projectJpaRepository.save(projectEntity);
-        return responseEntity.toDomain();
     }
 
     @Override

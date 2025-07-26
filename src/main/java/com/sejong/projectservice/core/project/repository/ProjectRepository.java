@@ -12,8 +12,6 @@ public interface ProjectRepository {
 
     Page<Project> findAll(Pageable pageable);
 
-    Project update(Project project, Long projectId);
-
     Page<Project> searchWithFilters(String keyword, Category category, ProjectStatus status, Pageable pageable);
 
     Project findOne(Long projectId);

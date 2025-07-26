@@ -2,8 +2,9 @@ package com.sejong.projectservice.application.project.service;
 
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.application.project.dto.request.DocumentCreateReq;
+import com.sejong.projectservice.application.project.dto.request.DocumentUpdateReq;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
-import com.sejong.projectservice.application.project.dto.response.DocumentCreateRes;
+import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
 import com.sejong.projectservice.application.project.dto.response.DocumentInfoRes;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
@@ -43,10 +44,13 @@ public class ProjectService {
         return ProjectPageResponse.from(projectPage);
     }
 
-    public ProjectUpdateResponse update(Long projectId, ProjectFormRequest projectFormRequest) {
-        Project project = Assembler.toProject(projectFormRequest);
-        Project updatedProject = projectRepository.update(project, projectId);
-        return ProjectUpdateResponse.from(updatedProject.getTitle(), "수정 완료");
+    public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest) {
+        Project project = projectRepository.findOne(projectId);
+        project.update(projectUpdateRequest.getTitle(), projectUpdateRequest.getDescription(),
+                projectUpdateRequest.getCategory(), projectUpdateRequest.getProjectStatus(),
+                projectUpdateRequest.getThumbnailUrl());
+        Project savedProject = projectRepository.save(project);
+        return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
     }
 
     public ProjectPageResponse search(String keyword, Category category, ProjectStatus status, Pageable pageable) {
@@ -60,12 +64,17 @@ public class ProjectService {
     }
 
     @Transactional
-    public DocumentCreateRes createDocument(Long projectId, DocumentCreateReq request) {
+    public DocumentInfoRes createDocument(Long projectId, DocumentCreateReq request) {
         Project project = projectRepository.findOne(projectId);
         Document document = Assembler.toDocument(request, generateYorkieDocumentId());
         project.addDocument(document);
-        projectRepository.save(project);
-        return DocumentCreateRes.from(document.getTitle(), "저장 완료");
+        Project savedProject = projectRepository.save(project);
+
+        Document savedDocument = savedProject.getDocuments().stream()
+                .filter(d -> d.getYorkieDocumentId().equals(document.getYorkieDocumentId()))
+                .findFirst()
+                .orElseThrow();
+        return DocumentInfoRes.from(savedDocument);
     }
 
     private String generateYorkieDocumentId() {
@@ -77,7 +86,14 @@ public class ProjectService {
 
     public DocumentInfoRes getDocument(Long projectId, Long documentId) {
         projectRepository.findOne(projectId);
-        Document document = documentRepository.findByDocumentId(documentId);
+        Document document = documentRepository.findById(documentId);
         return DocumentInfoRes.from(document);
+    }
+
+    public DocumentInfoRes updateDocument(Long projectId, Long documentId, DocumentUpdateReq request) {
+        Document document = documentRepository.findByIdAndProjectId(documentId, projectId);
+        document.update(request.getTitle(), request.getDescription(), request.getThumbnailUrl());
+        Document savedDocument = documentRepository.save(document);
+        return DocumentInfoRes.from(savedDocument);
     }
 }

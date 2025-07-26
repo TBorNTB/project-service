@@ -9,13 +9,26 @@ import org.springframework.stereotype.Repository;
 @Repository
 @RequiredArgsConstructor
 public class DocumentRepositoryImpl implements DocumentRepository {
-
     private final DocumentJpaRepository documentJpaRepository;
 
+
     @Override
-    public Document findByDocumentId(Long documentId) {
-        DocumentEntity documentEntity = documentJpaRepository.findDocumentEntityById(documentId)
+    public Document findByIdAndProjectId(Long documentId, Long projectId) {
+        DocumentEntity documentEntity = documentJpaRepository.findByIdAndProjectId(documentId, projectId)
+                .orElseThrow(() -> new RuntimeException("Document not found or not belongs in Project"));
+        return documentEntity.toDomain();
+    }
+
+    @Override
+    public Document findById(Long documentId) {
+        DocumentEntity documentEntity = documentJpaRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
+        return documentEntity.toDomain();
+    }
+
+    @Override
+    public Document save(Document document) {
+        DocumentEntity documentEntity = documentJpaRepository.save(DocumentEntity.from(document));
         return documentEntity.toDomain();
     }
 }

@@ -36,6 +36,16 @@ public class Project {
     private List<TechStack> techStacks = new ArrayList<>();
     private List<Document> documents = new ArrayList<>();
 
+    public void update(String title, String description, Category category,
+                       ProjectStatus projectStatus, String thumbnailUrl) {
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.projectStatus = projectStatus;
+        this.thumbnailUrl = thumbnailUrl;
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public void addDocument(Document doc) {
         documents.add(doc);
     }

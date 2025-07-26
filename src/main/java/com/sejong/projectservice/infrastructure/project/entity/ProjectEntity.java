@@ -90,17 +90,6 @@ public class ProjectEntity {
                 .build();
     }
 
-    // createdAt만 제외했습니다.
-    public void updateBasicInfo(Project project) {
-        clearAllRelations();
-        this.title = project.getTitle();
-        this.description = project.getDescription();
-        this.category = project.getCategory();
-        this.projectStatus = project.getProjectStatus();
-        this.updatedAt = project.getUpdatedAt();
-        this.thumbnailUrl = project.getThumbnailUrl();
-    }
-
     public void addTechStack(TechStackEntity techStackEntity) {
         ProjectTechStackEntity link = ProjectTechStackEntity.of(this, techStackEntity);
         techStackEntity.addProjectTechStackEntity(link);
@@ -120,13 +109,6 @@ public class ProjectEntity {
     public void addDocument(DocumentEntity documentEntity) {
         documentEntity.assignDocumentEntity(this);
         this.documents.add(documentEntity);
-    }
-
-    public void clearAllRelations() {
-        this.projectTechStacks.clear();
-        this.collaborators.clear();
-        this.subGoals.clear();
-        this.documents.clear();
     }
 
     public Project toDomain() {
