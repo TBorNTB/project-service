@@ -1,17 +1,28 @@
-package com.sejong.projectservice.core.assembler;
+package com.sejong.projectservice.application.project.assembler;
 
+import com.sejong.projectservice.application.project.dto.request.DocumentCreateReq;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.collaborator.domain.Collaborator;
+import com.sejong.projectservice.core.document.domain.Document;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
-
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class ProjectAssembler {
+public class Assembler {
+    public static Document toDocument(DocumentCreateReq request, String yorkieDocumentId) {
+        return Document.builder()
+                .id(null)
+                .yorkieDocumentId(yorkieDocumentId)
+                .title(request.getTitle())
+                .content(request.getContent())
+                .description(request.getDescription())
+                .thumbnailUrl(request.getThumbnailUrl())
+                .build();
+    }
 
-    public static Project toDomain(ProjectFormRequest request, Long userId) {
+    public static Project toProject(ProjectFormRequest request) {
         List<Collaborator> collaborators = request.getCollaborators().stream()
                 .map(Collaborator::from)
                 .toList();
@@ -32,8 +43,6 @@ public class ProjectAssembler {
                 .createdAt(request.getCreatedAt())
                 .updatedAt(LocalDateTime.now())
                 .thumbnailUrl(request.getThumbnail())
-                .contentJson(request.getContentJson())
-                .userId(userId)
                 .techStacks(techStacks)
                 .collaborators(collaborators)
                 .subGoals(subGoals)

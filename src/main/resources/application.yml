@@ -54,6 +54,11 @@ springdoc:
     enabled: true
     path: /swagger-ui.html
 
+
+jwt:
+  secret: asdf
+  expiration: 86400000
+
 eureka:
   client:
     service-url:

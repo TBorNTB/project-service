@@ -1,23 +1,21 @@
 package com.sejong.projectservice.application.project.controller.fixture;
 
+import static org.mockito.Mockito.mock;
+
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
-import com.sejong.projectservice.core.collaborator.Collaborator;
+import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.mockito.Mockito.mock;
 
 public class ProjectFixture {
 
@@ -33,19 +31,20 @@ public class ProjectFixture {
                 .subGoals(List.of("OAuth2 로그인 구현", "게시판 CRUD", "S3 이미지 업로드"))
                 .thumbnail("https://example.com/images/project-thumbnail.png")
                 .contentJson("""
-                    {
-                      "blocks": [
-                        { "type": "header", "data": "프로젝트 소개" },
-                        { "type": "paragraph", "data": "이 프로젝트는 포트폴리오용입니다." }
-                      ]
-                    }
-                """)
+                            {
+                              "blocks": [
+                                { "type": "header", "data": "프로젝트 소개" },
+                                { "type": "paragraph", "data": "이 프로젝트는 포트폴리오용입니다." }
+                              ]
+                            }
+                        """)
                 .build();
     }
 
     public static ProjectAddResponse createProjectAddResponse(String title) {
-        return ProjectAddResponse.from(title,"저장 완료!");
+        return ProjectAddResponse.from(title, "저장 완료!");
     }
+
     public static Project createProject(String title, Long userId) {
         return Project.builder()
                 .id(1L)
@@ -57,13 +56,13 @@ public class ProjectFixture {
                 .updatedAt(LocalDateTime.of(2025, 7, 9, 12, 0))
                 .thumbnailUrl("https://example.com/images/project-thumbnail.png")
                 .contentJson("""
-                    {
-                      "blocks": [
-                        { "type": "header", "data": "프로젝트 소개" },
-                        { "type": "paragraph", "data": "이 프로젝트는 포트폴리오용입니다." }
-                      ]
-                    }
-                """)
+                            {
+                              "blocks": [
+                                { "type": "header", "data": "프로젝트 소개" },
+                                { "type": "paragraph", "data": "이 프로젝트는 포트폴리오용입니다." }
+                              ]
+                            }
+                        """)
                 .userId(userId)
                 .collaborators(List.of(mock(Collaborator.class), mock(Collaborator.class)))
                 .techStacks(List.of(mock(TechStack.class), mock(TechStack.class)))

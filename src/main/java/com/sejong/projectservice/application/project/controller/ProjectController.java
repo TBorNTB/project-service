@@ -1,6 +1,10 @@
 package com.sejong.projectservice.application.project.controller;
 
+import com.sejong.projectservice.application.project.dto.request.DocumentCreateReq;
+import com.sejong.projectservice.application.project.dto.request.DocumentUpdateReq;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
+import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
+import com.sejong.projectservice.application.project.dto.response.DocumentInfoRes;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
@@ -14,7 +18,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,12 +39,10 @@ public class ProjectController {
         return "OK";
     }
 
-    @PostMapping("/add")
-    public ResponseEntity<ProjectAddResponse> add(
-            @RequestBody ProjectFormRequest projectFormRequest,
-            @RequestHeader("X-User-ID") String userId) {
-
-        ProjectAddResponse response = projectService.register(projectFormRequest, userId);
+    @PostMapping()
+    public ResponseEntity<ProjectAddResponse> createProject(
+            @RequestBody ProjectFormRequest projectFormRequest) {
+        ProjectAddResponse response = projectService.createProject(projectFormRequest);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -54,9 +63,9 @@ public class ProjectController {
     @PutMapping("/{projectId}")
     public ResponseEntity<ProjectUpdateResponse> updateProject(
             @PathVariable(name = "projectId") Long projectId,
-            @RequestBody ProjectFormRequest projectFormRequest
+            @RequestBody ProjectUpdateRequest projectUpdateRequest
     ) {
-        ProjectUpdateResponse response = projectService.update(projectId, projectFormRequest);
+        ProjectUpdateResponse response = projectService.update(projectId, projectUpdateRequest);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
@@ -91,4 +100,36 @@ public class ProjectController {
         ProjectPageResponse response = projectService.search(keyword, category, status, pageable);
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/{projectId}/document")
+    public ResponseEntity<DocumentInfoRes> createDocumentInProject(
+            @PathVariable(name = "projectId") Long projectId,
+            @RequestBody DocumentCreateReq request
+    ) {
+        DocumentInfoRes response = projectService.createDocument(projectId, request);
+        return ResponseEntity
+                .status(201)
+                .body(response);
+    }
+
+    @GetMapping("/{projectId}/{documentId}")
+    public ResponseEntity<DocumentInfoRes> getDocument(
+            @PathVariable(name = "projectId") Long projectId,
+            @PathVariable(name = "documentId") Long documentId
+    ) {
+        DocumentInfoRes documentInfoRes = projectService.getDocument(projectId, documentId);
+        return ResponseEntity.ok(documentInfoRes);
+    }
+
+    @PutMapping("{projectId}/{documentId}")
+    public ResponseEntity<DocumentInfoRes> updateDocument(
+            @PathVariable(name = "projectId") Long projectId,
+            @PathVariable(name = "documentId") Long documentId,
+            @RequestBody DocumentUpdateReq request
+    ) {
+        DocumentInfoRes documentInfoRes = projectService.updateDocument(projectId, documentId, request);
+        return ResponseEntity.ok(documentInfoRes);
+    }
+
+    // Todo: document crud, pageable(cursor/offset), search?
 }

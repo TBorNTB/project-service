@@ -1,16 +1,22 @@
 package com.sejong.projectservice.application.project.service;
 
-import com.sejong.projectservice.application.project.controller.fixture.ProjectFixture;
+import static com.sejong.projectservice.application.project.controller.fixture.ProjectFixture.createProject;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
-import com.sejong.projectservice.core.assembler.ProjectAssembler;
 import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,17 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-
-import static com.sejong.projectservice.application.project.controller.fixture.ProjectFixture.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class ProjectServiceTest {
@@ -66,7 +61,7 @@ class ProjectServiceTest {
         Pageable pageable = PageRequest.of(0, 10);
         Project project1 = createProject("테스트제목1", 1L);
         Project project2 = createProject("테스트제목2", 2L);
-        Page<Project> projectPage = new PageImpl<>(List.of(project1,project2), pageable, 2);
+        Page<Project> projectPage = new PageImpl<>(List.of(project1, project2), pageable, 2);
 
         when(projectRepository.findAll(pageable)).thenReturn(projectPage);
         // when
