@@ -115,6 +115,15 @@ public class ProjectEntity {
         documents.remove(documentEntity);
     }
 
+    public void update(Project project) {
+        this.title = project.getTitle();
+        this.description = project.getDescription();
+        this.category = project.getCategory();
+        this.projectStatus = project.getProjectStatus();
+        this.thumbnailUrl = project.getThumbnailUrl();
+        this.updatedAt = LocalDateTime.now();
+    }
+
     public Project toDomain() {
 
         List<Collaborator> collaboratorList = new ArrayList<>(collaborators.stream()

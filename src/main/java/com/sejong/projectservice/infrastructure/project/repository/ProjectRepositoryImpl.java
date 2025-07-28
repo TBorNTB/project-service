@@ -22,11 +22,19 @@ public class ProjectRepositoryImpl implements ProjectRepository {
 
     @Override
     public Project save(Project project) {
+        ProjectEntity projectEntity;
 
-        ProjectEntity projectEntity = ProjectEntity.from(project);
-        mapper.map(project, projectEntity);
-        ProjectEntity entity = projectJpaRepository.save(projectEntity);
-        return entity.toDomain();
+        if (project.getId() == null) {
+            projectEntity = ProjectEntity.from(project);
+            mapper.map(project, projectEntity);
+            ProjectEntity savedProjectEntity = projectJpaRepository.save(projectEntity);
+            return savedProjectEntity.toDomain();
+        } else {
+            projectEntity = projectJpaRepository.findById(project.getId())
+                    .orElseThrow(() -> new RuntimeException("project not found"));
+            projectEntity.update(project);
+            return projectEntity.toDomain();
+        }
     }
 
     @Override

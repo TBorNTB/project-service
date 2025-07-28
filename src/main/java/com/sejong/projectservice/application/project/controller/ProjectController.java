@@ -135,7 +135,7 @@ public class ProjectController {
     }
 
     @PutMapping("{projectId}/{documentId}")
-    @Operation(summary = "프로젝트 수정")
+    @Operation(summary = "다큐먼트 수정")
     public ResponseEntity<DocumentInfoRes> updateDocument(
             @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "documentId") Long documentId,

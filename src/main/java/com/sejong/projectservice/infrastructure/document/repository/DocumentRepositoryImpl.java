@@ -31,8 +31,18 @@ public class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public Document save(Document document) {
-        DocumentEntity documentEntity = documentJpaRepository.save(DocumentEntity.from(document));
-        return documentEntity.toDomain();
+        DocumentEntity documentEntity;
+
+        if (document.getId() == null) {
+            documentEntity = DocumentEntity.from(document);
+            DocumentEntity savedDocumentEntity = documentJpaRepository.save(documentEntity);
+            return savedDocumentEntity.toDomain();
+        } else {
+            documentEntity = documentJpaRepository.findById(document.getId())
+                    .orElseThrow(() -> new RuntimeException("Document not found"));
+            documentEntity.update(document);
+            return documentEntity.toDomain();
+        }
     }
 
     @Override

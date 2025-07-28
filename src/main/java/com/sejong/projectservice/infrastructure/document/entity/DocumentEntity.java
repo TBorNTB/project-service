@@ -54,7 +54,7 @@ public class DocumentEntity {
 
     public static DocumentEntity from(Document document) {
         return DocumentEntity.builder()
-                .id(null)
+                .id(document.getId() != null ? document.getId() : null)
                 .yorkieDocumentId(document.getYorkieDocumentId())
                 .title(document.getTitle())
                 .description(document.getDescription())
@@ -62,7 +62,16 @@ public class DocumentEntity {
                 .content(document.getContent())
                 .createdAt(document.getCreatedAt())
                 .updatedAt(document.getUpdatedAt())
+                .projectEntity(null)
                 .build();
+    }
+
+    public void update(Document document) {
+        this.title = document.getTitle();
+        this.description = document.getDescription();
+        this.thumbnailUrl = document.getThumbnailUrl();
+        this.content = document.getContent();
+        this.updatedAt = LocalDateTime.now();
     }
 
     public Document toDomain() {
@@ -75,6 +84,7 @@ public class DocumentEntity {
                 .content(content)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
+                .projectId(projectEntity != null ? projectEntity.getId() : null)
                 .build();
     }
 

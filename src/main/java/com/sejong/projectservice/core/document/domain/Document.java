@@ -11,8 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class Document {
-    private Long projectId;
-
     private Long id;
     private String yorkieDocumentId;
 
@@ -24,8 +22,11 @@ public class Document {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public void update(String title, String description, String thumbnailUrl) {
+    private Long projectId;
+
+    public void update(String title, String content, String description, String thumbnailUrl) {
         this.title = title;
+        this.content = content;
         this.description = description;
         this.thumbnailUrl = thumbnailUrl;
     }

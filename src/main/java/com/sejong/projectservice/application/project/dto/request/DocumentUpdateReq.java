@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class DocumentUpdateReq {
     private String title;
     private String description;
+    private String content;
     private String thumbnailUrl;
 }

@@ -93,8 +93,8 @@ public class ProjectService {
 
     @Transactional
     public DocumentInfoRes updateDocument(Long projectId, Long documentId, DocumentUpdateReq request) {
-        Document document = documentRepository.findByIdAndProjectId(documentId, projectId);
-        document.update(request.getTitle(), request.getDescription(), request.getThumbnailUrl());
+        Document document = documentRepository.findById(documentId);
+        document.update(request.getTitle(), request.getContent(), request.getDescription(), request.getThumbnailUrl());
         Document savedDocument = documentRepository.save(document);
         return DocumentInfoRes.from(savedDocument);
     }
