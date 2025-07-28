@@ -8,6 +8,7 @@ import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Assembler {
@@ -46,6 +47,7 @@ public class Assembler {
                 .techStacks(techStacks)
                 .collaborators(collaborators)
                 .subGoals(subGoals)
+                .documents(new ArrayList<>())
                 .build();
     }
 }

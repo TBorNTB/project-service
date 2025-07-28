@@ -37,6 +37,7 @@ public class TechStackEntity {
         return TechStackEntity.builder()
                 .id(null)
                 .name(name)
+                .projectTechStacks(new ArrayList<>())
                 .build();
     }
 
@@ -55,6 +56,6 @@ public class TechStackEntity {
     }
 
     public void addProjectTechStackEntity(ProjectTechStackEntity ptse) {
-        projectTechStacks.add(ptse);
+        this.projectTechStacks.add(ptse);
     }
 }
