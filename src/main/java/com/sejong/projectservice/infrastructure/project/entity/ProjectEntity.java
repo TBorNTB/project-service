@@ -117,23 +117,23 @@ public class ProjectEntity {
 
     public Project toDomain() {
 
-        List<Collaborator> collaboratorList = collaborators.stream()
+        List<Collaborator> collaboratorList = new ArrayList<>(collaborators.stream()
                 .map(CollaboratorEntity::toDomain)
-                .toList();
+                .toList());
 
-        List<TechStack> uniqueTechStackList = projectTechStacks.stream()
+        List<TechStack> uniqueTechStackList = new ArrayList<>(projectTechStacks.stream()
                 .map(ProjectTechStackEntity::getTechStackEntity)
                 .map(TechStackEntity::toDomain)
                 .distinct()
-                .toList();
+                .toList());
 
-        List<SubGoal> subGoalList = subGoals.stream()
+        List<SubGoal> subGoalList = new ArrayList<>(subGoals.stream()
                 .map(SubGoalEntity::toDomain)
-                .toList();
+                .toList());
 
-        List<Document> documentList = documents.stream()
+        List<Document> documentList = new ArrayList<>(documents.stream()
                 .map(DocumentEntity::toDomain)
-                .toList();
+                .toList());
 
         return Project.builder()
                 .id(this.id)
