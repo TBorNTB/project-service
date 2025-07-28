@@ -1,10 +1,7 @@
 package com.sejong.projectservice.application.project.controller;
 
-import com.sejong.projectservice.application.project.dto.request.DocumentCreateReq;
-import com.sejong.projectservice.application.project.dto.request.DocumentUpdateReq;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
-import com.sejong.projectservice.application.project.dto.response.DocumentInfoRes;
 import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
@@ -18,7 +15,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -108,52 +104,4 @@ public class ProjectController {
         ProjectPageResponse response = projectService.search(keyword, status, pageable);
         return ResponseEntity.ok(response);
     }
-
-    @PostMapping("/{projectId}/document")
-    @Operation(summary = "다큐먼트 생성")
-    public ResponseEntity<DocumentInfoRes> createDocumentInProject(
-            @PathVariable(name = "projectId") Long projectId,
-            @RequestBody DocumentCreateReq request
-    ) {
-        // Todo: member 권한 검증
-        DocumentInfoRes response = projectService.createDocument(projectId, request);
-        return ResponseEntity
-                .status(201)
-                .body(response);
-    }
-
-    @GetMapping("/{projectId}/{documentId}")
-    @Operation(summary = "다큐먼트 상세 조회")
-    public ResponseEntity<DocumentInfoRes> getDocument(
-            @PathVariable(name = "projectId") Long projectId,
-            @PathVariable(name = "documentId") Long documentId
-    ) {
-        DocumentInfoRes documentInfoRes = projectService.getDocument(projectId, documentId);
-        return ResponseEntity.ok(documentInfoRes);
-    }
-
-    @PutMapping("{projectId}/{documentId}")
-    @Operation(summary = "다큐먼트 수정")
-    public ResponseEntity<DocumentInfoRes> updateDocument(
-            @PathVariable(name = "projectId") Long projectId,
-            @PathVariable(name = "documentId") Long documentId,
-            @RequestBody DocumentUpdateReq request
-    ) {
-        // Todo: member 권한 검증
-        DocumentInfoRes documentInfoRes = projectService.updateDocument(projectId, documentId, request);
-        return ResponseEntity.ok(documentInfoRes);
-    }
-
-    @DeleteMapping("{projectId}/{documentId}")
-    @Operation(summary = "프로젝트 삭제")
-    public ResponseEntity<Void> deleteDocument(
-            @PathVariable(name = "projectId") Long projectId,
-            @PathVariable(name = "documentId") Long documentId
-    ) {
-        // Todo: member 권한 검증
-        projectService.deleteDocument(projectId, documentId);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
-
-    // Todo: pageable(cursor/offset), search?
 }

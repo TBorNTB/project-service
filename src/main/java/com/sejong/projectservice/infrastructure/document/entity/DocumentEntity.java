@@ -84,7 +84,6 @@ public class DocumentEntity {
                 .content(content)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
-                .projectId(projectEntity != null ? projectEntity.getId() : null)
                 .build();
     }
 

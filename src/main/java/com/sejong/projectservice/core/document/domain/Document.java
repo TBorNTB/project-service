@@ -22,8 +22,6 @@ public class Document {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private Long projectId;
-
     public void update(String title, String content, String description, String thumbnailUrl) {
         this.title = title;
         this.content = content;
