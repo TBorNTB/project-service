@@ -20,6 +20,8 @@ public class Assembler {
                 .content(request.getContent())
                 .description(request.getDescription())
                 .thumbnailUrl(request.getThumbnailUrl())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 

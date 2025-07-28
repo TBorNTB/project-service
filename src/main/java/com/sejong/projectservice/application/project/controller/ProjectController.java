@@ -112,6 +112,7 @@ public class ProjectController {
     }
 
     @PostMapping("/{projectId}/document")
+    @Operation(summary = "다큐먼트 생성")
     public ResponseEntity<DocumentInfoRes> createDocumentInProject(
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody DocumentCreateReq request
@@ -124,6 +125,7 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}/{documentId}")
+    @Operation(summary = "다큐먼트 상세 조회")
     public ResponseEntity<DocumentInfoRes> getDocument(
             @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "documentId") Long documentId
@@ -133,6 +135,7 @@ public class ProjectController {
     }
 
     @PutMapping("{projectId}/{documentId}")
+    @Operation(summary = "프로젝트 수정")
     public ResponseEntity<DocumentInfoRes> updateDocument(
             @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "documentId") Long documentId,
@@ -144,6 +147,7 @@ public class ProjectController {
     }
 
     @DeleteMapping("{projectId}/{documentId}")
+    @Operation(summary = "프로젝트 삭제")
     public ResponseEntity<Void> deleteDocument(
             @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "documentId") Long documentId
