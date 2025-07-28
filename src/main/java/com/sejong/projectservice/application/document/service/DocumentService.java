@@ -41,14 +41,13 @@ public class DocumentService {
                 .substring(0, 7);
     }
 
-    public DocumentInfoRes getDocument(Long projectId, Long documentId) {
-        projectRepository.findOne(projectId);
+    public DocumentInfoRes getDocument(Long documentId) {
         Document document = documentRepository.findById(documentId);
         return DocumentInfoRes.from(document);
     }
 
     @Transactional
-    public DocumentInfoRes updateDocument(Long projectId, Long documentId, DocumentUpdateReq request) {
+    public DocumentInfoRes updateDocument(Long documentId, DocumentUpdateReq request) {
         Document document = documentRepository.findById(documentId);
         document.update(request.getTitle(), request.getContent(), request.getDescription(), request.getThumbnailUrl());
         Document savedDocument = documentRepository.save(document);
@@ -56,8 +55,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public void deleteDocument(Long projectId, Long documentId) {
-        projectRepository.findOne(projectId);
+    public void deleteDocument(Long documentId) {
         Document document = documentRepository.findById(documentId);
         documentRepository.delete(document);
     }

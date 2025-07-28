@@ -24,7 +24,7 @@ public class DocumentController {
 
     private final DocumentService documentService;
 
-    @PostMapping("/{projectId}/document")
+    @PostMapping("/{projectId}")
     @Operation(summary = "다큐먼트 생성")
     public ResponseEntity<DocumentInfoRes> createDocumentInProject(
             @PathVariable(name = "projectId") Long projectId,
@@ -37,36 +37,33 @@ public class DocumentController {
                 .body(response);
     }
 
-    @GetMapping("/{projectId}/{documentId}")
+    @GetMapping("/{documentId}")
     @Operation(summary = "다큐먼트 상세 조회")
     public ResponseEntity<DocumentInfoRes> getDocument(
-            @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "documentId") Long documentId
     ) {
-        DocumentInfoRes documentInfoRes = documentService.getDocument(projectId, documentId);
+        DocumentInfoRes documentInfoRes = documentService.getDocument(documentId);
         return ResponseEntity.ok(documentInfoRes);
     }
 
-    @PutMapping("{projectId}/{documentId}")
+    @PutMapping("/{documentId}")
     @Operation(summary = "다큐먼트 수정")
     public ResponseEntity<DocumentInfoRes> updateDocument(
-            @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "documentId") Long documentId,
             @RequestBody DocumentUpdateReq request
     ) {
         // Todo: member 권한 검증
-        DocumentInfoRes documentInfoRes = documentService.updateDocument(projectId, documentId, request);
+        DocumentInfoRes documentInfoRes = documentService.updateDocument(documentId, request);
         return ResponseEntity.ok(documentInfoRes);
     }
 
-    @DeleteMapping("{projectId}/{documentId}")
-    @Operation(summary = "프로젝트 삭제")
+    @DeleteMapping("/{documentId}")
+    @Operation(summary = "다큐먼트 삭제")
     public ResponseEntity<Void> deleteDocument(
-            @PathVariable(name = "projectId") Long projectId,
             @PathVariable(name = "documentId") Long documentId
     ) {
         // Todo: member 권한 검증
-        documentService.deleteDocument(projectId, documentId);
+        documentService.deleteDocument(documentId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
