@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -106,6 +107,7 @@ public class ProjectController {
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody DocumentCreateReq request
     ) {
+        // Todo: member 권한 검증
         DocumentInfoRes response = projectService.createDocument(projectId, request);
         return ResponseEntity
                 .status(201)
@@ -127,9 +129,20 @@ public class ProjectController {
             @PathVariable(name = "documentId") Long documentId,
             @RequestBody DocumentUpdateReq request
     ) {
+        // Todo: member 권한 검증
         DocumentInfoRes documentInfoRes = projectService.updateDocument(projectId, documentId, request);
         return ResponseEntity.ok(documentInfoRes);
     }
 
-    // Todo: document crud, pageable(cursor/offset), search?
+    @DeleteMapping("{projectId}/{documentId}")
+    public ResponseEntity<Void> deleteDocument(
+            @PathVariable(name = "projectId") Long projectId,
+            @PathVariable(name = "documentId") Long documentId
+    ) {
+        // Todo: member 권한 검증
+        projectService.deleteDocument(projectId, documentId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    // Todo: pageable(cursor/offset), search?
 }

@@ -111,6 +111,10 @@ public class ProjectEntity {
         this.documents.add(documentEntity);
     }
 
+    public void removeDocument(DocumentEntity documentEntity) {
+        documents.remove(documentEntity);
+    }
+
     public Project toDomain() {
 
         List<Collaborator> collaboratorList = collaborators.stream()

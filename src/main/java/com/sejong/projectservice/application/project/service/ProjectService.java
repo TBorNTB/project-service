@@ -44,6 +44,7 @@ public class ProjectService {
         return ProjectPageResponse.from(projectPage);
     }
 
+    @Transactional
     public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest) {
         Project project = projectRepository.findOne(projectId);
         project.update(projectUpdateRequest.getTitle(), projectUpdateRequest.getDescription(),
@@ -90,10 +91,18 @@ public class ProjectService {
         return DocumentInfoRes.from(document);
     }
 
+    @Transactional
     public DocumentInfoRes updateDocument(Long projectId, Long documentId, DocumentUpdateReq request) {
         Document document = documentRepository.findByIdAndProjectId(documentId, projectId);
         document.update(request.getTitle(), request.getDescription(), request.getThumbnailUrl());
         Document savedDocument = documentRepository.save(document);
         return DocumentInfoRes.from(savedDocument);
+    }
+
+    @Transactional
+    public void deleteDocument(Long projectId, Long documentId) {
+        projectRepository.findOne(projectId);
+        Document document = documentRepository.findById(documentId);
+        documentRepository.delete(document);
     }
 }

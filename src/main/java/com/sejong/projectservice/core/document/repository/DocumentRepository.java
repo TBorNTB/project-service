@@ -8,4 +8,6 @@ public interface DocumentRepository {
     Document findById(Long documentId);
 
     Document save(Document document);
+
+    void delete(Document document);
 }
