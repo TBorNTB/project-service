@@ -1,6 +1,5 @@
 package com.sejong.projectservice.infrastructure.project.repository;
 
-import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
@@ -53,8 +52,8 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    public Page<Project> searchWithFilters(String keyword, Category category, ProjectStatus status, Pageable pageable) {
-        Page<ProjectEntity> pageProjectEntities = projectJpaRepository.searchWithFilters(keyword, category, status,
+    public Page<Project> searchWithFilters(String keyword, ProjectStatus status, Pageable pageable) {
+        Page<ProjectEntity> pageProjectEntities = projectJpaRepository.searchWithFilters(keyword, status,
                 pageable);
         List<Project> projects = pageProjectEntities.stream()
                 .map(ProjectEntity::toDomain)

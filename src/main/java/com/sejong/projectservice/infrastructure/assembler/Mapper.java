@@ -1,6 +1,8 @@
 package com.sejong.projectservice.infrastructure.assembler;
 
 import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.infrastructure.category.entity.CategoryEntity;
+import com.sejong.projectservice.infrastructure.category.repository.CategoryJpaRepository;
 import com.sejong.projectservice.infrastructure.collaborator.entity.CollaboratorEntity;
 import com.sejong.projectservice.infrastructure.document.entity.DocumentEntity;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Mapper {
 
+    private final CategoryJpaRepository categoryJpaRepository;
     private final TechStackJpaRepository techStackJpaRepository;
 
     public void map(Project project, ProjectEntity projectEntity) {
@@ -23,6 +26,11 @@ public class Mapper {
 
         project.getSubGoals().stream()
                 .map(SubGoalEntity::from).forEach(projectEntity::addSubGoal);
+
+        project.getCategories().stream()
+                .map(c -> categoryJpaRepository.findByName(c.getName())
+                        .orElseGet(() -> categoryJpaRepository.save(CategoryEntity.of(c.getName()))))
+                .forEach(projectEntity::addCategory);
 
         project.getTechStacks().stream()
                 .map(t -> techStackJpaRepository.findByName(t.getName())

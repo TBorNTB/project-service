@@ -1,7 +1,7 @@
-package com.sejong.projectservice.infrastructure.projecttechstack.entity;
+package com.sejong.projectservice.infrastructure.project_category.entity;
 
+import com.sejong.projectservice.infrastructure.category.entity.CategoryEntity;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
-import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,15 +17,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "project_techstack")
+@Table(name = "project_category")
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-public class ProjectTechStackEntity {
+public class ProjectCategoryEntity {
 
     @Id
-    @Column(name = "project_techstack_id")
+    @Column(name = "project_category_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -34,13 +34,13 @@ public class ProjectTechStackEntity {
     private ProjectEntity projectEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "techstack_id", nullable = false)
-    private TechStackEntity techStackEntity;
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryEntity categoryEntity;
 
-    public static ProjectTechStackEntity of(ProjectEntity projectEntity, TechStackEntity techStackEntity) {
-        return ProjectTechStackEntity.builder()
+    public static ProjectCategoryEntity of(ProjectEntity projectEntity, CategoryEntity categoryEntity) {
+        return ProjectCategoryEntity.builder()
                 .projectEntity(projectEntity)
-                .techStackEntity(techStackEntity)
+                .categoryEntity(categoryEntity)
                 .build();
     }
 }

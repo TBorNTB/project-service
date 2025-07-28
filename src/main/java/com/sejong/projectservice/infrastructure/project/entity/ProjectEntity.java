@@ -1,14 +1,16 @@
 package com.sejong.projectservice.infrastructure.project.entity;
 
+import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.core.document.domain.Document;
-import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
+import com.sejong.projectservice.infrastructure.category.entity.CategoryEntity;
 import com.sejong.projectservice.infrastructure.collaborator.entity.CollaboratorEntity;
 import com.sejong.projectservice.infrastructure.document.entity.DocumentEntity;
+import com.sejong.projectservice.infrastructure.project_category.entity.ProjectCategoryEntity;
 import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
 import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
@@ -48,10 +50,6 @@ public class ProjectEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(50)")
-    private Category category;
-
-    @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "VARCHAR(50)")
     private ProjectStatus projectStatus;
 
     private LocalDateTime createdAt;
@@ -61,6 +59,9 @@ public class ProjectEntity {
 
     @Column(columnDefinition = "TEXT")
     private String contentJson;
+
+    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectTechStackEntity> projectTechStacks = new ArrayList<>();
@@ -78,16 +79,22 @@ public class ProjectEntity {
         return ProjectEntity.builder()
                 .title(project.getTitle())
                 .description(project.getDescription())
-                .category(project.getCategory())
                 .projectStatus(project.getProjectStatus())
                 .thumbnailUrl(project.getThumbnailUrl())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
+                .projectCategories(new ArrayList<>())
                 .projectTechStacks(new ArrayList<>())
                 .collaborators(new ArrayList<>())
                 .subGoals(new ArrayList<>())
                 .documents(new ArrayList<>())
                 .build();
+    }
+
+    public void addCategory(CategoryEntity categoryEntity) {
+        ProjectCategoryEntity link = ProjectCategoryEntity.of(this, categoryEntity);
+        categoryEntity.addProjectCategoryEntity(link);
+        this.projectCategories.add(link);
     }
 
     public void addTechStack(TechStackEntity techStackEntity) {
@@ -118,7 +125,6 @@ public class ProjectEntity {
     public void update(Project project) {
         this.title = project.getTitle();
         this.description = project.getDescription();
-        this.category = project.getCategory();
         this.projectStatus = project.getProjectStatus();
         this.thumbnailUrl = project.getThumbnailUrl();
         this.updatedAt = LocalDateTime.now();
@@ -128,6 +134,12 @@ public class ProjectEntity {
 
         List<Collaborator> collaboratorList = new ArrayList<>(collaborators.stream()
                 .map(CollaboratorEntity::toDomain)
+                .toList());
+
+        List<Category> categories = new ArrayList<>(projectCategories.stream()
+                .map(ProjectCategoryEntity::getCategoryEntity)
+                .map(CategoryEntity::toDomain)
+                .distinct()
                 .toList());
 
         List<TechStack> uniqueTechStackList = new ArrayList<>(projectTechStacks.stream()
@@ -148,11 +160,11 @@ public class ProjectEntity {
                 .id(this.id)
                 .title(this.title)
                 .description(this.description)
-                .category(this.category)
                 .projectStatus(this.projectStatus)
                 .thumbnailUrl(this.thumbnailUrl)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
+                .categories(categories)
                 .collaborators(collaboratorList)
                 .techStacks(uniqueTechStackList)
                 .subGoals(subGoalList)

@@ -2,6 +2,7 @@ package com.sejong.projectservice.application.project.assembler;
 
 import com.sejong.projectservice.application.project.dto.request.DocumentCreateReq;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
+import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.core.document.domain.Document;
 import com.sejong.projectservice.core.project.domain.Project;
@@ -34,6 +35,10 @@ public class Assembler {
                 .map(TechStack::of)
                 .toList();
 
+        List<Category> categories = request.getCategories().stream()
+                .map(Category::of)
+                .toList();
+
         List<SubGoal> subGoals = request.getSubGoals().stream()
                 .map(it -> SubGoal.from(it, false, LocalDateTime.now(), LocalDateTime.now()))
                 .toList();
@@ -41,7 +46,7 @@ public class Assembler {
         return Project.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
-                .category(request.getCategory())
+                .categories(categories)
                 .projectStatus(request.getProjectStatus())
                 .createdAt(request.getCreatedAt())
                 .updatedAt(LocalDateTime.now())

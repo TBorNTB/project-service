@@ -1,6 +1,5 @@
 package com.sejong.projectservice.core.project.repository;
 
-import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import org.springframework.data.domain.Page;
@@ -12,7 +11,7 @@ public interface ProjectRepository {
 
     Page<Project> findAll(Pageable pageable);
 
-    Page<Project> searchWithFilters(String keyword, Category category, ProjectStatus status, Pageable pageable);
+    Page<Project> searchWithFilters(String keyword, ProjectStatus status, Pageable pageable);
 
     Project findOne(Long projectId);
 }

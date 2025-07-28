@@ -10,7 +10,6 @@ import com.sejong.projectservice.application.project.dto.response.ProjectPageRes
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.application.project.service.ProjectService;
-import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -94,7 +93,6 @@ public class ProjectController {
     @Operation(summary = "프로젝트 검색")
     public ResponseEntity<ProjectPageResponse> searchProjects(
             @RequestParam(name = "keyword", required = false) String keyword,
-            @RequestParam(name = "category", required = false) Category category,
             @RequestParam(name = "status", required = false) ProjectStatus status,
             @RequestParam(name = "sort", defaultValue = "createdAt") String sort,
             @RequestParam(name = "direction", defaultValue = "desc") String direction,
@@ -107,7 +105,7 @@ public class ProjectController {
                 Sort.by(Sort.Direction.fromString(direction), sort)
         );
 
-        ProjectPageResponse response = projectService.search(keyword, category, status, pageable);
+        ProjectPageResponse response = projectService.search(keyword, status, pageable);
         return ResponseEntity.ok(response);
     }
 

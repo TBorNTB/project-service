@@ -12,7 +12,6 @@ import com.sejong.projectservice.application.project.dto.response.ProjectSpecify
 import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.core.document.domain.Document;
 import com.sejong.projectservice.core.document.repository.DocumentRepository;
-import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
@@ -48,14 +47,14 @@ public class ProjectService {
     public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest) {
         Project project = projectRepository.findOne(projectId);
         project.update(projectUpdateRequest.getTitle(), projectUpdateRequest.getDescription(),
-                projectUpdateRequest.getCategory(), projectUpdateRequest.getProjectStatus(),
+                projectUpdateRequest.getProjectStatus(),
                 projectUpdateRequest.getThumbnailUrl());
         Project savedProject = projectRepository.save(project);
         return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
     }
 
-    public ProjectPageResponse search(String keyword, Category category, ProjectStatus status, Pageable pageable) {
-        Page<Project> projectPage = projectRepository.searchWithFilters(keyword, category, status, pageable);
+    public ProjectPageResponse search(String keyword, ProjectStatus status, Pageable pageable) {
+        Page<Project> projectPage = projectRepository.searchWithFilters(keyword, status, pageable);
         return ProjectPageResponse.from(projectPage);
     }
 

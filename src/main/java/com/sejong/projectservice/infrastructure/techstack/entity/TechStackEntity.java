@@ -3,6 +3,7 @@ package com.sejong.projectservice.infrastructure.techstack.entity;
 import com.sejong.projectservice.core.techstack.TechStack;
 import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectTechStackEntity;
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +26,7 @@ import lombok.NoArgsConstructor;
 public class TechStackEntity {
 
     @Id
+    @Column(name = "techstack_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
