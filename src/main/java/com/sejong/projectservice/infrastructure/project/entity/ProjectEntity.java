@@ -57,9 +57,6 @@ public class ProjectEntity {
 
     private String thumbnailUrl;
 
-    @Column(columnDefinition = "TEXT")
-    private String contentJson;
-
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
 
