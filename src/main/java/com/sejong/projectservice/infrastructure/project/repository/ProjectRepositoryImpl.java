@@ -88,4 +88,9 @@ public class ProjectRepositoryImpl implements ProjectRepository {
         return projectEntity.toDomain();
     }
 
+    @Override
+    public boolean existsById(Long postId) {
+        return projectJpaRepository.existsById(postId);
+    }
+
 }

@@ -19,4 +19,6 @@ public interface ProjectRepository {
     Page<Project> searchWithFilters(String keyword, Category category, ProjectStatus status, Pageable pageable);
 
     Project findOne(Long projectId);
+
+    boolean existsById(Long postId);
 }
