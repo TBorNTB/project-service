@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.sejong.projectservice.infrastructure.client")
+@EnableFeignClients
 @EnableDiscoveryClient
 public class ProjectServiceApplication {
 
