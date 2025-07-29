@@ -1,4 +1,4 @@
-package com.sejong.projectservice.infrastructure.assembler;
+package com.sejong.projectservice.infrastructure.mapper;
 
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.infrastructure.category.entity.CategoryEntity;
@@ -27,6 +27,9 @@ public class Mapper {
         project.getSubGoals().stream()
                 .map(SubGoalEntity::from).forEach(projectEntity::addSubGoal);
 
+        project.getDocuments().stream()
+                .map(DocumentEntity::from).forEach(projectEntity::addDocument);
+
         project.getCategories().stream()
                 .map(c -> categoryJpaRepository.findByName(c.getName())
                         .orElseGet(() -> categoryJpaRepository.save(CategoryEntity.of(c.getName()))))
@@ -36,8 +39,5 @@ public class Mapper {
                 .map(t -> techStackJpaRepository.findByName(t.getName())
                         .orElseGet(() -> techStackJpaRepository.save(TechStackEntity.of(t.getName()))))
                 .forEach(projectEntity::addTechStack);
-
-        project.getDocuments().stream()
-                .map(DocumentEntity::from).forEach(projectEntity::addDocument);
     }
 }
