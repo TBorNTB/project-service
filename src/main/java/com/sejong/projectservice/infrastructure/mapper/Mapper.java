@@ -19,6 +19,7 @@ public class Mapper {
     private final CategoryJpaRepository categoryJpaRepository;
     private final TechStackJpaRepository techStackJpaRepository;
 
+    // project 생성 시에 특화된 메서드
     public void map(Project project, ProjectEntity projectEntity) {
 
         project.getCollaborators().stream()
