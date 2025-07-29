@@ -66,6 +66,20 @@ public class DocumentEntity {
                 .build();
     }
 
+    public static DocumentEntity from(Document document, ProjectEntity projectEntity) {
+        return DocumentEntity.builder()
+                .id(document.getId() != null ? document.getId() : null)
+                .yorkieDocumentId(document.getYorkieDocumentId())
+                .title(document.getTitle())
+                .description(document.getDescription())
+                .thumbnailUrl(document.getThumbnailUrl())
+                .content(document.getContent())
+                .createdAt(document.getCreatedAt())
+                .updatedAt(document.getUpdatedAt())
+                .projectEntity(projectEntity)
+                .build();
+    }
+
     public void update(Document document) {
         this.title = document.getTitle();
         this.description = document.getDescription();

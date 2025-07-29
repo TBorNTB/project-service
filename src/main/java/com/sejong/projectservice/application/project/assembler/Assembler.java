@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Assembler {
-    public static Document toDocument(DocumentCreateReq request, String yorkieDocumentId) {
+    public static Document toDocument(DocumentCreateReq request, String yorkieDocumentId, Long projectId) {
         return Document.builder()
                 .id(null)
                 .yorkieDocumentId(yorkieDocumentId)
@@ -23,6 +23,7 @@ public class Assembler {
                 .thumbnailUrl(request.getThumbnailUrl())
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
+                .projectId(projectId)
                 .build();
     }
 

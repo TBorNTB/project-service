@@ -34,7 +34,9 @@ public class DocumentRepositoryImpl implements DocumentRepository {
         DocumentEntity documentEntity;
 
         if (document.getId() == null) {
-            documentEntity = DocumentEntity.from(document);
+            ProjectEntity projectEntity = projectJpaRepository.findById(document.getProjectId())
+                    .orElseThrow(() -> new RuntimeException("Project not found"));
+            documentEntity = DocumentEntity.from(document, projectEntity);
             DocumentEntity savedDocumentEntity = documentJpaRepository.save(documentEntity);
             return savedDocumentEntity.toDomain();
         } else {

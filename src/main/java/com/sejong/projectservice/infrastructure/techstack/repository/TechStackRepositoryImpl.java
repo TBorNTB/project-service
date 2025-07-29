@@ -21,7 +21,11 @@ public class TechStackRepositoryImpl implements TechstackRepository {
             TechStackEntity savedTechstackEntity = techStackJpaRepository.save(techStackEntity);
             return savedTechstackEntity.toDomain();
         } else {
-            return findById(techStack.getId());
+            techStackEntity = techStackJpaRepository.findById(techStack.getId())
+                    .orElseThrow(() -> new RuntimeException("TechStack not found"));
+            techStackEntity.update(techStack);
+            TechStackEntity savedTechstackEntity = techStackJpaRepository.save(techStackEntity);
+            return savedTechstackEntity.toDomain();
         }
     }
 

@@ -6,8 +6,6 @@ import com.sejong.projectservice.application.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.core.document.domain.Document;
 import com.sejong.projectservice.core.document.repository.DocumentRepository;
-import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,20 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DocumentService {
 
-    private final ProjectRepository projectRepository;
     private final DocumentRepository documentRepository;
 
     @Transactional
     public DocumentInfoRes createDocument(Long projectId, DocumentCreateReq request) {
-        Project project = projectRepository.findOne(projectId);
-        Document document = Assembler.toDocument(request, generateYorkieDocumentId());
-        project.addDocument(document);
-        Project savedProject = projectRepository.save(project);
-
-        Document savedDocument = savedProject.getDocuments().stream()
-                .filter(d -> d.getYorkieDocumentId().equals(document.getYorkieDocumentId()))
-                .findFirst()
-                .orElseThrow();
+        Document document = Assembler.toDocument(request, generateYorkieDocumentId(), projectId);
+        Document savedDocument = documentRepository.save(document);
         return DocumentInfoRes.from(savedDocument);
     }
 
