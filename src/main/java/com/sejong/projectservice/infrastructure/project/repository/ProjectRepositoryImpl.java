@@ -3,7 +3,7 @@ package com.sejong.projectservice.infrastructure.project.repository;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
-import com.sejong.projectservice.infrastructure.assembler.Mapper;
+import com.sejong.projectservice.infrastructure.mapper.Mapper;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,13 @@ public class ProjectRepositoryImpl implements ProjectRepository {
 
         if (project.getId() == null) {
             projectEntity = ProjectEntity.from(project);
-            mapper.map(project, projectEntity);
             ProjectEntity savedProjectEntity = projectJpaRepository.save(projectEntity);
+
+            // collaborator, subgoal, document 엔티티들이 projectentity에 종속되어있음.
+            // 따라서 projectentity가 먼저 영속화 되어있어야 함.
+            mapper.map(project, projectEntity);
+            savedProjectEntity = projectJpaRepository.save(projectEntity);
+
             return savedProjectEntity.toDomain();
         } else {
             projectEntity = projectJpaRepository.findById(project.getId())
