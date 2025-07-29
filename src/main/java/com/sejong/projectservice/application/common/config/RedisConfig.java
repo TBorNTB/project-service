@@ -1,4 +1,4 @@
-package com.sejong.projectservice.application.config;
+package com.sejong.projectservice.application.common.config;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.databind.ObjectMapper;

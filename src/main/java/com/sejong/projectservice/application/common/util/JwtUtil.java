@@ -1,4 +1,4 @@
-package com.sejong.projectservice.application.util;
+package com.sejong.projectservice.application.common.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

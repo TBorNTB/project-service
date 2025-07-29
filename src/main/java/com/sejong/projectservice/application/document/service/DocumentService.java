@@ -1,9 +1,9 @@
 package com.sejong.projectservice.application.document.service;
 
+import com.sejong.projectservice.application.document.dto.DocumentCreateReq;
+import com.sejong.projectservice.application.document.dto.DocumentInfoRes;
+import com.sejong.projectservice.application.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.application.project.assembler.Assembler;
-import com.sejong.projectservice.application.project.dto.request.DocumentCreateReq;
-import com.sejong.projectservice.application.project.dto.request.DocumentUpdateReq;
-import com.sejong.projectservice.application.project.dto.response.DocumentInfoRes;
 import com.sejong.projectservice.core.document.domain.Document;
 import com.sejong.projectservice.core.document.repository.DocumentRepository;
 import com.sejong.projectservice.core.project.domain.Project;

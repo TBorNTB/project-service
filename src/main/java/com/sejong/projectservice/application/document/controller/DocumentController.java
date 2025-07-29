@@ -1,9 +1,9 @@
 package com.sejong.projectservice.application.document.controller;
 
+import com.sejong.projectservice.application.document.dto.DocumentCreateReq;
+import com.sejong.projectservice.application.document.dto.DocumentInfoRes;
+import com.sejong.projectservice.application.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.application.document.service.DocumentService;
-import com.sejong.projectservice.application.project.dto.request.DocumentCreateReq;
-import com.sejong.projectservice.application.project.dto.request.DocumentUpdateReq;
-import com.sejong.projectservice.application.project.dto.response.DocumentInfoRes;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

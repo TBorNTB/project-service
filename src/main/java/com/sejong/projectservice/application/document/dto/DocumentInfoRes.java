@@ -1,4 +1,4 @@
-package com.sejong.projectservice.application.project.dto.response;
+package com.sejong.projectservice.application.document.dto;
 
 import com.sejong.projectservice.core.document.domain.Document;
 import java.time.LocalDateTime;

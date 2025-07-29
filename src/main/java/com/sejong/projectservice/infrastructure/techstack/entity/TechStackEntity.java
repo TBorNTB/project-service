@@ -60,4 +60,8 @@ public class TechStackEntity {
     public void addProjectTechStackEntity(ProjectTechStackEntity ptse) {
         this.projectTechStacks.add(ptse);
     }
+
+    public void update(TechStack techStack) {
+        this.name = techStack.getName();
+    }
 }

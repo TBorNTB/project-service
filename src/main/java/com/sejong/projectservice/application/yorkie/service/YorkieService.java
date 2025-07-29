@@ -1,6 +1,6 @@
 package com.sejong.projectservice.application.yorkie.service;
 
-import com.sejong.projectservice.application.util.JwtUtil;
+import com.sejong.projectservice.application.common.util.JwtUtil;
 import com.sejong.projectservice.application.yorkie.dto.request.CheckYorkieRequest;
 import com.sejong.projectservice.application.yorkie.dto.response.CheckYorkieResponse;
 import com.sejong.projectservice.core.collaborator.repository.CollaboratorRepository;
