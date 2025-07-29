@@ -1,4 +1,4 @@
-package com.sejong.projectservice.application.external;
+package com.sejong.projectservice.application.internal;
 
 import com.sejong.projectservice.application.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/external/project")
-public class ProjectExternalController {
+@RequestMapping("/internal/project")
+public class InternalController {
     private final ProjectService projectService;
 
     @GetMapping("/check/{postId}")
