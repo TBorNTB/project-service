@@ -1,26 +1,83 @@
 package com.sejong.projectservice.application.yorkie.service;
 
-import com.sejong.projectservice.application.yorkie.dto.response.YorkieRegisterResponse;
-import com.sejong.projectservice.application.yorkie.dto.response.YorkieSearchResponse;
-import com.sejong.projectservice.core.yorkie.Yorkie;
-import com.sejong.projectservice.core.yorkie.YorkieRepository;
+import com.sejong.projectservice.application.common.util.JwtUtil;
+import com.sejong.projectservice.application.yorkie.dto.request.CheckYorkieRequest;
+import com.sejong.projectservice.application.yorkie.dto.response.CheckYorkieResponse;
+import com.sejong.projectservice.core.collaborator.repository.CollaboratorRepository;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class YorkieService {
 
-    private final YorkieRepository yorkieRepository;
+    private final JwtUtil jwtUtil;
+    private final CollaboratorRepository collaboratorRepository;
 
-    public YorkieRegisterResponse register(Long yorkieId, Long projectId) {
-        Yorkie yorkie = Yorkie.of(yorkieId, projectId);
-        Yorkie savedYorkie = yorkieRepository.save(yorkie);
-        return YorkieRegisterResponse.from(savedYorkie);
+    public ResponseEntity<CheckYorkieResponse> checkYorkie(CheckYorkieRequest checkYorkieRequest) {
+        if (checkYorkieRequest.getMethod().equals(YorkieMethod.ActivateClient)
+                || checkYorkieRequest.getMethod().equals(YorkieMethod.DeactivateClient)) {
+            CheckYorkieResponse response = new CheckYorkieResponse(true,
+                    String.format("Pass %s method", checkYorkieRequest.getMethod()));
+
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(response);
+        }
+
+        String token = checkYorkieRequest.getToken();
+
+        // attributes는 null 일 수도 있는 값이다.
+        String yorkieDocId = Optional.ofNullable(checkYorkieRequest.getAttributes())
+                .filter(att -> !att.isEmpty())
+                .map(att -> att.get(0).key)
+                .orElseThrow(() -> new IllegalArgumentException("Document ID not found"));
+
+        if (!jwtUtil.validateToken(token)) {
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .body(new CheckYorkieResponse(false, "Token is expired or invalid"));
+        }
+
+        String username = jwtUtil.getUserNameFromToken(token);
+
+        boolean belongTo = collaboratorRepository.existsByDocumentYorkieIdAndUsername(yorkieDocId, username);
+        if (!belongTo) {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN)
+                    .body(new CheckYorkieResponse(false, "User does not have access to the document"));
+        }
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new CheckYorkieResponse(true, "Valid Token"));
     }
 
-    public YorkieSearchResponse findYorkieId(Long projectId) {
-        Long yorkieId = yorkieRepository.findByProjectId(projectId);
-        return YorkieSearchResponse.of(yorkieId);
+    public enum YorkieMethod {
+        ActivateClient,
+        DeactivateClient,
+        AttachDocument,
+        DetachDocument,
+        WatchDocuments,
+        PushPull,
+    }
+
+    public enum Verb {
+        r,
+        rw
+    }
+
+    public static class DocumentAttribute {
+
+        private String key;
+        private Verb verb;
+
+        public DocumentAttribute(String key, Verb verb) {
+            this.key = key;
+            this.verb = verb;
+        }
     }
 }

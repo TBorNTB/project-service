@@ -1,42 +1,44 @@
 package com.sejong.projectservice.infrastructure.project.repository;
 
-import com.sejong.projectservice.core.assembler.ProjectAssembler;
-import com.sejong.projectservice.core.enums.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
-import com.sejong.projectservice.infrastructure.assembler.ProjectEntityAssembler;
-import com.sejong.projectservice.infrastructure.collborator.entity.CollaboratorEntity;
+import com.sejong.projectservice.infrastructure.mapper.Mapper;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
-import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectTechStackEntity;
-import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
-import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
-import com.sejong.projectservice.infrastructure.techstack.repository.TechStackJpaRepository;
-import com.sejong.projectservice.infrastructure.techstack.repository.TechStackRepositoryImpl;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 public class ProjectRepositoryImpl implements ProjectRepository {
 
     private final ProjectJpaRepository projectJpaRepository;
-    private final ProjectEntityAssembler projectAssembler;
+    private final Mapper mapper;
 
     @Override
     public Project save(Project project) {
+        ProjectEntity projectEntity;
 
-        ProjectEntity projectEntity = ProjectEntity.from(project);
-        projectAssembler.assemble(projectEntity, project);
-        ProjectEntity entity = projectJpaRepository.save(projectEntity);
-        return entity.toDomain();
+        if (project.getId() == null) {
+            projectEntity = ProjectEntity.from(project);
+            ProjectEntity savedProjectEntity = projectJpaRepository.save(projectEntity);
+
+            // collaborator, subgoal, document 엔티티들이 projectentity에 종속되어있음.
+            // 따라서 projectentity가 먼저 영속화 되어있어야 함.
+            mapper.map(project, projectEntity);
+            savedProjectEntity = projectJpaRepository.save(projectEntity);
+
+            return savedProjectEntity.toDomain();
+        } else {
+            projectEntity = projectJpaRepository.findById(project.getId())
+                    .orElseThrow(() -> new RuntimeException("project not found"));
+            projectEntity.update(project);
+            return projectEntity.toDomain();
+        }
     }
 
     @Override
@@ -55,22 +57,9 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    @Transactional
-    public Project update(Project project, Long projectId) {
-        ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
-
-        projectEntity.updateBasicInfo(project);
-        projectEntity.clearAllRelations();
-        projectAssembler.assemble(projectEntity, project);
-
-        ProjectEntity responseEntity = projectJpaRepository.save(projectEntity);
-        return responseEntity.toDomain();
-    }
-
-    @Override
-    public Page<Project> searchWithFilters(String keyword, Category category, ProjectStatus status, Pageable pageable) {
-        Page<ProjectEntity> pageProjectEntities = projectJpaRepository.searchWithFilters(keyword, category, status, pageable);
+    public Page<Project> searchWithFilters(String keyword, ProjectStatus status, Pageable pageable) {
+        Page<ProjectEntity> pageProjectEntities = projectJpaRepository.searchWithFilters(keyword, status,
+                pageable);
         List<Project> projects = pageProjectEntities.stream()
                 .map(ProjectEntity::toDomain)
                 .toList();

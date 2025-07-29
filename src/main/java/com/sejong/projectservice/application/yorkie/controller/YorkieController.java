@@ -1,13 +1,14 @@
 package com.sejong.projectservice.application.yorkie.controller;
 
-import com.sejong.projectservice.application.yorkie.dto.request.YorkieRegisterRequest;
-import com.sejong.projectservice.application.yorkie.dto.response.YorkieRegisterResponse;
-import com.sejong.projectservice.application.yorkie.dto.response.YorkieSearchResponse;
+import com.sejong.projectservice.application.yorkie.dto.request.CheckYorkieRequest;
+import com.sejong.projectservice.application.yorkie.dto.response.CheckYorkieResponse;
 import com.sejong.projectservice.application.yorkie.service.YorkieService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -15,24 +16,10 @@ import org.springframework.web.bind.annotation.*;
 public class YorkieController {
     private final YorkieService yorkieService;
 
-    @PostMapping("/register")
-    public ResponseEntity<YorkieRegisterResponse> register(
-            @RequestBody YorkieRegisterRequest yorkieRegisterRequest
-    ){
-
-        YorkieRegisterResponse response = yorkieService.register(yorkieRegisterRequest.getYorkieId(), yorkieRegisterRequest.getProjectId());
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+    @PostMapping("/check")
+    public ResponseEntity<CheckYorkieResponse> checkYorkie(
+            @RequestBody CheckYorkieRequest checkYorkieRequest
+    ) {
+        return yorkieService.checkYorkie(checkYorkieRequest);
     }
-
-    @GetMapping("/{projectId}")
-    public ResponseEntity<YorkieSearchResponse> searchYorkieId(
-            @PathVariable(name="projectId") Long projectId
-    ){
-        YorkieSearchResponse response = yorkieService.findYorkieId(projectId);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(response);
-    }
-
 }

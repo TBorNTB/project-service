@@ -1,15 +1,10 @@
 package com.sejong.projectservice.core.techstack;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import java.util.Objects;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.util.Objects;
 
 @Getter
 @AllArgsConstructor
@@ -27,10 +22,18 @@ public class TechStack {
                 .build();
     }
 
+    public void update(String name) {
+        this.name = name;
+    }
+
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         TechStack that = (TechStack) o;
         return Objects.equals(id, that.id);
     }

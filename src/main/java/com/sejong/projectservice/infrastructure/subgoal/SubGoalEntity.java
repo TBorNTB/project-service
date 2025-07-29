@@ -2,13 +2,19 @@ package com.sejong.projectservice.infrastructure.subgoal;
 
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "subgoal")
@@ -33,17 +39,14 @@ public class SubGoalEntity {
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
-    public static SubGoalEntity from(SubGoal subGoal , ProjectEntity projectEntity) {
-        SubGoalEntity subGoalEntity = SubGoalEntity.builder()
+    public static SubGoalEntity from(SubGoal subGoal) {
+        return SubGoalEntity.builder()
                 .id(null)
                 .content(subGoal.getContent())
                 .completed(subGoal.getCompleted())
                 .createdAt(subGoal.getCreatedAt())
                 .updatedAt(subGoal.getUpdatedAt())
                 .build();
-
-        subGoalEntity.assignProjectEntity(projectEntity);
-        return subGoalEntity;
     }
 
     public SubGoal toDomain() {
@@ -58,6 +61,5 @@ public class SubGoalEntity {
 
     public void assignProjectEntity(ProjectEntity projectEntity) {
         this.projectEntity = projectEntity;
-        projectEntity.getSubGoals().add(this);
     }
 }
