@@ -65,4 +65,9 @@ public class ProjectService {
         Project project = projectRepository.findOne(projectId);
         return ProjectSpecifyInfo.from(project);
     }
+
+    @Transactional(readOnly = true)
+    public boolean exists(Long postId) {
+        return projectRepository.existsById(postId);
+    }
 }
