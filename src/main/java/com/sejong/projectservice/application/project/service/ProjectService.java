@@ -1,5 +1,6 @@
 package com.sejong.projectservice.application.project.service;
 
+import com.sejong.projectservice.application.internal.UserExternalService;
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
@@ -21,10 +22,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
-//    private final UserClient userClient;
+    private final UserExternalService userExternalService;
 
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest) {
+        userExternalService.validateExistence(projectFormRequest.getCollaborators());
         Project project = Assembler.toProject(projectFormRequest);
         Project savedProject = projectRepository.save(project);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
