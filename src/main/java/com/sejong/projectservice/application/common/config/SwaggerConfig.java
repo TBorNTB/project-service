@@ -11,9 +11,9 @@ import org.springframework.context.annotation.Configuration;
                 @Server(url = "/")
         },
         info = @Info(
-                title = "Newsletter API",
+                title = "Project API",
                 version = "v1",
-                description = "뉴스레터 API 문서입니다."
+                description = "프로젝트 서비스 API 문서입니다."
         )
 )
 @Configuration
