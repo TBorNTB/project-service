@@ -10,6 +10,7 @@ public enum ErrorCode implements ErrorCodeIfs {
     OK(200, 0, "성공"),
     BAD_REQUEST(400, 0, "잘못된 요청"),
     SERVER_ERROR(500, 0, "서버 에러"),
+    INVALID_USERS_NICKNAME(400, 0, "잘못된 요청"),
 
     NULL_POINT(500, 0, "Null Pointer"),
     MULTI_REQUEST(405, 0, "하루 한번만 요청 가능합니다"),

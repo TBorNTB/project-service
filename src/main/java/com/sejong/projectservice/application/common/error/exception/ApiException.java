@@ -33,4 +33,8 @@ public class ApiException extends RuntimeException {
         this.errorCodeIfs = errorCodeIfs;
         this.errorDescription = errorDescription;
     }
+
+    public ErrorCodeIfs getErrorCode() {
+        return errorCodeIfs;
+    }
 }

@@ -1,5 +1,7 @@
 package com.sejong.projectservice.application.internal;
 
+import static com.sejong.projectservice.application.common.error.code.ErrorCode.INVALID_USERS_NICKNAME;
+
 import com.sejong.projectservice.application.common.error.code.ErrorCode;
 import com.sejong.projectservice.application.common.error.exception.ApiException;
 import com.sejong.projectservice.infrastructure.client.UserClient;
@@ -18,15 +20,19 @@ public class UserExternalService {
     private final UserClient userClient;
 
     @CircuitBreaker(name = "user-circuit-breaker", fallbackMethod = "validateExistenceFallback")
-    public void validateExistence(List<String> userNames) {
-        ResponseEntity<Boolean> response = userClient.existAll(userNames);
-        if (Boolean.FALSE.equals(response.getBody())) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "존재하지 않는 Username");
+    public void validateExistence(List<String> userNicknames) {
+        ResponseEntity<Boolean> response = userClient.existAll(userNicknames);
+        if (response.getBody() != Boolean.TRUE) {
+            throw new ApiException(INVALID_USERS_NICKNAME, "닉네임 목록을 다시 확인하세요.");
         }
     }
 
     private void validateExistenceFallback(List<String> userNames, Throwable t) {
         log.info("fallback method is called. userNames: {}", userNames);
-        throw new ApiException(ErrorCode.EXTERNAL_SERVER_ERROR, t.getMessage());
+        if (t instanceof ApiException) {
+            throw (ApiException) t;
+        }
+        
+        throw new ApiException(ErrorCode.EXTERNAL_SERVER_ERROR, "잠시 서비스 이용이 불가합니다.");
     }
 }
