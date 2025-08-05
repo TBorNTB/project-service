@@ -1,21 +1,25 @@
 package com.sejong.projectservice.application.project.service;
 
 import com.sejong.projectservice.application.internal.UserExternalService;
+import com.sejong.projectservice.application.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
-import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
-import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
-import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
-import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
+import com.sejong.projectservice.application.project.dto.response.*;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.core.project.domain.ProjectDoc;
+import com.sejong.projectservice.core.project.repository.ProjectElasticRepository;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
+import com.sejong.projectservice.infrastructure.project.entity.ProjectDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +27,14 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final UserExternalService userExternalService;
+    private final ProjectElasticRepository projectElasticRepository;
 
     @Transactional
-    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest) {
-        userExternalService.validateExistence(projectFormRequest.getCollaborators());
-        Project project = Assembler.toProject(projectFormRequest);
+    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, Long userId) {
+//        userExternalService.validateExistence(projectFormRequest.getCollaborators());
+        Project project = Assembler.toProject(projectFormRequest, userId);
         Project savedProject = projectRepository.save(project);
+        projectElasticRepository.save(savedProject);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
     }
 
@@ -61,5 +67,33 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public boolean exists(Long postId) {
         return projectRepository.existsById(postId);
+    }
+
+    @Transactional
+    public ProjectDeleteResponse removeProject(Long userId, Long projectId) {
+        Project project = projectRepository.findOne(projectId);
+        project.validateOwner(userId);
+        projectRepository.deleteById(projectId);
+        projectElasticRepository.deleteById(projectId.toString());
+        return ProjectDeleteResponse.of(project.getTitle(),"삭제 완료");
+    }
+
+    public List<String> getSuggestions(String query) {
+        return projectElasticRepository.getSuggestions(query);
+    }
+
+    public List<ProjectDoc> searchProjects(
+            String query,
+            ProjectStatus projectStatus,
+            List<String> categories,
+            List<String> techStacks,
+            int size,
+            int page
+    ) {
+        List<ProjectDoc> projectDocuments = projectElasticRepository.searchProjects(
+                query, projectStatus, categories, techStacks, size,page
+        );
+
+        return projectDocuments;
     }
 }

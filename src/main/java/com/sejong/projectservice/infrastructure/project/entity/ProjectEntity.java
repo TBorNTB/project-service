@@ -48,6 +48,8 @@ public class ProjectEntity {
     private String title;
     private String description;
 
+    private Long ownerId;
+
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(50)")
     private ProjectStatus projectStatus;
@@ -76,6 +78,7 @@ public class ProjectEntity {
         return ProjectEntity.builder()
                 .title(project.getTitle())
                 .description(project.getDescription())
+                .ownerId(project.getOwnerId())
                 .projectStatus(project.getProjectStatus())
                 .thumbnailUrl(project.getThumbnailUrl())
                 .createdAt(project.getCreatedAt())
@@ -156,6 +159,7 @@ public class ProjectEntity {
         return Project.builder()
                 .id(this.id)
                 .title(this.title)
+                .ownerId(this.ownerId)
                 .description(this.description)
                 .projectStatus(this.projectStatus)
                 .thumbnailUrl(this.thumbnailUrl)

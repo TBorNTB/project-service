@@ -1,5 +1,7 @@
 package com.sejong.projectservice.core.project.domain;
 
+import com.sejong.projectservice.application.common.error.code.ErrorCode;
+import com.sejong.projectservice.application.common.error.exception.ApiException;
 import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.core.document.domain.Document;
@@ -24,6 +26,7 @@ public class Project {
     private LocalDateTime createdAt;
 
     private Long id;
+    private Long ownerId;
     private List<Collaborator> collaborators = new ArrayList<>();
 
     private String title;
@@ -47,5 +50,11 @@ public class Project {
 
     public void addDocument(Document doc) {
         documents.add(doc);
+    }
+
+    public void validateOwner(Long userId) {
+        if(userId!=this.ownerId){
+            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
+        }
     }
 }
