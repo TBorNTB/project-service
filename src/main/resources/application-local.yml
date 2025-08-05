@@ -8,13 +8,22 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
+  elasticsearch:
+    uris: http://localhost:9200
+    connection-timeout: 5s
+    socket-timeout: 30s
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+
   sql:
     init:
       mode: always
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     defer-datasource-initialization: true
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -37,6 +46,8 @@ spring:
       ribbon:
         enabled: false
 
+
+
 springdoc:
   api-docs:
     version: openapi_3_0
@@ -57,3 +68,7 @@ eureka:
       defaultZone: ${EUREKA_DEFAULTZONE}
     register-with-eureka: true
     fetch-registry: true
+
+logging:
+  level:
+    org.elasticsearch.client: TRACE

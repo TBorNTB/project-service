@@ -43,6 +43,15 @@ spring:
       ribbon:
         enabled: false
 
+  elasticsearch:
+    uris: http://localhost:9200
+    connection-timeout: 5s
+    socket-timeout: 30s
+  data:
+    elasticsearch:
+      repositories:
+        enabled: true
+
 springdoc:
   api-docs:
     version: openapi_3_0
@@ -83,3 +92,6 @@ resilience4j:
     instances:
       myFeignClient:
         timeoutDuration: 3s
+logging:
+  level:
+    org.elasticsearch.client: TRACE
