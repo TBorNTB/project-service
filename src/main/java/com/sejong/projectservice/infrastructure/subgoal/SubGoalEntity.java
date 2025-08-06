@@ -62,4 +62,13 @@ public class SubGoalEntity {
     public void assignProjectEntity(ProjectEntity projectEntity) {
         this.projectEntity = projectEntity;
     }
+
+
+    public void update(SubGoal subGoal) {
+        this.id = subGoal.getId();
+        this.content = subGoal.getContent();
+        this.completed = subGoal.getCompleted();
+        this.createdAt = subGoal.getCreatedAt();
+        this.updatedAt = subGoal.getUpdatedAt();
+    }
 }

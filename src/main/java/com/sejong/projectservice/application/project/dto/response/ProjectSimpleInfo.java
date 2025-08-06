@@ -4,6 +4,7 @@ import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public class ProjectSimpleInfo {
     private LocalDateTime updatedAt;
     private String thumbnailUrl;
 
+    private List<SubGoal> subGoals = new ArrayList<>();
     private List<Category> categories = new ArrayList<>();
     private List<TechStack> techStacks = new ArrayList<>();
     private List<Collaborator> collaborators = new ArrayList<>();
@@ -47,6 +49,7 @@ public class ProjectSimpleInfo {
                 .categories(project.getCategories())
                 .techStacks(project.getTechStacks())
                 .collaborators(collaboratorList)
+                .subGoals(project.getSubGoals())
                 .collaboratorSize(collaboratorList.size())
                 .build();
     }
