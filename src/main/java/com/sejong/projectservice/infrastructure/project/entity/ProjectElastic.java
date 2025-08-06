@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 @Document(indexName= "projects")
 @Setting(settingPath = "/elasticsearch/project-settings.json")
-public class ProjectDocument {
+public class ProjectElastic {
 
     @Id
     private String id;
@@ -57,7 +57,7 @@ public class ProjectDocument {
     @Field(type = FieldType.Keyword)
     private List<String> collaborators = new ArrayList<>();
 
-    public static ProjectDocument from(Project project){
+    public static ProjectElastic from(Project project){
 
         List<String> categoryNames = project.getCategories().stream()
                 .map(Category::getName)
@@ -74,7 +74,7 @@ public class ProjectDocument {
                 .distinct()
                 .toList();
 
-        return ProjectDocument.builder()
+        return ProjectElastic.builder()
                 .id(project.getId().toString())
                 .title(project.getTitle())
                 .description(project.getDescription())
