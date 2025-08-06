@@ -46,7 +46,7 @@ public class CategoryRepositoryImpl implements CategoryRepository {
         jpaRepository.deleteById(categoryEntity.getId());
         return categoryEntity.toDomain();
     }
-ㅎ
+
     @Override
     public List<Category> findAll() {
         List<CategoryEntity> categoryEntities = jpaRepository.findAll();
