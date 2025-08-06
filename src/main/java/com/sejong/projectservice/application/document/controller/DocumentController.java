@@ -4,18 +4,16 @@ import com.sejong.projectservice.application.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.application.document.dto.DocumentInfoRes;
 import com.sejong.projectservice.application.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.application.document.service.DocumentService;
+import com.sejong.projectservice.core.document.domain.DocumentDoc;
+import com.sejong.projectservice.core.enums.ProjectStatus;
+import com.sejong.projectservice.core.project.domain.ProjectDoc;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -67,5 +65,27 @@ public class DocumentController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // Todo: pageable(cursor/offset), search?
+    @GetMapping("/suggestion")
+    @Operation(summary = "elastic 검색 조회 == 쿠팡 검색 추천처럼 ")
+    public ResponseEntity<List<String>> getSuggestion(
+            @RequestParam String query
+    ) {
+        List<String> suggestions = documentService.getSuggestions(query);
+        return ResponseEntity.ok(suggestions);
+    }
+
+    @GetMapping("/search")
+    @Operation(summary = "Document관련 elastic 내용물 전체 조회 => 현재 정렬 방식은 지원 안함")
+    public ResponseEntity<List<DocumentDoc>> searchDocuments(
+            @RequestParam String query,
+            @RequestParam(defaultValue ="5") int size,
+            @RequestParam(defaultValue = "0") int page
+
+    ) {
+
+        List<DocumentDoc> response = documentService.searchDocuments(
+                query, size,page
+        );
+        return ResponseEntity.ok(response);
+    }
 }
