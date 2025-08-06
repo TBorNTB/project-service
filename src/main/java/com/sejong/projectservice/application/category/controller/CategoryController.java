@@ -3,6 +3,7 @@ package com.sejong.projectservice.application.category.controller;
 import com.sejong.projectservice.application.category.controller.dto.*;
 import com.sejong.projectservice.application.category.service.CategoryService;
 import com.sejong.projectservice.core.category.Category;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,6 +19,7 @@ public class CategoryController {
     private final CategoryService categoryService;
 
     @PostMapping("")
+    @Operation(summary = "카테고리 저장")
     public ResponseEntity<CategoryResponse> addCategory(
             @RequestHeader("x-user") String userId,
             @RequestBody @Valid CategoryAddRequest categoryAddRequest
@@ -27,6 +29,7 @@ public class CategoryController {
     }
 
     @PutMapping("")
+    @Operation(summary = "카테고리 수정")
     public ResponseEntity<CategoryResponse> updateCategory(
             @RequestHeader("x-user") String userId,
             @RequestBody @Valid CategoryUpdateRequest categoryUpdateRequest
@@ -36,6 +39,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("")
+    @Operation(summary = "카테고리 삭제")
     public ResponseEntity<CategoryResponse> deleteCategory(
             @RequestHeader("x-user") String userId,
             @RequestBody @Valid CategoryDeleteRequest categoryDeleteRequest
@@ -45,6 +49,7 @@ public class CategoryController {
     }
 
     @GetMapping("")
+    @Operation(summary = "카테고리 전체 조회")
     public ResponseEntity<CategoryAllResponse> getAllCategory(){
         CategoryAllResponse response = categoryService.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(response);
