@@ -42,8 +42,4 @@ public class Mapper {
                         .orElseGet(() -> techStackJpaRepository.save(TechStackEntity.of(t.getName()))))
                 .forEach(projectEntity::addTechStack);
     }
-
-    public void updateSubGoal(SubGoal subGoal, SubGoalEntity subGoalEntity) {
-
-    }
 }
