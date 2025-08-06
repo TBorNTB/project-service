@@ -57,4 +57,13 @@ public class Project {
             throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
         }
     }
+
+    public void checkSubGoal(Long subGoalId) {
+        SubGoal selectedSubGaol = subGoals.stream()
+                .filter(subGoal -> subGoal.getId().equals(subGoalId))
+                .findFirst()
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 subGoalId는 관련 프로젝트 내에 없습니다."));
+
+        selectedSubGaol.check();
+    }
 }
