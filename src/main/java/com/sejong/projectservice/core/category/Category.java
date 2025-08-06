@@ -38,4 +38,8 @@ public class Category {
     public int hashCode() {
         return Objects.hash(id);
     }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }
