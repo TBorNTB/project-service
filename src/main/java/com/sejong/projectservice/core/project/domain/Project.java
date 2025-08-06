@@ -57,4 +57,14 @@ public class Project {
             throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
         }
     }
+
+    public void updateCollaborator(List<String> collaboratorNames) {
+        List<Collaborator> collaboratorList = collaboratorNames.stream()
+                .map(Collaborator::from)
+                .distinct()
+                .toList();
+
+        this.collaborators.clear();
+        this.collaborators.addAll(collaboratorList);
+    }
 }

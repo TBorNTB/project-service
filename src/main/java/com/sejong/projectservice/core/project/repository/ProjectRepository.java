@@ -18,4 +18,6 @@ public interface ProjectRepository {
     boolean existsById(Long postId);
 
     void deleteById(Long projectId);
+
+    Project updateCollaborator(Project project);
 }

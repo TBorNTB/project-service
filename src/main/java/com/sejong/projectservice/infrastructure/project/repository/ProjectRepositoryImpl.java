@@ -1,5 +1,7 @@
 package com.sejong.projectservice.infrastructure.project.repository;
 
+import com.sejong.projectservice.application.common.error.code.ErrorCode;
+import com.sejong.projectservice.application.common.error.exception.ApiException;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
@@ -80,6 +82,15 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     @Override
     public boolean existsById(Long postId) {
         return projectJpaRepository.existsById(postId);
+    }
+
+    @Override
+    public Project updateCollaborator(Project project) {
+        ProjectEntity projectEntity = projectJpaRepository.findById(project.getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 프로젝트트 존재하지 않습니다."));
+
+        mapper.updateCollaborator(project, projectEntity);
+        return projectEntity.toDomain();
     }
 
     @Override

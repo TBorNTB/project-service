@@ -41,4 +41,11 @@ public class Mapper {
                         .orElseGet(() -> techStackJpaRepository.save(TechStackEntity.of(t.getName()))))
                 .forEach(projectEntity::addTechStack);
     }
+
+    public void updateCollaborator(Project project, ProjectEntity projectEntity) {
+        projectEntity.getCollaborators().clear();
+
+        project.getCollaborators().stream()
+                .map(CollaboratorEntity::from).forEach(projectEntity::addCollaborator);
+    }
 }
