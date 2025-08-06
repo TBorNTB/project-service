@@ -2,16 +2,13 @@ package com.sejong.projectservice.infrastructure.project.repository;
 
 import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
-import com.sejong.projectservice.application.pagination.OffsetPageReqDto;
-import com.sejong.projectservice.core.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.domain.ProjectDoc;
 import com.sejong.projectservice.core.project.repository.ProjectElasticRepository;
-import com.sejong.projectservice.infrastructure.project.entity.ProjectDocument;
+import com.sejong.projectservice.infrastructure.project.entity.ProjectElastic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
@@ -30,9 +27,9 @@ public class ProjectElasticRepositoryImpl implements ProjectElasticRepository {
 
     @Override
     public String save(Project project) {
-        ProjectDocument projectDocument = ProjectDocument.from(project);
-        ProjectDocument savedProjectDocument = repository.save(projectDocument);
-        return savedProjectDocument.getId();
+        ProjectElastic projectElastic = ProjectElastic.from(project);
+        ProjectElastic savedProjectElastic = repository.save(projectElastic);
+        return savedProjectElastic.getId();
     }
 
     @Override
@@ -53,11 +50,11 @@ public class ProjectElasticRepositoryImpl implements ProjectElasticRepository {
                 .withPageable(PageRequest.of(0, 5))
                 .build();
 
-        SearchHits<ProjectDocument> searchHits = elasticsearchOperations.search(nativeQuery, ProjectDocument.class);
+        SearchHits<ProjectElastic> searchHits = elasticsearchOperations.search(nativeQuery, ProjectElastic.class);
         return searchHits.getSearchHits().stream()
                 .map(hit -> {
-                    ProjectDocument projectDocument = hit.getContent();
-                    return projectDocument.getTitle();
+                    ProjectElastic projectElastic = hit.getContent();
+                    return projectElastic.getTitle();
                 })
                 .toList();
     }
@@ -109,14 +106,14 @@ public class ProjectElasticRepositoryImpl implements ProjectElasticRepository {
                 .withPageable(PageRequest.of(page, size))
                 .build();
 
-        SearchHits<ProjectDocument> searchHits = elasticsearchOperations.search(
+        SearchHits<ProjectElastic> searchHits = elasticsearchOperations.search(
                 nativeQuery,
-                ProjectDocument.class
+                ProjectElastic.class
         );
 
          return searchHits.stream()
                  .map(SearchHit::getContent)
-                 .map(ProjectDocument::toDocument)
+                 .map(ProjectElastic::toDocument)
                  .toList();
     }
 }

@@ -1,17 +1,13 @@
 package com.sejong.projectservice.application.project.controller;
 
-import com.sejong.projectservice.application.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
 import com.sejong.projectservice.application.project.dto.response.*;
 import com.sejong.projectservice.application.project.service.ProjectService;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.ProjectDoc;
-import com.sejong.projectservice.infrastructure.project.entity.ProjectDocument;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -76,7 +72,7 @@ public class ProjectController {
             @RequestParam(defaultValue ="") List<String> categories,
             @RequestParam(defaultValue ="") List<String> techStacks,
             @RequestParam(defaultValue ="5") int size,
-            @RequestParam(defaultValue = "0")int page
+            @RequestParam(defaultValue = "0") int page
 
     ) {
 

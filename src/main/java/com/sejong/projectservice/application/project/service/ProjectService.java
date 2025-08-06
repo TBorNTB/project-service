@@ -1,7 +1,6 @@
 package com.sejong.projectservice.application.project.service;
 
 import com.sejong.projectservice.application.internal.UserExternalService;
-import com.sejong.projectservice.application.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
@@ -11,11 +10,9 @@ import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.domain.ProjectDoc;
 import com.sejong.projectservice.core.project.repository.ProjectElasticRepository;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
-import com.sejong.projectservice.infrastructure.project.entity.ProjectDocument;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
