@@ -54,4 +54,16 @@ public class CategoryController {
         CategoryAllResponse response = categoryService.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
+    @PutMapping("/{postId}")
+    @Operation(summary = "프로젝트의 카테고리 수정")
+    public ResponseEntity<CategoryAllResponse> updateProjectCategory(
+            @RequestHeader("x-user") String userId,
+            @PathVariable(name="postId") Long projectId,
+            @RequestParam List<String> categoryNames
+    ) {
+        CategoryAllResponse response = categoryService.updateProject(userId, projectId, categoryNames);
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
 }

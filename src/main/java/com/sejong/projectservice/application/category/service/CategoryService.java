@@ -4,6 +4,8 @@ import com.sejong.projectservice.application.category.controller.dto.CategoryAll
 import com.sejong.projectservice.application.category.controller.dto.CategoryResponse;
 import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.category.CategoryRepository;
+import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.List;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ProjectRepository projectRepository;
 
     @Transactional
     public CategoryResponse create(String userId, String name) {
@@ -37,9 +40,21 @@ public class CategoryService {
         return CategoryResponse.deleteFrom(category);
     }
 
+    @Transactional(readOnly = true)
     public CategoryAllResponse getAll() {
         List<Category> categories = categoryRepository.findAll();
         return CategoryAllResponse.from(categories);
 
+    }
+
+    @Transactional
+    public CategoryAllResponse updateProject(String userId, Long projectId, List<String> categoryNames) {
+        //todo 해당 유저가 project 수정 권한이 있는지 검증
+        Project project = projectRepository.findOne(projectId);
+        project.validateOwner(Long.valueOf(userId));
+        project.updateCategory(categoryNames);
+
+        Project updatedProject = projectRepository.update(project);
+        return CategoryAllResponse.from(updatedProject.getCategories());
     }
 }
