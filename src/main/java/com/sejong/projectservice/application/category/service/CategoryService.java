@@ -53,7 +53,7 @@ public class CategoryService {
         //todo 이 코드는 손봐야 된다. 현재 유저를 찾고 그 유저가 권한이 있는지 검증해야된다.
         //todo 또한 그런 비지니스 로직이 생긴다면 전체 collaboator의 연관관계를 끊지 말고 하나하나 추가 아니면 기존게 있다면 보존 형태로 해야되겠다.
         Project project = projectRepository.findOne(projectId);
-        project.validateUpdateRole(userName);
+        project.ensureCollaboratorExists(userName);
         project.updateCategory(categoryNames);
 
         Project updatedProject = projectRepository.update(project);

@@ -58,7 +58,7 @@ public class Project {
         }
     }
 
-    public void validateUpdateRole(String userName){
+    public void ensureCollaboratorExists(String userName){
         boolean exists = collaborators.stream()
                 .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
 
