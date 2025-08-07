@@ -3,6 +3,7 @@ package com.sejong.projectservice.application.subgoal.service;
 import com.sejong.projectservice.application.subgoal.controller.dto.SubGoalCheckResponse;
 import com.sejong.projectservice.application.subgoal.controller.dto.SubGoalDeleteResponse;
 import com.sejong.projectservice.application.subgoal.controller.dto.SubGoalResponse;
+import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.subgoal.SubGoalRepository;
@@ -20,9 +21,9 @@ public class SubGoalService {
     private final ProjectRepository projectRepository;
 
     @Transactional
-    public SubGoalCheckResponse updateCheck(String userId, Long projectId , Long subGoalId) {
-        //todo userId를 통해 유저 이름 조회 근데 만약 헤더에 유저 이름도 넣는다면 안해도 된다.
-        //todo project안에 협력자 및 방장만 수정 가능하도록 검증을 해야한다.
+    public SubGoalCheckResponse updateCheck(String userName, Long projectId , Long subGoalId) {
+        Project project = projectRepository.findOne(projectId);
+        project.ensureCollaboratorExists(userName);
         SubGoal subGoal = subGoalRepository.findOne(subGoalId);
         subGoal.check();
         SubGoal updatedSubGoal = subGoalRepository.update(subGoal);
@@ -30,15 +31,18 @@ public class SubGoalService {
     }
 
     @Transactional
-    public SubGoalResponse create(String userId, Long projectId, String content) {
+    public SubGoalResponse create(String userName, Long projectId, String content) {
+        Project project = projectRepository.findOne(projectId);
+        project.ensureCollaboratorExists(userName);
         SubGoal subGoal = SubGoal.from(content, false, LocalDateTime.now(), LocalDateTime.now());
         SubGoal savedSubGoal = subGoalRepository.save(projectId, subGoal);
         return SubGoalResponse.from(savedSubGoal);
     }
 
     @Transactional
-    public SubGoalDeleteResponse remove(String userId, Long projectId, Long subGoalId) {
-        //todo 삭제 요청한 유저가 프로젝트에서 삭제 권한이 있는지 검증하는 로직 필요
+    public SubGoalDeleteResponse remove(String userName, Long projectId, Long subGoalId) {
+        Project project = projectRepository.findOne(projectId);
+        project.ensureCollaboratorExists(userName);
         subGoalRepository.delete(subGoalId);
         return SubGoalDeleteResponse.of(subGoalId);
     }

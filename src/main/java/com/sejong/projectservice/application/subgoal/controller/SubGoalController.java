@@ -22,33 +22,33 @@ public class SubGoalController {
     @PutMapping("/check/{projectId}")
     @Operation(summary ="서브 목표 달성 완료 기능")
     public ResponseEntity<SubGoalCheckResponse> checkSubGoal(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("x-user-name") String userName,
             @PathVariable(name="projectId") Long projectId,
             @RequestParam(name = "subGoalId") Long subGoalId
     ){
-        SubGoalCheckResponse response = subGoalService.updateCheck(userId,projectId, subGoalId);
+        SubGoalCheckResponse response = subGoalService.updateCheck(userName,projectId, subGoalId);
         return ResponseEntity.ok(response);
     }
 
     @PostMapping("/{projectId}")
     @Operation(summary ="서브 목표 추가")
     public ResponseEntity<SubGoalResponse> addSubGoal(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("x-user-name") String userName,
             @PathVariable(name="projectId") Long projectId,
             @RequestBody SubGoalRequest subGoalRequest
     ){
-        SubGoalResponse response = subGoalService.create(userId,projectId, subGoalRequest.getContent());
+        SubGoalResponse response = subGoalService.create(userName,projectId, subGoalRequest.getContent());
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{projectId}/{subGoalId}")
     @Operation(summary = "서브 목표 삭제")
     public ResponseEntity<SubGoalDeleteResponse> deleteSubGoal(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("x-user-name") String userName,
             @PathVariable(name="projectId") Long projectId,
             @PathVariable(name="subGoalId") Long subGoalId
     ){
-        SubGoalDeleteResponse response = subGoalService.remove(userId, projectId, subGoalId);
+        SubGoalDeleteResponse response = subGoalService.remove(userName, projectId, subGoalId);
         return ResponseEntity.ok(response);
     }
 

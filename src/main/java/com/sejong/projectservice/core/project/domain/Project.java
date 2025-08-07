@@ -58,6 +58,16 @@ public class Project {
         }
     }
 
+    public void ensureCollaboratorExists(String userName){
+        boolean exists = collaborators.stream()
+                .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
+
+        if(exists==false){
+            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트내에 collaborator가 아닙니다.");
+        }
+
+    }
+
     public void checkSubGoal(Long subGoalId) {
         SubGoal selectedSubGaol = subGoals.stream()
                 .filter(subGoal -> subGoal.getId().equals(subGoalId))
