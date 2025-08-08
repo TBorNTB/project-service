@@ -26,7 +26,7 @@ public class Project {
     private LocalDateTime createdAt;
 
     private Long id;
-    private Long ownerId;
+    private String userNickname;
     private List<Collaborator> collaborators = new ArrayList<>();
 
     private String title;
@@ -52,8 +52,8 @@ public class Project {
         documents.add(doc);
     }
 
-    public void validateOwner(Long userId) {
-        if(userId!=this.ownerId){
+    public void validateOwner(String userNickname) {
+        if(this.userNickname.equals(userNickname)){
             throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
         }
     }

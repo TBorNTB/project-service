@@ -27,7 +27,7 @@ public class Assembler {
                 .build();
     }
 
-    public static Project toProject(ProjectFormRequest request, Long userId) {
+    public static Project toProject(ProjectFormRequest request, String userNickname) {
         List<Collaborator> collaborators = request.getCollaborators().stream()
                 .map(Collaborator::from)
                 .toList();
@@ -46,7 +46,7 @@ public class Assembler {
 
         return Project.builder()
                 .title(request.getTitle())
-                .ownerId(userId)
+                .userNickname(userNickname)
                 .description(request.getDescription())
                 .categories(categories)
                 .projectStatus(request.getProjectStatus())

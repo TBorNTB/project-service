@@ -27,9 +27,9 @@ public class ProjectService {
     private final ProjectElasticRepository projectElasticRepository;
 
     @Transactional
-    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, Long userId) {
+    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String userNickname) {
         userExternalService.validateExistence(projectFormRequest.getCollaborators());
-        Project project = Assembler.toProject(projectFormRequest, userId);
+        Project project = Assembler.toProject(projectFormRequest, userNickname);
         Project savedProject = projectRepository.save(project);
         projectElasticRepository.save(savedProject);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
@@ -68,9 +68,9 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDeleteResponse removeProject(Long userId, Long projectId) {
+    public ProjectDeleteResponse removeProject(String userNickname, Long projectId) {
         Project project = projectRepository.findOne(projectId);
-        project.validateOwner(userId);
+        project.validateOwner(userNickname);
         projectRepository.deleteById(projectId);
         projectElasticRepository.deleteById(projectId.toString());
         return ProjectDeleteResponse.of(project.getTitle(),"삭제 완료");

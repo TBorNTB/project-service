@@ -33,9 +33,9 @@ public class ProjectController {
     @PostMapping()
     @Operation(summary = "프로젝트 생성")
     public ResponseEntity<ProjectAddResponse> createProject(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("X-User-Nickname") String userNickname,
             @RequestBody ProjectFormRequest projectFormRequest) {
-        ProjectAddResponse response = projectService.createProject(projectFormRequest, Long.valueOf(userId));
+        ProjectAddResponse response = projectService.createProject(projectFormRequest, userNickname);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -130,10 +130,10 @@ public class ProjectController {
     @DeleteMapping("/{projectId}")
     @Operation(summary = "프로젝트 삭제")
     public ResponseEntity<ProjectDeleteResponse> deleteProject(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("X-User-Nickname") String userNickname,
             @PathVariable Long projectId
     ) {
-        ProjectDeleteResponse response = projectService.removeProject(Long.valueOf(userId), projectId);
+        ProjectDeleteResponse response = projectService.removeProject(userNickname, projectId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
