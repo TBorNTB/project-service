@@ -16,8 +16,10 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class ProjectRepositoryImpl implements ProjectRepository {
 
+    private final ProjectElasticDocumentRepository projectElasticDocumentRepository;
     private final ProjectJpaRepository projectJpaRepository;
     private final Mapper mapper;
+
 
     @Override
     public Project save(Project project) {
@@ -86,5 +88,8 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     public void deleteById(Long projectId) {
         projectJpaRepository.deleteById(projectId);
     }
+
+
+
 
 }

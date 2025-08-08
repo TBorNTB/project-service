@@ -4,7 +4,7 @@ import co.elastic.clients.elasticsearch._types.FieldValue;
 import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.core.project.domain.ProjectDoc;
+import com.sejong.projectservice.core.project.domain.ProjectDocument;
 import com.sejong.projectservice.core.project.repository.ProjectElasticRepository;
 import com.sejong.projectservice.infrastructure.project.entity.ProjectElastic;
 import lombok.RequiredArgsConstructor;
@@ -60,7 +60,7 @@ public class ProjectElasticRepositoryImpl implements ProjectElasticRepository {
     }
 
     @Override
-    public List<ProjectDoc> searchProjects(String query, ProjectStatus projectStatus, List<String> categories, List<String> techStacks, int size, int page) {
+    public List<ProjectDocument> searchProjects(String query, ProjectStatus projectStatus, List<String> categories, List<String> techStacks, int size, int page) {
 
         Query multiMatchQuery = MultiMatchQuery.of(m -> m
                 .query(query)

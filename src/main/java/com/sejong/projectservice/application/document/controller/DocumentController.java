@@ -4,9 +4,7 @@ import com.sejong.projectservice.application.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.application.document.dto.DocumentInfoRes;
 import com.sejong.projectservice.application.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.application.document.service.DocumentService;
-import com.sejong.projectservice.core.document.domain.DocumentDoc;
-import com.sejong.projectservice.core.enums.ProjectStatus;
-import com.sejong.projectservice.core.project.domain.ProjectDoc;
+import com.sejong.projectservice.core.document.domain.DocumentDocument;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -76,14 +74,14 @@ public class DocumentController {
 
     @GetMapping("/search")
     @Operation(summary = "Document관련 elastic 내용물 전체 조회 => 현재 정렬 방식은 지원 안함")
-    public ResponseEntity<List<DocumentDoc>> searchDocuments(
+    public ResponseEntity<List<DocumentDocument>> searchDocuments(
             @RequestParam String query,
             @RequestParam(defaultValue ="5") int size,
             @RequestParam(defaultValue = "0") int page
 
     ) {
 
-        List<DocumentDoc> response = documentService.searchDocuments(
+        List<DocumentDocument> response = documentService.searchDocuments(
                 query, size,page
         );
         return ResponseEntity.ok(response);

@@ -2,7 +2,7 @@ package com.sejong.projectservice.infrastructure.document.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.sejong.projectservice.core.document.domain.DocumentDoc;
+import com.sejong.projectservice.core.document.domain.DocumentDocument;
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.*;
@@ -59,8 +59,8 @@ public class DocumentElastic {
                 .build();
     }
 
-    public DocumentDoc toDocument(){
-        return DocumentDoc.builder()
+    public DocumentDocument toDocument(){
+        return DocumentDocument.builder()
                 .id(Long.valueOf(id))
                 .yorkieDocumentId(yorkieDocumentId)
                 .title(title)

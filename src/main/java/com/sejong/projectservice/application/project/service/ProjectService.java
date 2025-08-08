@@ -7,7 +7,7 @@ import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRe
 import com.sejong.projectservice.application.project.dto.response.*;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.core.project.domain.ProjectDoc;
+import com.sejong.projectservice.core.project.domain.ProjectDocument;
 import com.sejong.projectservice.core.project.repository.ProjectElasticRepository;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +48,7 @@ public class ProjectService {
                 projectUpdateRequest.getProjectStatus(),
                 projectUpdateRequest.getThumbnailUrl());
         Project savedProject = projectRepository.save(project);
+        projectElasticRepository.save(savedProject);
         return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
     }
 
@@ -79,7 +80,7 @@ public class ProjectService {
         return projectElasticRepository.getSuggestions(query);
     }
 
-    public List<ProjectDoc> searchProjects(
+    public List<ProjectDocument> searchProjects(
             String query,
             ProjectStatus projectStatus,
             List<String> categories,
@@ -87,7 +88,7 @@ public class ProjectService {
             int size,
             int page
     ) {
-        List<ProjectDoc> projectDocuments = projectElasticRepository.searchProjects(
+        List<ProjectDocument> projectDocuments = projectElasticRepository.searchProjects(
                 query, projectStatus, categories, techStacks, size,page
         );
 
