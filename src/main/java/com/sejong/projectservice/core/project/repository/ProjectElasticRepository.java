@@ -2,7 +2,7 @@ package com.sejong.projectservice.core.project.repository;
 
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.core.project.domain.ProjectDocument;
+import com.sejong.projectservice.infrastructure.project.kafka.ProjectDocument;
 
 import java.util.List;
 
