@@ -57,4 +57,24 @@ public class Project {
             throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
         }
     }
+
+    public void ensureCollaboratorExists(String userName){
+        boolean exists = collaborators.stream()
+                .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
+
+        if(exists==false){
+            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트내에 collaborator가 아닙니다.");
+        }
+
+    }
+
+    public void updateCategory(List<String> categoryNames) {
+        List<Category> categoriesList = categoryNames.stream()
+                .map(Category::of)
+                .distinct()
+                .toList();
+
+        this.categories.clear();
+        this.categories.addAll(categoriesList);
+    }
 }
