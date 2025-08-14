@@ -1,6 +1,7 @@
 package com.sejong.projectservice.infrastructure.mapper;
 
 import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.infrastructure.category.entity.CategoryEntity;
 import com.sejong.projectservice.infrastructure.category.repository.CategoryJpaRepository;
 import com.sejong.projectservice.infrastructure.collaborator.entity.CollaboratorEntity;

@@ -68,6 +68,16 @@ public class Project {
 
     }
 
+
+    public void checkSubGoal(Long subGoalId) {
+        SubGoal selectedSubGaol = subGoals.stream()
+                .filter(subGoal -> subGoal.getId().equals(subGoalId))
+                .findFirst()
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 subGoalId는 관련 프로젝트 내에 없습니다."));
+
+        selectedSubGaol.check();
+    }
+
     public void updateCategory(List<String> categoryNames) {
         List<Category> categoriesList = categoryNames.stream()
                 .map(Category::of)
@@ -76,5 +86,6 @@ public class Project {
 
         this.categories.clear();
         this.categories.addAll(categoriesList);
+
     }
 }
