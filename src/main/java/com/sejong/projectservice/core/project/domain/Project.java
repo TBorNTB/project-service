@@ -58,6 +58,16 @@ public class Project {
         }
     }
 
+
+    public void updateCollaborator(List<String> collaboratorNames) {
+        List<Collaborator> collaboratorList = collaboratorNames.stream()
+                .map(Collaborator::from)
+                .distinct()
+                .toList();
+
+        this.collaborators.clear();
+        this.collaborators.addAll(collaboratorList);
+    }
     public void ensureCollaboratorExists(String userName){
         boolean exists = collaborators.stream()
                 .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
@@ -86,6 +96,5 @@ public class Project {
 
         this.categories.clear();
         this.categories.addAll(categoriesList);
-
     }
 }

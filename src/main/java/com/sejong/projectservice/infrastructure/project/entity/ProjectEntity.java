@@ -14,16 +14,8 @@ import com.sejong.projectservice.infrastructure.project_category.entity.ProjectC
 import com.sejong.projectservice.infrastructure.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.infrastructure.subgoal.SubGoalEntity;
 import com.sejong.projectservice.infrastructure.techstack.entity.TechStackEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,19 +53,19 @@ public class ProjectEntity {
 
     private String thumbnailUrl;
 
-    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
 
-    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<ProjectTechStackEntity> projectTechStacks = new ArrayList<>();
 
-    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CollaboratorEntity> collaborators = new ArrayList<>();
 
-    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SubGoalEntity> subGoals = new ArrayList<>();
 
-    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DocumentEntity> documents = new ArrayList<>();
 
     public static ProjectEntity from(Project project) {

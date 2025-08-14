@@ -19,5 +19,9 @@ public interface ProjectRepository {
 
     void deleteById(Long projectId);
 
+
+    Project updateCollaborator(Project project);
+
     Project update(Project project);
+
 }

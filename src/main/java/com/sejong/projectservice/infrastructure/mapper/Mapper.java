@@ -43,8 +43,15 @@ public class Mapper {
                 .forEach(projectEntity::addTechStack);
     }
 
-    //변경감지하여 영속화 하는 작업
 
+    public void updateCollaborator(Project project, ProjectEntity projectEntity) {
+        projectEntity.getCollaborators().clear();
+
+        project.getCollaborators().stream()
+                .map(CollaboratorEntity::from).forEach(projectEntity::addCollaborator);
+
+    //변경감지하여 영속화 하는 작업
+    }
     public void updateCategory(Project project, ProjectEntity projectEntity) {
         projectEntity.getProjectCategories().clear();
 
@@ -52,5 +59,6 @@ public class Mapper {
                 .map(c -> categoryJpaRepository.findByName(c.getName())
                         .orElseGet(() -> categoryJpaRepository.save(CategoryEntity.of(c.getName()))))
                 .forEach(projectEntity::addCategory);
+
     }
 }

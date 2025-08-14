@@ -85,6 +85,15 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
+    public Project updateCollaborator(Project project) {
+        ProjectEntity projectEntity = projectJpaRepository.findById(project.getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 프로젝트트 존재하지 않습니다."));
+
+        mapper.updateCollaborator(project, projectEntity);
+        return projectEntity.toDomain();
+    }
+
+    @Override
     public void deleteById(Long projectId) {
         projectJpaRepository.deleteById(projectId);
     }
