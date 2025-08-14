@@ -1,5 +1,7 @@
 package com.sejong.projectservice.infrastructure.project.repository;
 
+import com.sejong.projectservice.application.common.error.code.ErrorCode;
+import com.sejong.projectservice.application.common.error.exception.ApiException;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
@@ -85,6 +87,15 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     @Override
     public void deleteById(Long projectId) {
         projectJpaRepository.deleteById(projectId);
+    }
+
+    @Override
+    public Project update(Project project) {
+        ProjectEntity projectEntity = projectJpaRepository.findById(project.getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 사용자는 존재하지 않습니다."));
+
+        mapper.updateCategory(project, projectEntity);
+        return projectEntity.toDomain();
     }
 
 }

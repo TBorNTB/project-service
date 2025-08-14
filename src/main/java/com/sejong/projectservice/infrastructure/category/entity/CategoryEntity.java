@@ -61,4 +61,7 @@ public class CategoryEntity {
         this.projectCategories.add(pce);
     }
 
+    public void updateName(String nextName) {
+        this.name = nextName;
+    }
 }

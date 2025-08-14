@@ -42,4 +42,15 @@ public class Mapper {
                         .orElseGet(() -> techStackJpaRepository.save(TechStackEntity.of(t.getName()))))
                 .forEach(projectEntity::addTechStack);
     }
+
+    //변경감지하여 영속화 하는 작업
+
+    public void updateCategory(Project project, ProjectEntity projectEntity) {
+        projectEntity.getProjectCategories().clear();
+
+        project.getCategories().stream()
+                .map(c -> categoryJpaRepository.findByName(c.getName())
+                        .orElseGet(() -> categoryJpaRepository.save(CategoryEntity.of(c.getName()))))
+                .forEach(projectEntity::addCategory);
+    }
 }
