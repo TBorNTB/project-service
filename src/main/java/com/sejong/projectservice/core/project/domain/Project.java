@@ -26,7 +26,7 @@ public class Project {
     private LocalDateTime createdAt;
 
     private Long id;
-    private Long ownerId;
+    private String userNickname;
     private List<Collaborator> collaborators = new ArrayList<>();
 
     private String title;
@@ -52,11 +52,12 @@ public class Project {
         documents.add(doc);
     }
 
-    public void validateOwner(Long userId) {
-        if(userId!=this.ownerId){
+    public void validateOwner(String userNickname) {
+        if(this.userNickname.equals(userNickname)){
             throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
         }
     }
+
 
     public void updateCollaborator(List<String> collaboratorNames) {
         List<Collaborator> collaboratorList = collaboratorNames.stream()
@@ -66,5 +67,34 @@ public class Project {
 
         this.collaborators.clear();
         this.collaborators.addAll(collaboratorList);
+    }
+    public void ensureCollaboratorExists(String userName){
+        boolean exists = collaborators.stream()
+                .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
+
+        if(exists==false){
+            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트내에 collaborator가 아닙니다.");
+        }
+
+    }
+
+
+    public void checkSubGoal(Long subGoalId) {
+        SubGoal selectedSubGaol = subGoals.stream()
+                .filter(subGoal -> subGoal.getId().equals(subGoalId))
+                .findFirst()
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 subGoalId는 관련 프로젝트 내에 없습니다."));
+
+        selectedSubGaol.check();
+    }
+
+    public void updateCategory(List<String> categoryNames) {
+        List<Category> categoriesList = categoryNames.stream()
+                .map(Category::of)
+                .distinct()
+                .toList();
+
+        this.categories.clear();
+        this.categories.addAll(categoriesList);
     }
 }

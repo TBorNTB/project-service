@@ -1,6 +1,7 @@
 package com.sejong.projectservice.infrastructure.mapper;
 
 import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.infrastructure.category.entity.CategoryEntity;
 import com.sejong.projectservice.infrastructure.category.repository.CategoryJpaRepository;
 import com.sejong.projectservice.infrastructure.collaborator.entity.CollaboratorEntity;
@@ -42,10 +43,22 @@ public class Mapper {
                 .forEach(projectEntity::addTechStack);
     }
 
+
     public void updateCollaborator(Project project, ProjectEntity projectEntity) {
         projectEntity.getCollaborators().clear();
 
         project.getCollaborators().stream()
                 .map(CollaboratorEntity::from).forEach(projectEntity::addCollaborator);
+
+    //변경감지하여 영속화 하는 작업
+    }
+    public void updateCategory(Project project, ProjectEntity projectEntity) {
+        projectEntity.getProjectCategories().clear();
+
+        project.getCategories().stream()
+                .map(c -> categoryJpaRepository.findByName(c.getName())
+                        .orElseGet(() -> categoryJpaRepository.save(CategoryEntity.of(c.getName()))))
+                .forEach(projectEntity::addCategory);
+
     }
 }

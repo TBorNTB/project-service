@@ -5,10 +5,9 @@ import co.elastic.clients.elasticsearch._types.query_dsl.MultiMatchQuery;
 import co.elastic.clients.elasticsearch._types.query_dsl.Query;
 import co.elastic.clients.elasticsearch._types.query_dsl.TextQueryType;
 import com.sejong.projectservice.core.document.domain.Document;
-import com.sejong.projectservice.core.document.domain.DocumentDoc;
+import com.sejong.projectservice.core.document.domain.DocumentDocument;
 import com.sejong.projectservice.core.document.repository.DocumentElasticRepository;
 import com.sejong.projectservice.infrastructure.document.entity.DocumentElastic;
-import com.sejong.projectservice.infrastructure.project.entity.ProjectElastic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.elasticsearch.client.elc.NativeQuery;
@@ -57,7 +56,7 @@ public class DocumentElasticRepositoryImpl implements DocumentElasticRepository 
     }
 
     @Override
-    public List<DocumentDoc> searchDocuments(String query, int size, int page) {
+    public List<DocumentDocument> searchDocuments(String query, int size, int page) {
         Query multiMatchQuery = MultiMatchQuery.of(m -> m
                 .query(query)
                 .fields("title^3", "description^2", "content")

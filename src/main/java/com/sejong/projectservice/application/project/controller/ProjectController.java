@@ -5,7 +5,7 @@ import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRe
 import com.sejong.projectservice.application.project.dto.response.*;
 import com.sejong.projectservice.application.project.service.ProjectService;
 import com.sejong.projectservice.core.enums.ProjectStatus;
-import com.sejong.projectservice.core.project.domain.ProjectDoc;
+import com.sejong.projectservice.core.project.domain.ProjectDocument;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -33,9 +33,9 @@ public class ProjectController {
     @PostMapping()
     @Operation(summary = "프로젝트 생성")
     public ResponseEntity<ProjectAddResponse> createProject(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("X-User-Nickname") String userNickname,
             @RequestBody ProjectFormRequest projectFormRequest) {
-        ProjectAddResponse response = projectService.createProject(projectFormRequest, Long.valueOf(userId));
+        ProjectAddResponse response = projectService.createProject(projectFormRequest, userNickname);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -55,7 +55,7 @@ public class ProjectController {
     }
 
     @GetMapping("/suggestion")
-    @Operation(summary = "elastic 검색 조회 == 쿠팡 검색 추천처럼 ")
+    @Operation(summary = "검색어 자동 완성 기능")
     public ResponseEntity<List<String>> getSuggestion(
             @RequestParam String query
     ) {
@@ -66,7 +66,7 @@ public class ProjectController {
     //todo 정렬 및 desc asc 지원되게 해야됨
     @GetMapping("/search")
     @Operation(summary = "elastic 내용물 전체 조회 => 현재 정렬 방식은 지원 안함")
-    public ResponseEntity<List<ProjectDoc>> searchProjects(
+    public ResponseEntity<List<ProjectDocument>> searchProjects(
             @RequestParam String query,
             @RequestParam ProjectStatus projectStatus,
             @RequestParam(defaultValue ="") List<String> categories,
@@ -76,7 +76,7 @@ public class ProjectController {
 
     ) {
 
-        List<ProjectDoc> response = projectService.searchProjects(
+        List<ProjectDocument> response = projectService.searchProjects(
                 query, projectStatus, categories, techStacks, size,page
         );
         return ResponseEntity.ok(response);
@@ -130,10 +130,10 @@ public class ProjectController {
     @DeleteMapping("/{projectId}")
     @Operation(summary = "프로젝트 삭제")
     public ResponseEntity<ProjectDeleteResponse> deleteProject(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("X-User-Nickname") String userNickname,
             @PathVariable Long projectId
     ) {
-        ProjectDeleteResponse response = projectService.removeProject(Long.valueOf(userId), projectId);
+        ProjectDeleteResponse response = projectService.removeProject(userNickname, projectId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }

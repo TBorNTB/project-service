@@ -7,7 +7,7 @@ import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRe
 import com.sejong.projectservice.application.project.dto.response.*;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.core.project.domain.ProjectDoc;
+import com.sejong.projectservice.core.project.domain.ProjectDocument;
 import com.sejong.projectservice.core.project.repository.ProjectElasticRepository;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +27,9 @@ public class ProjectService {
     private final ProjectElasticRepository projectElasticRepository;
 
     @Transactional
-    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, Long userId) {
-//        userExternalService.validateExistence(projectFormRequest.getCollaborators());
-        Project project = Assembler.toProject(projectFormRequest, userId);
+    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String userNickname) {
+        userExternalService.validateExistence(projectFormRequest.getCollaborators());
+        Project project = Assembler.toProject(projectFormRequest, userNickname);
         Project savedProject = projectRepository.save(project);
         projectElasticRepository.save(savedProject);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
@@ -48,6 +48,7 @@ public class ProjectService {
                 projectUpdateRequest.getProjectStatus(),
                 projectUpdateRequest.getThumbnailUrl());
         Project savedProject = projectRepository.save(project);
+        projectElasticRepository.save(savedProject);
         return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
     }
 
@@ -67,9 +68,9 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDeleteResponse removeProject(Long userId, Long projectId) {
+    public ProjectDeleteResponse removeProject(String userNickname, Long projectId) {
         Project project = projectRepository.findOne(projectId);
-        project.validateOwner(userId);
+        project.validateOwner(userNickname);
         projectRepository.deleteById(projectId);
         projectElasticRepository.deleteById(projectId.toString());
         return ProjectDeleteResponse.of(project.getTitle(),"삭제 완료");
@@ -79,7 +80,7 @@ public class ProjectService {
         return projectElasticRepository.getSuggestions(query);
     }
 
-    public List<ProjectDoc> searchProjects(
+    public List<ProjectDocument> searchProjects(
             String query,
             ProjectStatus projectStatus,
             List<String> categories,
@@ -87,7 +88,7 @@ public class ProjectService {
             int size,
             int page
     ) {
-        List<ProjectDoc> projectDocuments = projectElasticRepository.searchProjects(
+        List<ProjectDocument> projectDocuments = projectElasticRepository.searchProjects(
                 query, projectStatus, categories, techStacks, size,page
         );
 

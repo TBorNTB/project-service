@@ -98,4 +98,13 @@ public class ProjectRepositoryImpl implements ProjectRepository {
         projectJpaRepository.deleteById(projectId);
     }
 
+    @Override
+    public Project update(Project project) {
+        ProjectEntity projectEntity = projectJpaRepository.findById(project.getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 사용자는 존재하지 않습니다."));
+
+        mapper.updateCategory(project, projectEntity);
+        return projectEntity.toDomain();
+    }
+
 }

@@ -5,7 +5,7 @@ import com.sejong.projectservice.application.document.dto.DocumentInfoRes;
 import com.sejong.projectservice.application.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.core.document.domain.Document;
-import com.sejong.projectservice.core.document.domain.DocumentDoc;
+import com.sejong.projectservice.core.document.domain.DocumentDocument;
 import com.sejong.projectservice.core.document.repository.DocumentElasticRepository;
 import com.sejong.projectservice.core.document.repository.DocumentRepository;
 
@@ -62,7 +62,7 @@ public class DocumentService {
        return documentElasticRepository.getSuggestions(query);
     }
 
-    public List<DocumentDoc> searchDocuments(String query, int size, int page) {
+    public List<DocumentDocument> searchDocuments(String query, int size, int page) {
         return documentElasticRepository.searchDocuments(query,size,page);
     }
 

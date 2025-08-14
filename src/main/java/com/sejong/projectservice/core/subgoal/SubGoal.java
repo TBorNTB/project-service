@@ -28,4 +28,9 @@ public class SubGoal {
                 .updatedAt(updatedAt)
                 .build();
     }
+
+    public void check(){
+        if(completed) completed = false;
+        else completed = true;
+    }
 }
