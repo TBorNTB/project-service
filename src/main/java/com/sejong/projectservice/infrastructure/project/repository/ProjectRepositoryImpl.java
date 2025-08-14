@@ -82,4 +82,12 @@ public class ProjectRepositoryImpl implements ProjectRepository {
         return projectJpaRepository.existsById(postId);
     }
 
+    @Override
+    public void deleteById(Long projectId) {
+        projectJpaRepository.deleteById(projectId);
+    }
+
+
+
+
 }

@@ -16,4 +16,6 @@ public interface ProjectRepository {
     Project findOne(Long projectId);
 
     boolean existsById(Long postId);
+
+    void deleteById(Long projectId);
 }
