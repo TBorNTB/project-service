@@ -22,7 +22,7 @@ public class CollaboratorService {
         userExternalService.validateExistence(collaboratorNames);
 
         Project project = projectRepository.findOne(projectId);
-        project.validateOwner(Long.valueOf(userId));
+        project.validateOwner(userId);
         project.updateCollaborator(collaboratorNames);
         Project updatedProject = projectRepository.updateCollaborator(project);
         return updatedProject.getCollaborators();
