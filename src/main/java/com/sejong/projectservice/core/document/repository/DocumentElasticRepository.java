@@ -1,7 +1,7 @@
 package com.sejong.projectservice.core.document.repository;
 
 import com.sejong.projectservice.core.document.domain.Document;
-import com.sejong.projectservice.core.document.domain.DocumentDoc;
+import com.sejong.projectservice.core.document.domain.DocumentDocument;
 
 import java.util.List;
 
@@ -12,5 +12,5 @@ public interface DocumentElasticRepository {
 
     List<String> getSuggestions(String query);
 
-    List<DocumentDoc> searchDocuments(String query, int size, int page);
+    List<DocumentDocument> searchDocuments(String query, int size, int page);
 }

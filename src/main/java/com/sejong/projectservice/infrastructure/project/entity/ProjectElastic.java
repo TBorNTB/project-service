@@ -5,7 +5,7 @@ import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.core.project.domain.ProjectDoc;
+import com.sejong.projectservice.core.project.domain.ProjectDocument;
 import com.sejong.projectservice.core.techstack.TechStack;
 import lombok.*;
 import org.springframework.data.annotation.Id;
@@ -87,8 +87,8 @@ public class ProjectElastic {
                 .build();
     }
 
-    public ProjectDoc toDocument(){
-        return ProjectDoc.builder()
+    public ProjectDocument toDocument(){
+        return ProjectDocument.builder()
                 .id(id)
                 .title(title)
                 .description(description)

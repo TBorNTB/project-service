@@ -98,5 +98,4 @@ public class ProjectRepositoryImpl implements ProjectRepository {
         return projectEntity.toDomain();
     }
 
-
 }

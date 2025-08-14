@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProjectDoc {
+public class ProjectDocument {
     private String id;
 
     private String title;
