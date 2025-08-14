@@ -37,18 +37,14 @@ spring:
         order_updates: true
   kafka:
     bootstrap-servers: localhost:9092
-    properties:
-      acks: all
-      enable.idempotence: true
     producer:
+      # 메시지의 key 직렬화 방식 : 자바 객체를 문자열(String)로 변환해서 Kafka에 전송
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      # JsonSerializer가 타입 정보를 헤더에 넣지 않게(호환성↑)
+      # 메시지의 value 직렬화 방식 : 자바 객체를 문자열(String)로 변환해서 Kafka에 전송
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # 여러 파티션에 메시지를 저장할 때의 방식 (라운드 로빈 방식)
       properties:
-        spring.json.add.type.headers: false
-      retries: 10
-      linger-ms: 20       # 소량 배치
-      batch-size: 32768
+        partitioner.class: org.apache.kafka.clients.producer.RoundRobinPartitioner
 
   thymeleaf:
     enabled: false
@@ -86,3 +82,7 @@ eureka:
 logging:
   level:
     org.elasticsearch.client: TRACE
+
+app:
+  kafka:
+    topic: project-events
