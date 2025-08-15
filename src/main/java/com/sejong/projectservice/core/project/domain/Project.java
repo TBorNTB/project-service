@@ -53,7 +53,7 @@ public class Project {
     }
 
     public void validateOwner(String userNickname) {
-        if(this.userNickname.equals(userNickname)){
+        if(!this.userNickname.equals(userNickname)){
             throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
         }
     }
