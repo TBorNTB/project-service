@@ -1,0 +1,88 @@
+@startuml database-erd
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam linetype ortho
+
+entity "projects" {
+  * id : BIGINT
+  --
+  * title : VARCHAR(255)
+  * description : TEXT
+  * status : VARCHAR(50)
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+  --
+  * creator_id : BIGINT
+}
+
+entity "categories" {
+  * id : BIGINT
+  --
+  * name : VARCHAR(100)
+  * description : TEXT
+}
+
+entity "tech_stacks" {
+  * id : BIGINT
+  --
+  * name : VARCHAR(100)
+  * description : TEXT
+  * icon_url : VARCHAR(500)
+}
+
+entity "collaborators" {
+  * id : BIGINT
+  --
+  * project_id : BIGINT
+  * user_id : BIGINT
+  * role : VARCHAR(50)
+  * joined_at : TIMESTAMP
+}
+
+entity "sub_goals" {
+  * id : BIGINT
+  --
+  * project_id : BIGINT
+  * title : VARCHAR(255)
+  * description : TEXT
+  * completed : BOOLEAN
+  * deadline : TIMESTAMP
+}
+
+entity "documents" {
+  * id : BIGINT
+  --
+  * project_id : BIGINT
+  * title : VARCHAR(255)
+  * content : TEXT
+  * created_at : TIMESTAMP
+  * updated_at : TIMESTAMP
+}
+
+entity "project_categories" {
+  * id : BIGINT
+  --
+  * project_id : BIGINT
+  * category_id : BIGINT
+}
+
+entity "project_tech_stacks" {
+  * id : BIGINT
+  --
+  * project_id : BIGINT
+  * tech_stack_id : BIGINT
+}
+
+' Relationships
+projects ||--o{ collaborators : has
+projects ||--o{ sub_goals : contains
+projects ||--o{ documents : contains
+projects }o--o{ categories : belongs_to
+projects }o--o{ tech_stacks : uses
+
+project_categories }o--|| projects : references
+project_categories }o--|| categories : references
+project_tech_stacks }o--|| projects : references
+project_tech_stacks }o--|| tech_stacks : references
+
+@enduml

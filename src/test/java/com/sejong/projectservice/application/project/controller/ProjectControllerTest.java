@@ -66,7 +66,7 @@ class ProjectControllerTest {
         //given
         ProjectFormRequest projectFormRequest = createProjectFormRequest("테스트제목");
         ProjectAddResponse response = createProjectAddResponse("테스트제목");
-        when(projectService.createProject(projectFormRequest,1L)).thenReturn(response);
+//        when(projectService.createProject(projectFormRequest,1L)).thenReturn(response);
 
         //when && then
         mockMvc.perform(post("/api/project")

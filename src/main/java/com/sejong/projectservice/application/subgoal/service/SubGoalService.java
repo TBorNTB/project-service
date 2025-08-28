@@ -23,7 +23,7 @@ public class SubGoalService {
     @Transactional
     public SubGoalCheckResponse updateCheck(String userName, Long projectId , Long subGoalId) {
         Project project = projectRepository.findOne(projectId);
-        project.ensureCollaboratorExists(userName);
+//        project.ensureCollaboratorExists(userName);
         SubGoal subGoal = subGoalRepository.findOne(subGoalId);
         subGoal.check();
         SubGoal updatedSubGoal = subGoalRepository.update(subGoal);
@@ -33,7 +33,7 @@ public class SubGoalService {
     @Transactional
     public SubGoalResponse create(String userName, Long projectId, String content) {
         Project project = projectRepository.findOne(projectId);
-        project.ensureCollaboratorExists(userName);
+//        project.ensureCollaboratorExists(userName);
         SubGoal subGoal = SubGoal.from(content, false, LocalDateTime.now(), LocalDateTime.now());
         SubGoal savedSubGoal = subGoalRepository.save(projectId, subGoal);
         return SubGoalResponse.from(savedSubGoal);
@@ -42,7 +42,7 @@ public class SubGoalService {
     @Transactional
     public SubGoalDeleteResponse remove(String userName, Long projectId, Long subGoalId) {
         Project project = projectRepository.findOne(projectId);
-        project.ensureCollaboratorExists(userName);
+//        project.ensureCollaboratorExists(userName);
         subGoalRepository.delete(subGoalId);
         return SubGoalDeleteResponse.of(subGoalId);
     }

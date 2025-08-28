@@ -32,6 +32,20 @@ spring:
           default_batch_fetch_size: 100
         order_inserts: true
         order_updates: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    properties:
+      acks: all
+      enable.idempotence: true
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      # JsonSerializer가 타입 정보를 헤더에 넣지 않게(호환성↑)
+      properties:
+        spring.json.add.type.headers: false
+      retries: 10
+      linger-ms: 20       # 소량 배치
+      batch-size: 32768
 
   thymeleaf:
     enabled: false
@@ -95,3 +109,7 @@ resilience4j:
 logging:
   level:
     org.elasticsearch.client: TRACE
+
+app:
+  kafka:
+    topic: project-events

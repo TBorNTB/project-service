@@ -1,0 +1,135 @@
+@startuml project-class
+!theme plain
+skinparam backgroundColor #FFFFFF
+skinparam classAttributeIconSize 0
+
+package "Core Domain" {
+  class Project {
+    -Long id
+    -String title
+    -String description
+    -ProjectStatus status
+    -LocalDateTime createdAt
+    -LocalDateTime updatedAt
+    -List<SubGoal> subGoals
+    -List<Collaborator> collaborators
+    -List<TechStack> techStacks
+    -List<Category> categories
+    +createProject()
+    +updateProject()
+    +deleteProject()
+    +addCollaborator()
+    +removeCollaborator()
+  }
+  
+  class SubGoal {
+    -Long id
+    -String title
+    -String description
+    -boolean completed
+    -LocalDateTime deadline
+    +complete()
+    +updateDeadline()
+  }
+  
+  class Collaborator {
+    -Long id
+    -Long userId
+    -String role
+    -LocalDateTime joinedAt
+    +changeRole()
+    +leaveProject()
+  }
+  
+  class TechStack {
+    -Long id
+    -String name
+    -String description
+    -String iconUrl
+  }
+  
+  class Category {
+    -Long id
+    -String name
+    -String description
+  }
+  
+  enum ProjectStatus {
+    PLANNING
+    IN_PROGRESS
+    COMPLETED
+    ON_HOLD
+    CANCELLED
+  }
+}
+
+package "Infrastructure" {
+  class ProjectEntity {
+    -Long id
+    -String title
+    -String description
+    -String status
+    -LocalDateTime createdAt
+    -LocalDateTime updatedAt
+  }
+  
+  class ProjectElastic {
+    -String id
+    -String title
+    -String description
+    -String status
+    -List<String> techStacks
+    -List<String> categories
+  }
+  
+  class ProjectRepository {
+    +save(Project)
+    +findById(Long)
+    +findAll()
+    +delete(Project)
+  }
+  
+  class ProjectElasticRepository {
+    +save(ProjectDoc)
+    +findByTitle(String)
+    +searchByTechStack(String)
+    +searchByCategory(String)
+  }
+}
+
+package "Application" {
+  class ProjectService {
+    -ProjectRepository projectRepository
+    -ProjectElasticRepository elasticRepository
+    +createProject(ProjectFormRequest)
+    +updateProject(Long, ProjectUpdateRequest)
+    +deleteProject(Long)
+    +getProject(Long)
+    +searchProjects(PageSearchCommand)
+  }
+  
+  class ProjectController {
+    -ProjectService projectService
+    +POST /projects
+    +PUT /projects/{id}
+    +DELETE /projects/{id}
+    +GET /projects/{id}
+    +GET /projects/search
+  }
+}
+
+' Relationships
+Project ||--o{ SubGoal
+Project ||--o{ Collaborator
+Project ||--o{ TechStack
+Project ||--o{ Category
+Project }o--|| ProjectStatus
+
+ProjectEntity ||--o{ Project
+ProjectElastic ||--o{ Project
+
+ProjectService --> ProjectRepository
+ProjectService --> ProjectElasticRepository
+ProjectController --> ProjectService
+
+@enduml
