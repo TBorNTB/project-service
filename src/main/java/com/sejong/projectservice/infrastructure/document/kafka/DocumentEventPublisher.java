@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class DocumentEventPublisher {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
-    private final String topic = "document-events";
+    private final String DOCUMENT_EVENTS = "document-events";
 
     public void publishCreated(Document document){
         publish(document, Type.CREATED);
@@ -29,12 +29,12 @@ public class DocumentEventPublisher {
 
     public void publishDeleted(String documentId) {
         DocumentIndexEvent event = DocumentIndexEvent.deleteOf(documentId, Type.DELETED, System.currentTimeMillis());
-        kafkaTemplate.send(topic, documentId,  toJsonString(event));
+        kafkaTemplate.send(DOCUMENT_EVENTS, documentId,  toJsonString(event));
     }
 
     private void publish(Document document, Type type) {
         DocumentIndexEvent event = DocumentIndexEvent.of(document, type, System.currentTimeMillis());
-        kafkaTemplate.send(topic, event.getAggregatedId(), toJsonString(event));
+        kafkaTemplate.send(DOCUMENT_EVENTS, event.getAggregatedId(), toJsonString(event));
     }
 
     private String toJsonString(Object object) {

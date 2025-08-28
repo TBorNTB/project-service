@@ -39,7 +39,7 @@ spring:
       enable.idempotence: true
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
       # JsonSerializer가 타입 정보를 헤더에 넣지 않게(호환성↑)
       properties:
         spring.json.add.type.headers: false

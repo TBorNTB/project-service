@@ -19,7 +19,7 @@ public class CollaboratorService {
 
     @Transactional
     public List<Collaborator> updateProject(String userId, Long projectId, List<String> collaboratorNames) {
-        userExternalService.validateExistence(collaboratorNames);
+//        userExternalService.validateExistence(collaboratorNames);
 
         Project project = projectRepository.findOne(projectId);
         project.validateOwner(userId);

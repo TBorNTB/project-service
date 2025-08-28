@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class ProjectEventPublisher {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
-    private final String topic = "project-events";
+    private final String PROJECT_EVENTS = "project-events";
 
     public void publishCreated(Project project){
         publish(project, Type.CREATED);
@@ -26,12 +26,12 @@ public class ProjectEventPublisher {
 
     public void publishDeleted(String projectId) {
         ProjectIndexEvent event = ProjectIndexEvent.deleteOf(projectId, Type.DELETED, System.currentTimeMillis());
-        kafkaTemplate.send(topic, projectId,  toJsonString(event));
+        kafkaTemplate.send(PROJECT_EVENTS, projectId,  toJsonString(event));
     }
 
     private void publish(Project project, Type type) {
         ProjectIndexEvent event = ProjectIndexEvent.of(project, type, System.currentTimeMillis());
-        kafkaTemplate.send(topic, event.getAggregatedId(), toJsonString(event));
+        kafkaTemplate.send(PROJECT_EVENTS, event.getAggregatedId(), toJsonString(event));
     }
 
     private String toJsonString(Object object) {
