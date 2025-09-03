@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 public class ProjectFormRequest {
 
     private String title;
-    private LocalDateTime createdAt;
     private String description;
     private String thumbnail;
 
