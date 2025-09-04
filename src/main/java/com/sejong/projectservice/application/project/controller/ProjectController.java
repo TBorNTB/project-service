@@ -56,10 +56,11 @@ public class ProjectController {
     @PutMapping("/{projectId}")
     @Operation(summary = "프로젝트 기본 정보 수정")
     public ResponseEntity<ProjectUpdateResponse> updateProject(
+            @RequestHeader("X-User-Id") String username,
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody ProjectUpdateRequest projectUpdateRequest
     ) {
-        ProjectUpdateResponse response = projectService.update(projectId, projectUpdateRequest);
+        ProjectUpdateResponse response = projectService.update(projectId, projectUpdateRequest, username);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
@@ -99,10 +100,10 @@ public class ProjectController {
     @DeleteMapping("/{projectId}")
     @Operation(summary = "프로젝트 삭제")
     public ResponseEntity<ProjectDeleteResponse> deleteProject(
-            @RequestHeader("X-User-Nickname") String userNickname,
+            @RequestHeader("X-User-Id") String username,
             @PathVariable Long projectId
     ) {
-        ProjectDeleteResponse response = projectService.removeProject(userNickname, projectId);
+        ProjectDeleteResponse response = projectService.removeProject(username, projectId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }

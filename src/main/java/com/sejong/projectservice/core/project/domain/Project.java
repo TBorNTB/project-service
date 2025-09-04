@@ -26,7 +26,7 @@ public class Project {
     private LocalDateTime createdAt;
 
     private Long id;
-    private String userNickname;
+    private String username;
     private List<Collaborator> collaborators = new ArrayList<>();
 
     private String title;
@@ -52,12 +52,20 @@ public class Project {
         documents.add(doc);
     }
 
-    public void validateOwner(String userNickname) {
-        if(!this.userNickname.equals(userNickname)){
-            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
+    public void validateUserPermission(String username){
+        if(this.username.equals(username))return;
+
+        boolean exists = ensureCollaboratorExists(username);
+        if(exists==false){
+            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 수정 권한이 없습니다.");
         }
     }
 
+    public void validateOwner(String username) {
+        if(!this.username.equals(username)){
+            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
+        }
+    }
 
     public void updateCollaborator(List<String> collaboratorNames) {
         List<Collaborator> collaboratorList = collaboratorNames.stream()
@@ -68,16 +76,12 @@ public class Project {
         this.collaborators.clear();
         this.collaborators.addAll(collaboratorList);
     }
-    public void ensureCollaboratorExists(String userName){
+    public boolean ensureCollaboratorExists(String userName){
         boolean exists = collaborators.stream()
                 .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
 
-        if(exists==false){
-            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트내에 collaborator가 아닙니다.");
-        }
-
+        return exists;
     }
-
 
     public void checkSubGoal(Long subGoalId) {
         SubGoal selectedSubGaol = subGoals.stream()

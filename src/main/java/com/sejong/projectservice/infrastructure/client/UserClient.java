@@ -1,7 +1,7 @@
 package com.sejong.projectservice.infrastructure.client;
 
-
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -21,4 +21,7 @@ public interface UserClient {
     @GetMapping("/{username}/exists/multiple")
     ResponseEntity<Boolean> exists(@PathVariable("username") String username,
                                    @RequestParam("collaboratorUsernames") List<String> collaboratorUsernames);
+
+    @GetMapping("/all")
+    ResponseEntity<Map<String, String>> getAllUsernames(@RequestParam("usernames") List<String> usernames);
 }

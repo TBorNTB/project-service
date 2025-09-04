@@ -19,7 +19,6 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,7 +41,7 @@ public class ProjectEntity {
     private String title;
     private String description;
 
-    private String userNickname;
+    private String username;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(50)")
@@ -72,7 +71,7 @@ public class ProjectEntity {
         return ProjectEntity.builder()
                 .title(project.getTitle())
                 .description(project.getDescription())
-                .userNickname(project.getUserNickname())
+                .username(project.getUsername())
                 .projectStatus(project.getProjectStatus())
                 .thumbnailUrl(project.getThumbnailUrl())
                 .createdAt(project.getCreatedAt())
@@ -153,7 +152,7 @@ public class ProjectEntity {
         return Project.builder()
                 .id(this.id)
                 .title(this.title)
-                .userNickname(this.userNickname)
+                .username(this.username)
                 .description(this.description)
                 .projectStatus(this.projectStatus)
                 .thumbnailUrl(this.thumbnailUrl)
@@ -166,5 +165,4 @@ public class ProjectEntity {
                 .documents(documentList)
                 .build();
     }
-
 }
