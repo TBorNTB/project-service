@@ -24,9 +24,9 @@ public class TechStackService {
         return TechStackRes.from(savedTechstack);
     }
 
-    private static void validateAdminRole(String userRole) {
-        if(!userRole.equals("ADMIN")) {
-            throw new ApiException(ErrorCode.BAD_REQUEST,"어드민 전용 권한입니다.");
+    private void validateAdminRole(String userRole) {
+        if (!userRole.equals("ADMIN")) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "어드민 전용 권한입니다.");
         }
     }
 
