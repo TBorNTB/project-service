@@ -30,9 +30,9 @@ public class ProjectController {
     @PostMapping()
     @Operation(summary = "프로젝트 생성")
     public ResponseEntity<ProjectAddResponse> createProject(
-            @RequestHeader("X-User-Nickname") String userNickname,
+            @RequestHeader("X-User-Id") String username,
             @RequestBody ProjectFormRequest projectFormRequest) {
-        ProjectAddResponse response = projectService.createProject(projectFormRequest, userNickname);
+        ProjectAddResponse response = projectService.createProject(projectFormRequest, username);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);

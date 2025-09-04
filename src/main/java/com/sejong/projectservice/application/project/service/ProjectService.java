@@ -24,9 +24,9 @@ public class ProjectService {
     private final ProjectEventPublisher projectEventPublisher;
 
     @Transactional
-    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String userNickname) {
-//        userExternalService.validateExistence(projectFormRequest.getCollaborators());
-        Project project = Assembler.toProject(projectFormRequest, userNickname);
+    public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
+        userExternalService.validateExistence(username, projectFormRequest.getCollaborators());
+        Project project = Assembler.toProject(projectFormRequest, username);
         Project savedProject = projectRepository.save(project);
         projectEventPublisher.publishCreated(savedProject);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
@@ -70,7 +70,7 @@ public class ProjectService {
         project.validateOwner(userNickname);
         projectRepository.deleteById(projectId);
         projectEventPublisher.publishDeleted(projectId.toString());
-        return ProjectDeleteResponse.of(project.getTitle(),"삭제 완료");
+        return ProjectDeleteResponse.of(project.getTitle(), "삭제 완료");
     }
 
 
