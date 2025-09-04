@@ -13,7 +13,7 @@ import java.time.temporal.ChronoUnit;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class DocumentDocument {
+public class DocumentEvent {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
@@ -28,8 +28,8 @@ public class DocumentDocument {
     private String createdAt;
     private String updatedAt;
 
-    public static DocumentDocument from(Document document){
-        return DocumentDocument.builder()
+    public static DocumentEvent from(Document document){
+        return DocumentEvent.builder()
                 .id(document.getId().toString())
                 .yorkieDocumentId(document.getYorkieDocumentId())
                 .title(document.getTitle())

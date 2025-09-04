@@ -19,7 +19,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProjectDocument {
+public class ProjectEvent {
 
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
@@ -41,7 +41,7 @@ public class ProjectDocument {
 
     private List<String> collaborators = new ArrayList<>();
 
-    public static ProjectDocument from(Project project){
+    public static ProjectEvent from(Project project){
 
         List<String> categoryNames = project.getCategories().stream()
                 .map(Category::getName)
@@ -58,7 +58,7 @@ public class ProjectDocument {
                 .distinct()
                 .toList();
 
-        return ProjectDocument.builder()
+        return ProjectEvent.builder()
                 .id(project.getId().toString())
                 .title(project.getTitle())
                 .description(project.getDescription())

@@ -15,15 +15,15 @@ public class ProjectIndexEvent {
     private String aggregatedId;
     private Type type;
     private long occurredAt;
-    private ProjectDocument projectDocument;
+    private ProjectEvent projectEvent;
 
     public static ProjectIndexEvent of(Project project,Type type, long occurredAt) {
-        ProjectDocument document = ProjectDocument.from(project);
+        ProjectEvent document = ProjectEvent.from(project);
         return ProjectIndexEvent.builder()
                 .aggregatedId(document.getId())
                 .type(type)
                 .occurredAt(occurredAt)
-                .projectDocument(document)
+                .projectEvent(document)
                 .build();
     }
 
