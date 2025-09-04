@@ -21,10 +21,10 @@ public class CategoryController {
     @PostMapping("")
     @Operation(summary = "카테고리 저장")
     public ResponseEntity<CategoryResponse> addCategory(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryAddRequest categoryAddRequest
     ) {
-        CategoryResponse response = categoryService.create(userId, categoryAddRequest.getName());
+        CategoryResponse response = categoryService.create(userRole, categoryAddRequest.getName());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
