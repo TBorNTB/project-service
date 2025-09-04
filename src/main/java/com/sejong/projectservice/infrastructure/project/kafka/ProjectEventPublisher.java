@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 public class ProjectEventPublisher {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
-    private final String PROJECT_EVENTS = "aws.project.cdc.events.0";
+    private final String PROJECT_EVENTS = "project";
 
     public void publishCreated(Project project){
         publish(project, Type.CREATED);
