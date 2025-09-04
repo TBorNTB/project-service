@@ -20,11 +20,11 @@ public class DocumentController {
     @PostMapping("/{projectId}")
     @Operation(summary = "다큐먼트 생성")
     public ResponseEntity<DocumentInfoRes> createDocumentInProject(
+            @RequestHeader("X-User-Id") String username,
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody DocumentCreateReq request
     ) {
-        // Todo: member 권한 검증
-        DocumentInfoRes response = documentService.createDocument(projectId, request);
+        DocumentInfoRes response = documentService.createDocument(projectId, request, username);
         return ResponseEntity
                 .status(201)
                 .body(response);
@@ -42,21 +42,22 @@ public class DocumentController {
     @PutMapping("/{documentId}")
     @Operation(summary = "다큐먼트 수정")
     public ResponseEntity<DocumentInfoRes> updateDocument(
+            @RequestHeader("X-User-Id") String username,
             @PathVariable(name = "documentId") Long documentId,
             @RequestBody DocumentUpdateReq request
     ) {
-        // Todo: member 권한 검증
-        DocumentInfoRes documentInfoRes = documentService.updateDocument(documentId, request);
+        DocumentInfoRes documentInfoRes = documentService.updateDocument(documentId, request, username);
         return ResponseEntity.ok(documentInfoRes);
     }
 
     @DeleteMapping("/{documentId}")
     @Operation(summary = "다큐먼트 삭제")
     public ResponseEntity<Void> deleteDocument(
+            @RequestHeader("X-User-Id") String username,
             @PathVariable(name = "documentId") Long documentId
     ) {
-        // Todo: member 권한 검증
-        documentService.deleteDocument(documentId);
+
+        documentService.deleteDocument(documentId, username);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

@@ -57,7 +57,7 @@ public class Project {
 
         boolean exists = ensureCollaboratorExists(username);
         if(exists==false){
-            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 수정 권한이 없습니다.");
+            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 접근 권한이 없습니다.");
         }
     }
 
