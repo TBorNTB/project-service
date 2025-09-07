@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
+import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -20,10 +21,12 @@ public class ProjectPageResponse {
     Long totalElements;
     int page;
 
-    public static ProjectPageResponse from(Page<Project> projectPage) {
+    public static ProjectPageResponse from(Page<Project> projectPage, Map<String , String> usernames) {
 
         List<ProjectSimpleInfo> projectSimpleInfos = projectPage.stream()
-                .map(ProjectSimpleInfo::from)
+                .map(project->{
+                    return ProjectSimpleInfo.from(project, usernames);
+                })
                 .toList();
 
         return ProjectPageResponse.builder()

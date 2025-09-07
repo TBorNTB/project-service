@@ -106,6 +106,7 @@ resilience4j:
     instances:
       myFeignClient:
         timeoutDuration: 3s
+
 logging:
   level:
     org.elasticsearch.client: TRACE
