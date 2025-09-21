@@ -18,7 +18,7 @@ public class CollaboratorController {
     private final CollaboratorService collaboratorService;
 
     @PutMapping("/{projectId}")
-    @Operation(summary = "협력자들 수정")
+    @Operation(summary = "협력자들 수정 ")
     public ResponseEntity<List<Collaborator>> updateCollaborator(
             @RequestHeader("x-user") String userId,
             @RequestBody List<String> collaboratorNames,
