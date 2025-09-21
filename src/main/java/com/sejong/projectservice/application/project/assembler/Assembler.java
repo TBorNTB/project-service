@@ -50,7 +50,7 @@ public class Assembler {
                 .description(request.getDescription())
                 .categories(categories)
                 .projectStatus(request.getProjectStatus())
-                .createdAt(request.getCreatedAt())
+                .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .thumbnailUrl(request.getThumbnail())
                 .techStacks(techStacks)

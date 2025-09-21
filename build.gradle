@@ -71,6 +71,11 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'net.datafaker:datafaker:2.0.2'
 
+    //kafka
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'com.fasterxml.jackson.core:jackson-databind'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+
     testRuntimeOnly 'com.h2database:h2'
 }
 

@@ -49,7 +49,8 @@ public class DocumentRepositoryImpl implements DocumentRepository {
 
     @Override
     public void delete(Document document) {
-        DocumentEntity documentEntity = DocumentEntity.from(document);
+        DocumentEntity documentEntity = documentJpaRepository.findById(document.getId())
+                .orElseThrow(() -> new RuntimeException("Document not found"));
         ProjectEntity projectEntity = documentEntity.getProjectEntity();
         projectEntity.removeDocument(documentEntity);
         documentJpaRepository.delete(documentEntity);
