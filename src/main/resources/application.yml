@@ -33,7 +33,7 @@ spring:
         order_inserts: true
         order_updates: true
   kafka:
-    bootstrap-servers: localhost:9092
+    bootstrap-servers: ${EC2_HOST_INFRA}:9092
     properties:
       acks: all
       enable.idempotence: true
@@ -58,7 +58,7 @@ spring:
         enabled: false
 
   elasticsearch:
-    uris: http://localhost:9200
+    uris: http://${EC2_HOST_INFRA}:9200
     connection-timeout: 5s
     socket-timeout: 30s
   data:
