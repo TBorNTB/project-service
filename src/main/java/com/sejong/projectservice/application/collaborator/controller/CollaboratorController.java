@@ -20,12 +20,12 @@ public class CollaboratorController {
     @PutMapping("/{projectId}")
     @Operation(summary = "협력자들 수정 ")
     public ResponseEntity<List<Collaborator>> updateCollaborator(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("X-User-Id") String username,
             @RequestBody List<String> collaboratorNames,
             @PathVariable(name = "projectId") Long projectId
 
     ) {
-        List<Collaborator> response = collaboratorService.updateProject(userId, projectId, collaboratorNames);
+        List<Collaborator> response = collaboratorService.updateProject(username, projectId, collaboratorNames);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }

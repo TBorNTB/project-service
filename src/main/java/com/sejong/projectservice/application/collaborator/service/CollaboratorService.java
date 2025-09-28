@@ -18,11 +18,11 @@ public class CollaboratorService {
     private final UserExternalService userExternalService;
 
     @Transactional
-    public List<Collaborator> updateProject(String userId, Long projectId, List<String> collaboratorNames) {
-//        userExternalService.validateExistence(collaboratorNames);
+    public List<Collaborator> updateProject(String username, Long projectId, List<String> collaboratorNames) {
+        userExternalService.validateExistence(username,collaboratorNames);
 
         Project project = projectRepository.findOne(projectId);
-        project.validateOwner(userId);
+        project.validateUserPermission(username);
         project.updateCollaborator(collaboratorNames);
         Project updatedProject = projectRepository.updateCollaborator(project);
         return updatedProject.getCollaborators();
