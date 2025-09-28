@@ -7,14 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,10 +19,11 @@ public class TechStackController {
     @PostMapping()
     @Operation(summary = "테크스택 생성")
     public ResponseEntity<TechStackRes> createTechStack(
+            @RequestHeader("X-User-Role") String userRole,
             @RequestBody TechStackCreateReq techstackCreateReq
     ) {
         // TODO: 권한 검증
-        TechStackRes response = techstackService.createTechStack(techstackCreateReq);
+        TechStackRes response = techstackService.createTechStack(techstackCreateReq,userRole);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
@@ -47,21 +41,23 @@ public class TechStackController {
     @PutMapping("/{techStackId}")
     @Operation(summary = " 테크스택 수정")
     public ResponseEntity<TechStackRes> updateTechStack(
+            @RequestHeader("X-User-Role") String userRole,
             @PathVariable(name = "techStackId") Long techStackId,
             @RequestBody TechStackCreateReq techstackCreateReq
     ) {
         // TODO: 권한 검증
-        TechStackRes response = techstackService.updateTechStack(techStackId, techstackCreateReq);
+        TechStackRes response = techstackService.updateTechStack(techStackId, techstackCreateReq,userRole);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{techStackId}")
     @Operation(summary = "테크스택 삭제")
     public ResponseEntity<Void> deleteTechStack(
+            @RequestHeader("X-User-Role") String userRole,
             @PathVariable(name = "techStackId") Long techStackId
     ) {
         // TODO: 권한 검증
-        techstackService.deleteTechStack(techStackId);
+        techstackService.deleteTechStack(techStackId,userRole);
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

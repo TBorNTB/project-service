@@ -46,7 +46,7 @@ public class Assembler {
 
         return Project.builder()
                 .title(request.getTitle())
-                .userNickname(userNickname)
+                .username(userNickname)
                 .description(request.getDescription())
                 .categories(categories)
                 .projectStatus(request.getProjectStatus())
