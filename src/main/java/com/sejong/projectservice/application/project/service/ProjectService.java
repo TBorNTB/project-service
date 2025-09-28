@@ -25,7 +25,7 @@ public class ProjectService {
 
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String userNickname) {
-//        userExternalService.validateExistence(projectFormRequest.getCollaborators());
+        userExternalService.validateExistence(projectFormRequest.getCollaborators());
         Project project = Assembler.toProject(projectFormRequest, userNickname);
         Project savedProject = projectRepository.save(project);
         projectEventPublisher.publishCreated(savedProject);
