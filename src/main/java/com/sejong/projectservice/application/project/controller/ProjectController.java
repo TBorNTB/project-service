@@ -101,9 +101,10 @@ public class ProjectController {
     @Operation(summary = "프로젝트 삭제")
     public ResponseEntity<ProjectDeleteResponse> deleteProject(
             @RequestHeader("X-User-Id") String username,
+            @RequestHeader("X-User-Role") String userRole,
             @PathVariable Long projectId
     ) {
-        ProjectDeleteResponse response = projectService.removeProject(username, projectId);
+        ProjectDeleteResponse response = projectService.removeProject(username, projectId,userRole);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }

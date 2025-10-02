@@ -37,7 +37,7 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest,String username) {
+    public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest, String username) {
         Project project = projectRepository.findOne(projectId);
         project.validateUserPermission(username);
 
@@ -50,9 +50,9 @@ public class ProjectService {
     }
 
     @Transactional
-    public ProjectDeleteResponse removeProject(String username, Long projectId) {
+    public ProjectDeleteResponse removeProject(String username, Long projectId, String userRole) {
         Project project = projectRepository.findOne(projectId);
-        project.validateOwner(username);
+        project.validateOwner(username, userRole);
         projectRepository.deleteById(projectId);
         projectEventPublisher.publishDeleted(projectId.toString());
         return ProjectDeleteResponse.of(project.getTitle(), "삭제 완료");
@@ -64,24 +64,24 @@ public class ProjectService {
         Page<Project> projectPage = projectRepository.findAll(pageable);
         List<String> usernames = ProjectUsernamesExtractor.extract(projectPage.getContent());
 
-        Map<String,String> usernamesMap = userExternalService.getAllUsernames(usernames);
-        return ProjectPageResponse.from(projectPage,usernamesMap);
+        Map<String, String> usernamesMap = userExternalService.getAllUsernames(usernames);
+        return ProjectPageResponse.from(projectPage, usernamesMap);
     }
 
     @Transactional(readOnly = true)
     public ProjectPageResponse search(String keyword, ProjectStatus status, Pageable pageable) {
         Page<Project> projectPage = projectRepository.searchWithFilters(keyword, status, pageable);
         List<String> usernames = ProjectUsernamesExtractor.extract(projectPage.getContent());
-        Map<String,String> usernamesMap = userExternalService.getAllUsernames(usernames);
-        return ProjectPageResponse.from(projectPage,usernamesMap);
+        Map<String, String> usernamesMap = userExternalService.getAllUsernames(usernames);
+        return ProjectPageResponse.from(projectPage, usernamesMap);
     }
 
     @Transactional(readOnly = true)
     public ProjectSpecifyInfo findOne(Long projectId) {
         Project project = projectRepository.findOne(projectId);
         List<String> usernames = ProjectUsernamesExtractor.extract(project);
-        Map<String,String> usernamesMap = userExternalService.getAllUsernames(usernames);
-        return ProjectSpecifyInfo.from(project,usernamesMap);
+        Map<String, String> usernamesMap = userExternalService.getAllUsernames(usernames);
+        return ProjectSpecifyInfo.from(project, usernamesMap);
     }
 
     @Transactional(readOnly = true)

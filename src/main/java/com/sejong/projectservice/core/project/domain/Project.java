@@ -8,9 +8,11 @@ import com.sejong.projectservice.core.document.domain.Document;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.subgoal.SubGoal;
 import com.sejong.projectservice.core.techstack.TechStack;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -52,18 +54,18 @@ public class Project {
         documents.add(doc);
     }
 
-    public void validateUserPermission(String username){
-        if(this.username.equals(username))return;
+    public void validateUserPermission(String username) {
+        if (this.username.equals(username)) return;
 
         boolean exists = ensureCollaboratorExists(username);
-        if(exists==false){
-            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 접근 권한이 없습니다.");
+        if (exists == false) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "해당 유저는 프로젝트 접근 권한이 없습니다.");
         }
     }
 
-    public void validateOwner(String username) {
-        if(!this.username.equals(username)){
-            throw new ApiException(ErrorCode.BAD_REQUEST,"해당 유저는 프로젝트 Owner가 아닙니다.");
+    public void validateOwner(String username, String userRole) {
+        if (!this.username.equals(username) || !userRole.equalsIgnoreCase("ADMIN")) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "해당 유저는 프로젝트 Owner가 아닙니다.");
         }
     }
 
@@ -76,7 +78,8 @@ public class Project {
         this.collaborators.clear();
         this.collaborators.addAll(collaboratorList);
     }
-    public boolean ensureCollaboratorExists(String userName){
+
+    public boolean ensureCollaboratorExists(String userName) {
         boolean exists = collaborators.stream()
                 .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
 
