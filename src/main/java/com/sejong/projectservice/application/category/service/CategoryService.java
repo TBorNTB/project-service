@@ -50,9 +50,9 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryAllResponse updateProject( String userName,Long projectId, List<String> categoryNames) {
+    public CategoryAllResponse updateProject( String username,Long projectId, List<String> categoryNames) {
         Project project = projectRepository.findOne(projectId);
-        project.validateUserPermission(userName);
+        project.validateUserPermission(username);
         project.updateCategory(categoryNames);
 
         Project updatedProject = projectRepository.update(project);

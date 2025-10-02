@@ -31,20 +31,20 @@ public class CategoryController {
     @PutMapping("")
     @Operation(summary = "카테고리 수정")
     public ResponseEntity<CategoryResponse> updateCategory(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryUpdateRequest categoryUpdateRequest
     ) {
-        CategoryResponse response = categoryService.update(userId, categoryUpdateRequest.getPrevName(),categoryUpdateRequest.getNextName());
+        CategoryResponse response = categoryService.update(userRole, categoryUpdateRequest.getPrevName(),categoryUpdateRequest.getNextName());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("")
     @Operation(summary = "카테고리 삭제")
     public ResponseEntity<CategoryResponse> deleteCategory(
-            @RequestHeader("x-user") String userId,
+            @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryDeleteRequest categoryDeleteRequest
     ) {
-        CategoryResponse response = categoryService.remove(userId, categoryDeleteRequest.getName());
+        CategoryResponse response = categoryService.remove(userRole, categoryDeleteRequest.getName());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -58,11 +58,11 @@ public class CategoryController {
     @PutMapping("/{postId}")
     @Operation(summary = "프로젝트의 카테고리 수정")
     public ResponseEntity<CategoryAllResponse> updateProjectCategory(
-            @RequestHeader("x-user-name") String userName,
+            @RequestHeader("X-User-Id") String username,
             @PathVariable(name="postId") Long projectId,
             @RequestParam List<String> categoryNames
     ) {
-        CategoryAllResponse response = categoryService.updateProject(userName, projectId, categoryNames);
+        CategoryAllResponse response = categoryService.updateProject(username, projectId, categoryNames);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
