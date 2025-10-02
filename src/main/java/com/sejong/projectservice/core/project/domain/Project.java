@@ -64,7 +64,7 @@ public class Project {
     }
 
     public void validateOwner(String username, String userRole) {
-        if (!this.username.equals(username) || !userRole.equalsIgnoreCase("ADMIN")) {
+        if (!this.username.equals(username) && !userRole.equalsIgnoreCase("ADMIN")) {
             throw new ApiException(ErrorCode.BAD_REQUEST, "해당 유저는 프로젝트 Owner가 아닙니다.");
         }
     }

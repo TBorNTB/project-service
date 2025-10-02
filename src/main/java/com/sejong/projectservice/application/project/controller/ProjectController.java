@@ -104,7 +104,7 @@ public class ProjectController {
             @RequestHeader("X-User-Role") String userRole,
             @PathVariable Long projectId
     ) {
-        ProjectDeleteResponse response = projectService.removeProject(username, projectId,userRole);
+        ProjectDeleteResponse response = projectService.removeProject(username, projectId, userRole);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }
