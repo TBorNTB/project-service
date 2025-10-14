@@ -54,4 +54,22 @@ public class CategoryRepositoryImpl implements CategoryRepository {
                 .map(CategoryEntity::toDomain)
                 .toList();
     }
+
+    @Override
+    public Category updateDescription(Category category) {
+        CategoryEntity categoryEntity = jpaRepository.findById(category.getId())
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 이름은 카테고리 목록에 없습니다."));
+
+        categoryEntity.updateDescription(category.getDescription());
+        CategoryEntity updatedCategoryEntity = jpaRepository.save(categoryEntity);
+        return updatedCategoryEntity.toDomain();
+    }
+
+    @Override
+    public Category findOne(Long categoryId) {
+        CategoryEntity categoryEntity = jpaRepository.findById(categoryId)
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 이름은 카테고리 목록에 없습니다."));
+        return categoryEntity.toDomain();
+    }
+
 }

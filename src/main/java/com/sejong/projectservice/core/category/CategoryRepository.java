@@ -12,4 +12,8 @@ public interface CategoryRepository {
     Category delete(String name);
 
     List<Category> findAll();
+
+    Category updateDescription(Category category);
+
+    Category findOne(Long categoryId);
 }

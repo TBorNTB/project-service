@@ -64,4 +64,13 @@ public class CategoryService {
             throw new ApiException(ErrorCode.BAD_REQUEST,"관리자만 가능합니다.");
         }
     }
+
+    @Transactional
+    public CategoryResponse updateDescription(String userRole, Long categoryId,String description) {
+       Category category = categoryRepository.findOne(categoryId);
+       category.updateDescription(description);
+       Category updatedCategory = categoryRepository.updateDescription(category);
+       return CategoryResponse.updateFrom(category);
+
+    }
 }

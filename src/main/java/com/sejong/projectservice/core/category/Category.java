@@ -14,6 +14,7 @@ public class Category {
 
     private Long id;
     private String name;
+    private String description;
 
     public static Category of(String name) {
         return Category.builder()
@@ -41,5 +42,9 @@ public class Category {
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
     }
 }

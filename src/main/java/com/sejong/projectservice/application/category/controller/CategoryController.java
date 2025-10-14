@@ -28,6 +28,17 @@ public class CategoryController {
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PatchMapping("/description/{categoryId}")
+    @Operation(summary = "카테고리 관련 설명 추가")
+    public ResponseEntity<CategoryResponse> updateCategoryDescription(
+            @RequestHeader("X-User-Role") String userRole,
+            @PathVariable(name="categoryId") Long categoryId,
+            @RequestBody @Valid CategoryDescriptionRequest categoryDescriptionRequest
+    ){
+        CategoryResponse response = categoryService.updateDescription(userRole, categoryId,categoryDescriptionRequest.getDescription());
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
     @PutMapping("")
     @Operation(summary = "카테고리 수정")
     public ResponseEntity<CategoryResponse> updateCategory(

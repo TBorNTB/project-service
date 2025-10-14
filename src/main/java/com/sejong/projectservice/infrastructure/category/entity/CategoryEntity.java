@@ -32,6 +32,8 @@ public class CategoryEntity {
 
     private String name;
 
+    private String description;
+
     @OneToMany(mappedBy = "categoryEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
 
@@ -47,6 +49,7 @@ public class CategoryEntity {
         return CategoryEntity.builder()
                 .id(null)
                 .name(category.getName())
+                .description(category.getDescription())
                 .build();
     }
 
@@ -54,6 +57,7 @@ public class CategoryEntity {
         return Category.builder()
                 .id(this.getId())
                 .name(this.getName())
+                .description(this.getDescription())
                 .build();
     }
 
@@ -63,5 +67,9 @@ public class CategoryEntity {
 
     public void updateName(String nextName) {
         this.name = nextName;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
     }
 }
