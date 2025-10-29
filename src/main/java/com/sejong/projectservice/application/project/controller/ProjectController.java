@@ -95,8 +95,7 @@ public class ProjectController {
         ProjectPageResponse response = projectService.search(keyword, status, pageable);
         return ResponseEntity.ok(response);
     }
-
-    //todo 특정 사용자만 삭제할 수 있는 로직이 필요
+    
     @DeleteMapping("/{projectId}")
     @Operation(summary = "프로젝트 삭제")
     public ResponseEntity<ProjectDeleteResponse> deleteProject(

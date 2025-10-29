@@ -1,6 +1,7 @@
 package com.sejong.projectservice.application.project.service;
 
 import com.sejong.projectservice.application.internal.UserExternalService;
+import com.sejong.projectservice.application.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
@@ -82,6 +83,17 @@ public class ProjectService {
         List<String> usernames = ProjectUsernamesExtractor.extract(project);
         Map<String, String> usernamesMap = userExternalService.getAllUsernames(usernames);
         return ProjectSpecifyInfo.from(project, usernamesMap);
+    }
+
+    @Transactional(readOnly = true)
+    public PostLikeCheckResponse checkPost(Long postId) {
+        boolean exists = projectRepository.existsById(postId);
+        if(exists){
+            Project project = projectRepository.findOne(postId);
+            return PostLikeCheckResponse.hasOf(project, true);
+        }
+
+        return PostLikeCheckResponse.hasNotOf();
     }
 
     @Transactional(readOnly = true)
