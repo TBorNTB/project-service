@@ -81,4 +81,7 @@ jobs:
               -e DB_PASSWORD="${{ secrets.DB_PASSWORD }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e EUREKA_DEFAULTZONE="${{ secrets.EUREKA_DEFAULTZONE }}" \
+              -e S3_SECRET_KEY="${{ secrets.S3_SECRET_KEY }}" \
+              -e S3_BUCKET="${{ secrets.S3_BUCKET }}" \
+              -e S3_ACCESS_KEY="${{ secrets.S3_ACCESS_KEY }}" \
               869508798906.dkr.ecr.ap-northeast-2.amazonaws.com/${{ secrets.REPOSITORY_NAME }}:${{ secrets.IMAGE_NAME }}
