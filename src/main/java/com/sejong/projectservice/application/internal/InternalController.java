@@ -1,5 +1,6 @@
 package com.sejong.projectservice.application.internal;
 
+import com.sejong.projectservice.application.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.application.internal.response.ProjectResponse;
 import com.sejong.projectservice.application.project.service.ProjectService;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,9 @@ public class InternalController {
     private final ProjectService projectService;
 
     @GetMapping("/check/{postId}")
-    public ResponseEntity<Boolean> checkProject(@PathVariable Long postId) {
-        boolean exists = projectService.exists(postId);
-        return ResponseEntity.ok(exists);
+    public ResponseEntity<PostLikeCheckResponse> checkProject(@PathVariable Long postId) {
+        PostLikeCheckResponse response =  projectService.checkPost(postId);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/favorite-post")

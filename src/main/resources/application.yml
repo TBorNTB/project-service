@@ -51,6 +51,15 @@ spring:
     enabled: false
 
   cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: ${S3_ACCESS_KEY}
+        secret-key: ${S3_SECRET_KEY}
+      stack:
+        auto: false
+
     discovery:
       enabled: true
     loadbalancer:
@@ -114,3 +123,8 @@ logging:
 app:
   kafka:
     topic: project-events
+
+aws:
+  s3:
+    bucket: ${S3_BUCKET}
+    region: ap-northeast-2
