@@ -24,4 +24,5 @@ public interface ProjectRepository {
 
     Project update(Project project);
 
+    Long getProjectCount();
 }

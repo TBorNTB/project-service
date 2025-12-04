@@ -107,4 +107,9 @@ public class ProjectRepositoryImpl implements ProjectRepository {
         return projectEntity.toDomain();
     }
 
+    @Override
+    public Long getProjectCount() {
+        return projectJpaRepository.getProjectCount();
+    }
+
 }

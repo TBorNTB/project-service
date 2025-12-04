@@ -27,4 +27,10 @@ public class InternalController {
         ProjectResponse response = new ProjectResponse(1L);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/count")
+    public ResponseEntity<Long> getProjectCount() {
+        Long count = projectService.getProjectCount();
+        return ResponseEntity.ok(count);
+    }
 }

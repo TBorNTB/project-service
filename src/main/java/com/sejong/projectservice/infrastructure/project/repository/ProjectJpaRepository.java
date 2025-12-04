@@ -18,4 +18,6 @@ public interface ProjectJpaRepository extends JpaRepository<ProjectEntity, Long>
                                           Pageable pageable);
 
 
+    @Query("select count(pe) from ProjectEntity pe")
+    Long getProjectCount();
 }

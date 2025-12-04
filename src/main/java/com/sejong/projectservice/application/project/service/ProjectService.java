@@ -100,4 +100,10 @@ public class ProjectService {
     public boolean exists(Long postId) {
         return projectRepository.existsById(postId);
     }
+
+    @Transactional(readOnly = true)
+    public Long getProjectCount() {
+        Long count = projectRepository.getProjectCount();
+        return count;
+    }
 }
