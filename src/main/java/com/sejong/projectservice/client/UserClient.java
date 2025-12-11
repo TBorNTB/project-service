@@ -1,8 +1,8 @@
-package com.sejong.projectservice.infrastructure.client;
+package com.sejong.projectservice.client;
 
+import com.sejong.projectservice.client.dto.UserNameInfo;
 import java.util.List;
 import java.util.Map;
-
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,6 +22,6 @@ public interface UserClient {
     ResponseEntity<Boolean> exists(@PathVariable("username") String username,
                                    @RequestParam("collaboratorUsernames") List<String> collaboratorUsernames);
 
-    @GetMapping("/all")
-    ResponseEntity<Map<String, String>> getAllUsernames(@RequestParam("usernames") List<String> usernames);
+    @GetMapping("/un-info")
+    ResponseEntity<Map<String, UserNameInfo>> getUserNameInfos(@RequestParam("usernames") List<String> usernames);
 }

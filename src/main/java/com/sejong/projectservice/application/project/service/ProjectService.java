@@ -1,24 +1,27 @@
 package com.sejong.projectservice.application.project.service;
 
-import com.sejong.projectservice.application.internal.UserExternalService;
 import com.sejong.projectservice.application.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
-import com.sejong.projectservice.application.project.dto.response.*;
+import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
+import com.sejong.projectservice.application.project.dto.response.ProjectDeleteResponse;
+import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
+import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
+import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
+import com.sejong.projectservice.client.UserExternalService;
+import com.sejong.projectservice.client.dto.UserNameInfo;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
 import com.sejong.projectservice.infrastructure.project.kafka.ProjectEventPublisher;
+import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -31,7 +34,9 @@ public class ProjectService {
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
         userExternalService.validateExistence(username, projectFormRequest.getCollaborators());
-        Project project = Assembler.toProject(projectFormRequest, username);
+        Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(List.of(username));
+        Project project = Assembler.
+                toProject(projectFormRequest, username, userNameInfos.get(username));
         Project savedProject = projectRepository.save(project);
         projectEventPublisher.publishCreated(savedProject);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
@@ -65,7 +70,7 @@ public class ProjectService {
         Page<Project> projectPage = projectRepository.findAll(pageable);
         List<String> usernames = ProjectUsernamesExtractor.extract(projectPage.getContent());
 
-        Map<String, String> usernamesMap = userExternalService.getAllUsernames(usernames);
+        Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
         return ProjectPageResponse.from(projectPage, usernamesMap);
     }
 
@@ -73,7 +78,8 @@ public class ProjectService {
     public ProjectPageResponse search(String keyword, ProjectStatus status, Pageable pageable) {
         Page<Project> projectPage = projectRepository.searchWithFilters(keyword, status, pageable);
         List<String> usernames = ProjectUsernamesExtractor.extract(projectPage.getContent());
-        Map<String, String> usernamesMap = userExternalService.getAllUsernames(usernames);
+
+        Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
         return ProjectPageResponse.from(projectPage, usernamesMap);
     }
 
@@ -81,14 +87,15 @@ public class ProjectService {
     public ProjectSpecifyInfo findOne(Long projectId) {
         Project project = projectRepository.findOne(projectId);
         List<String> usernames = ProjectUsernamesExtractor.extract(project);
-        Map<String, String> usernamesMap = userExternalService.getAllUsernames(usernames);
+
+        Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
         return ProjectSpecifyInfo.from(project, usernamesMap);
     }
 
     @Transactional(readOnly = true)
     public PostLikeCheckResponse checkPost(Long postId) {
         boolean exists = projectRepository.existsById(postId);
-        if(exists){
+        if (exists) {
             Project project = projectRepository.findOne(postId);
             return PostLikeCheckResponse.hasOf(project, true);
         }

@@ -1,14 +1,14 @@
 package com.sejong.projectservice.application.project.dto.response;
 
+import com.sejong.projectservice.client.dto.UserNameInfo;
 import com.sejong.projectservice.core.project.domain.Project;
+import java.util.List;
+import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.domain.Page;
-
-import java.util.List;
-import java.util.Map;
 
 @Data
 @AllArgsConstructor
@@ -21,11 +21,11 @@ public class ProjectPageResponse {
     Long totalElements;
     int page;
 
-    public static ProjectPageResponse from(Page<Project> projectPage, Map<String , String> usernames) {
+    public static ProjectPageResponse from(Page<Project> projectPage, Map<String, UserNameInfo> userNameInfos) {
 
         List<ProjectSimpleInfo> projectSimpleInfos = projectPage.stream()
-                .map(project->{
-                    return ProjectSimpleInfo.from(project, usernames);
+                .map(project -> {
+                    return ProjectSimpleInfo.from(project, userNameInfos);
                 })
                 .toList();
 

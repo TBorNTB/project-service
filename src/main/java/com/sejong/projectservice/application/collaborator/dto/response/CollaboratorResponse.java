@@ -10,15 +10,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class CollaboratorResponse {
+
     private Long id;
     private String username;
     private String nickname;
+    private String realname;
 
-    public static CollaboratorResponse of(Long id, String username, String nickname) {
+    public static CollaboratorResponse of(Long id, String username, String nickname, String realName) {
         return CollaboratorResponse.builder()
                 .id(id)
                 .username(username)
                 .nickname(nickname)
+                .realname(realName)
                 .build();
     }
 }
