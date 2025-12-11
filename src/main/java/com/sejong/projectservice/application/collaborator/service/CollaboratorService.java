@@ -1,15 +1,13 @@
 package com.sejong.projectservice.application.collaborator.service;
 
-import com.sejong.projectservice.application.internal.UserExternalService;
+import com.sejong.projectservice.client.UserExternalService;
 import com.sejong.projectservice.core.collaborator.domain.Collaborator;
-import com.sejong.projectservice.core.collaborator.repository.CollaboratorRepository;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +17,7 @@ public class CollaboratorService {
 
     @Transactional
     public List<Collaborator> updateProject(String username, Long projectId, List<String> collaboratorNames) {
-        userExternalService.validateExistence(username,collaboratorNames);
+        userExternalService.validateExistence(username, collaboratorNames);
 
         Project project = projectRepository.findOne(projectId);
         project.validateUserPermission(username);

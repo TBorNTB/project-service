@@ -1,15 +1,13 @@
-package com.sejong.projectservice.application.internal;
+package com.sejong.projectservice.client;
 
 import static com.sejong.projectservice.application.common.error.code.ErrorCode.INVALID_USERS_NICKNAME;
 
 import com.sejong.projectservice.application.common.error.code.ErrorCode;
 import com.sejong.projectservice.application.common.error.exception.ApiException;
-import com.sejong.projectservice.infrastructure.client.UserClient;
+import com.sejong.projectservice.client.dto.UserNameInfo;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-
 import java.util.List;
 import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -48,7 +46,8 @@ public class UserExternalService {
     }
 
     private void validateExistenceFallback(String username, List<String> collaboratorUsernames, Throwable t) {
-        log.info("fallback method is called. userName: {}, collaboratorUserCount : {}", username, collaboratorUsernames.size());
+        log.info("fallback method is called. userName: {}, collaboratorUserCount : {}", username,
+                collaboratorUsernames.size());
         if (t instanceof ApiException) {
             throw (ApiException) t;
         }
@@ -56,17 +55,17 @@ public class UserExternalService {
         throw new ApiException(ErrorCode.EXTERNAL_SERVER_ERROR, "잠시 서비스 이용이 불가합니다.");
     }
 
-    @CircuitBreaker(name = "user-circuit-breaker", fallbackMethod = "getAllUsernamesFallback")
-    public Map<String, String> getAllUsernames(List<String> usernames) {
-        ResponseEntity<Map<String, String>> response = userClient.getAllUsernames(usernames);
+    @CircuitBreaker(name = "user-circuit-breaker", fallbackMethod = "getUserNameInfosFallback")
+    public Map<String, UserNameInfo> getUserNameInfos(List<String> usernames) {
+        ResponseEntity<Map<String, UserNameInfo>> response = userClient.getUserNameInfos(usernames);
         if (response.getBody() == null) {
             throw new ApiException(ErrorCode.EXTERNAL_SERVER_ERROR);
         }
         return response.getBody();
     }
 
-    private void getAllUsernamesFallback(List<String> usernames, Throwable t) {
-        log.info("getAllUsernamesFallback 작동");
+    private void getUserNameInfosFallback(List<String> usernames, Throwable t) {
+        log.info("getUserNameInfosFallback 작동");
         if (t instanceof ApiException) {
             throw (ApiException) t;
         }
