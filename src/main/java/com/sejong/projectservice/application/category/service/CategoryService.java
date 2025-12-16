@@ -8,18 +8,18 @@ import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.category.CategoryRepository;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
-import jakarta.validation.constraints.NotBlank;
+import com.sejong.projectservice.infrastructure.category.repository.CategoryJpaRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final CategoryJpaRepository categoryJpaRepository;
     private final ProjectRepository projectRepository;
 
     @Transactional
@@ -50,7 +50,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryAllResponse updateProject( String username,Long projectId, List<String> categoryNames) {
+    public CategoryAllResponse updateProject(String username, Long projectId, List<String> categoryNames) {
         Project project = projectRepository.findOne(projectId);
         project.validateUserPermission(username);
         project.updateCategory(categoryNames);
@@ -60,17 +60,21 @@ public class CategoryService {
     }
 
     private void validateAdminRole(String userRole) {
-        if(!userRole.equals("ADMIN")){
-            throw new ApiException(ErrorCode.BAD_REQUEST,"관리자만 가능합니다.");
+        if (!userRole.equals("ADMIN")) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "관리자만 가능합니다.");
         }
     }
 
     @Transactional
-    public CategoryResponse updateDescription(String userRole, Long categoryId,String description) {
-       Category category = categoryRepository.findOne(categoryId);
-       category.updateDescription(description);
-       Category updatedCategory = categoryRepository.updateDescription(category);
-       return CategoryResponse.updateFrom(category);
+    public CategoryResponse updateDescription(String userRole, Long categoryId, String description) {
+        Category category = categoryRepository.findOne(categoryId);
+        category.updateDescription(description);
+        Category updatedCategory = categoryRepository.updateDescription(category);
+        return CategoryResponse.updateFrom(category);
+    }
 
+    @Transactional(readOnly = true)
+    public Long getCategoryCount() {
+        return categoryJpaRepository.count();
     }
 }
