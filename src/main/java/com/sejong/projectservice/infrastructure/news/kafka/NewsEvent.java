@@ -1,14 +1,15 @@
-package com.sejong.archiveservice.infrastructure.news.kafka;
+package com.sejong.projectservice.infrastructure.news.kafka;
 
-import com.sejong.archiveservice.core.news.Content;
-import com.sejong.archiveservice.core.news.News;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
+import com.sejong.projectservice.core.news.Content;
+import com.sejong.projectservice.core.news.News;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor

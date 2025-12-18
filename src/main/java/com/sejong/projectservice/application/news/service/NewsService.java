@@ -1,32 +1,36 @@
-package com.sejong.archiveservice.application.news.service;
+package com.sejong.projectservice.application.news.service;
 
-import com.sejong.archiveservice.application.internal.UserExternalService;
-import com.sejong.archiveservice.application.internal.response.PostLikeCheckResponse;
-import com.sejong.archiveservice.application.news.assembler.NewsAssembler;
-import com.sejong.archiveservice.application.news.dto.NewsReqDto;
-import com.sejong.archiveservice.application.news.dto.NewsResDto;
-import com.sejong.archiveservice.application.pagination.CursorPageReqDto;
-import com.sejong.archiveservice.application.pagination.OffsetPageReqDto;
-import com.sejong.archiveservice.client.dto.UserNameInfo;
-import com.sejong.archiveservice.core.common.extractor.ExtractorUsername;
-import com.sejong.archiveservice.core.common.pagination.CursorPageRequest;
-import com.sejong.archiveservice.core.common.pagination.CursorPageResponse;
-import com.sejong.archiveservice.core.common.pagination.CustomPageRequest;
-import com.sejong.archiveservice.core.common.pagination.OffsetPageResponse;
-import com.sejong.archiveservice.core.news.News;
-import com.sejong.archiveservice.core.news.NewsRepository;
-import com.sejong.archiveservice.core.user.UserId;
-import com.sejong.archiveservice.core.user.UserIds;
-import com.sejong.archiveservice.infrastructure.news.kafka.NewsEventPublisher;
-import java.util.List;
-import java.util.Map;
+
+import com.sejong.projectservice.application.news.assembler.NewsAssembler;
+import com.sejong.projectservice.application.news.dto.NewsReqDto;
+import com.sejong.projectservice.application.news.dto.NewsResDto;
+import com.sejong.projectservice.application.pagination.CursorPageReqDto;
+import com.sejong.projectservice.application.pagination.OffsetPageReqDto;
+import com.sejong.projectservice.client.UserExternalService;
+import com.sejong.projectservice.client.response.PostLikeCheckResponse;
+import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.core.common.extractor.ExtractorUsername;
+import com.sejong.projectservice.core.common.pagination.CursorPageRequest;
+import com.sejong.projectservice.core.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.core.common.pagination.CustomPageRequest;
+import com.sejong.projectservice.core.common.pagination.OffsetPageResponse;
+import com.sejong.projectservice.core.news.News;
+import com.sejong.projectservice.core.news.NewsRepository;
+import com.sejong.projectservice.core.user.UserId;
+import com.sejong.projectservice.core.user.UserIds;
+import com.sejong.projectservice.infrastructure.news.kafka.NewsEventPublisher;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class NewsService {
 
     private final NewsRepository newsRepository;
@@ -96,7 +100,7 @@ public class NewsService {
         CursorPageRequest pageRequest = cursorPageReqDto.toPageRequest();
         CursorPageResponse<List<News>> newsPage = newsRepository.findAllWithCursor(pageRequest);
 
-        List<NewsResDto> dtoList = newsPage.getData().stream()
+        List<NewsResDto> dtoList = newsPage.getContent().stream()
                 .map(this::resolveUsernames)
                 .toList();
 
@@ -115,7 +119,11 @@ public class NewsService {
 
     private NewsResDto resolveUsernames(News news) {
         List<String> usernames = ExtractorUsername.FromNewses(news);
-        Map<String, UserNameInfo> usernamesMap = userExternalService.getAllUsernames(usernames);
+        log.info("usernames.size() {}",usernames.size());
+        for(int i=0;i<usernames.size();i++){
+            log.info("username.get({}) : {}",i,usernames.get(i));
+        }
+        Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
         return NewsResDto.from(news, usernamesMap);
     }
 

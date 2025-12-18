@@ -1,8 +1,10 @@
-package com.sejong.archiveservice.application.news.dto;
+package com.sejong.projectservice.application.news.dto;
 
-import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -11,11 +13,10 @@ public class NewsReqDto {
     String summary;
     String content;
     String category;
+
+    @Schema(hidden = true)
     String writerUsername;
     List<String> participantIds;
     List<String> tags;
 
-    public void setWriter(String username) {
-        writerUsername = username;
-    }
 }

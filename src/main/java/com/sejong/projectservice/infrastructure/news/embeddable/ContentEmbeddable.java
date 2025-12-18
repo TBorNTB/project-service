@@ -1,7 +1,8 @@
-package com.sejong.archiveservice.infrastructure.news.embeddable;
+package com.sejong.projectservice.infrastructure.news.embeddable;
 
-import com.sejong.archiveservice.core.news.Content;
-import com.sejong.archiveservice.core.news.NewsCategory;
+
+import com.sejong.projectservice.core.news.Content;
+import com.sejong.projectservice.core.news.NewsCategory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

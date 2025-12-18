@@ -1,17 +1,14 @@
-package com.sejong.archiveservice.core.news;
+package com.sejong.projectservice.core.news;
 
-import com.sejong.archiveservice.application.exception.BaseException;
-import com.sejong.archiveservice.application.exception.ExceptionType;
-import com.sejong.archiveservice.core.common.file.Filepath;
-import com.sejong.archiveservice.core.user.UserId;
-import com.sejong.archiveservice.core.user.UserIds;
+import com.sejong.projectservice.application.exception.BaseException;
+import com.sejong.projectservice.application.exception.ExceptionType;
+import com.sejong.projectservice.core.common.file.Filepath;
+import com.sejong.projectservice.core.user.UserId;
+import com.sejong.projectservice.core.user.UserIds;
+import lombok.*;
+
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 @EqualsAndHashCode

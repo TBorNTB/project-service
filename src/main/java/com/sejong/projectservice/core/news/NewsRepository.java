@@ -1,11 +1,11 @@
-package com.sejong.archiveservice.core.news;
+package com.sejong.projectservice.core.news;
 
-import com.sejong.archiveservice.core.common.pagination.CursorPageRequest;
-import com.sejong.archiveservice.core.common.pagination.CursorPageResponse;
-import com.sejong.archiveservice.core.common.pagination.CustomPageRequest;
-import com.sejong.archiveservice.core.common.pagination.OffsetPageResponse;
+import com.sejong.projectservice.core.common.pagination.CursorPageRequest;
+import com.sejong.projectservice.core.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.core.common.pagination.CustomPageRequest;
+import com.sejong.projectservice.core.common.pagination.OffsetPageResponse;
+
 import java.util.List;
-
 
 public interface NewsRepository {
 

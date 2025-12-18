@@ -1,15 +1,16 @@
-package com.sejong.archiveservice.infrastructure.news.kafka;
+package com.sejong.projectservice.infrastructure.news.kafka;
 
-import static com.sejong.archiveservice.infrastructure.common.Type.CREATED;
-import static com.sejong.archiveservice.infrastructure.common.Type.UPDATED;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sejong.archiveservice.core.news.News;
-import com.sejong.archiveservice.infrastructure.common.Type;
+import com.sejong.projectservice.core.news.News;
+import com.sejong.projectservice.infrastructure.project.kafka.enums.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import static com.sejong.projectservice.infrastructure.project.kafka.enums.Type.*;
+
 
 @Service
 @RequiredArgsConstructor
@@ -27,7 +28,7 @@ public class NewsEventPublisher {
     }
 
     public void publishDeleted(Long newsId) {
-        NewsIndexEvent event = NewsIndexEvent.deleteOf(newsId.toString(), Type.DELETED, System.currentTimeMillis());
+        NewsIndexEvent event = NewsIndexEvent.deleteOf(newsId.toString(), DELETED, System.currentTimeMillis());
         kafkaTemplate.send(NEWS_EVENTS, newsId.toString(),  toJsonString(event));
     }
 

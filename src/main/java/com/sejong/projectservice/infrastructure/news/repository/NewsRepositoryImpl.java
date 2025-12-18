@@ -1,22 +1,25 @@
-package com.sejong.archiveservice.infrastructure.news.repository;
+package com.sejong.projectservice.infrastructure.news.repository;
 
-import com.sejong.archiveservice.application.exception.BaseException;
-import com.sejong.archiveservice.application.exception.ExceptionType;
-import com.sejong.archiveservice.core.common.pagination.CursorPageRequest;
-import com.sejong.archiveservice.core.common.pagination.CursorPageResponse;
-import com.sejong.archiveservice.core.common.pagination.CustomPageRequest;
-import com.sejong.archiveservice.core.common.pagination.OffsetPageResponse;
-import com.sejong.archiveservice.core.news.News;
-import com.sejong.archiveservice.core.news.NewsRepository;
-import com.sejong.archiveservice.infrastructure.news.entity.NewsEntity;
-import com.sejong.archiveservice.infrastructure.news.mapper.NewsMapper;
-import java.util.List;
+
+import com.sejong.projectservice.application.exception.BaseException;
+import com.sejong.projectservice.application.exception.ExceptionType;
+import com.sejong.projectservice.core.common.pagination.CursorPageRequest;
+import com.sejong.projectservice.core.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.core.common.pagination.CustomPageRequest;
+import com.sejong.projectservice.core.common.pagination.OffsetPageResponse;
+import com.sejong.projectservice.core.common.pagination.enums.SortDirection;
+import com.sejong.projectservice.core.news.News;
+import com.sejong.projectservice.core.news.NewsRepository;
+import com.sejong.projectservice.infrastructure.news.entity.NewsEntity;
+import com.sejong.projectservice.infrastructure.news.mapper.NewsMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
@@ -58,7 +61,7 @@ public class NewsRepositoryImpl implements NewsRepository {
     public OffsetPageResponse<List<News>> findAllWithOffset(CustomPageRequest customPageRequest) {
         Pageable pageable = PageRequest.of(customPageRequest.getPage(),
                 customPageRequest.getSize(),
-                Direction.valueOf(customPageRequest.getDirection().name()),
+                Sort.Direction.valueOf(customPageRequest.getDirection().name()),
                 customPageRequest.getSortBy());
 
         Page<NewsEntity> archiveEntities = archiveJpaRepository.findAll(pageable);
@@ -100,7 +103,7 @@ public class NewsRepositoryImpl implements NewsRepository {
     }
 
     private List<NewsEntity> getCursorBasedEntities(CursorPageRequest request, Pageable pageable) {
-        boolean isDesc = request.getDirection() == CursorPageRequest.SortDirection.DESC;
+        boolean isDesc = request.getDirection() == SortDirection.DESC;
 
         if (request.getCursor() == null) {
             // 첫 페이지
@@ -110,8 +113,8 @@ public class NewsRepositoryImpl implements NewsRepository {
         } else {
             // 커서 기반 페이지
             return isDesc ?
-                    archiveJpaRepository.findByCursorDesc(request.getCursor(), pageable) :
-                    archiveJpaRepository.findByCursorAsc(request.getCursor(), pageable);
+                    archiveJpaRepository.findByCursorDesc(request.getCursor().getProjectId(), pageable) :
+                    archiveJpaRepository.findByCursorAsc(request.getCursor().getProjectId(), pageable);
         }
     }
 }

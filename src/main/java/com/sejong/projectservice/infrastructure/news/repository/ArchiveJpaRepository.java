@@ -1,12 +1,14 @@
-package com.sejong.archiveservice.infrastructure.news.repository;
+package com.sejong.projectservice.infrastructure.news.repository;
 
-import com.sejong.archiveservice.infrastructure.news.entity.NewsEntity;
-import feign.Param;
-import java.util.List;
+
+import com.sejong.projectservice.infrastructure.news.entity.NewsEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+import java.util.List;
 
 public interface ArchiveJpaRepository extends JpaRepository<NewsEntity, Long> {
     boolean existsById(Long archiveId);

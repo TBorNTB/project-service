@@ -1,6 +1,6 @@
-package com.sejong.archiveservice.infrastructure.news.converter;
+package com.sejong.projectservice.infrastructure.news.converter;
 
-import com.sejong.archiveservice.core.common.file.Filepaths;
+import com.sejong.projectservice.core.common.file.Filepaths;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 

@@ -1,7 +1,8 @@
-package com.sejong.archiveservice.application.news.dto;
+package com.sejong.projectservice.application.news.dto;
 
-import com.sejong.archiveservice.client.dto.UserNameInfo;
-import com.sejong.archiveservice.core.news.News;
+import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.core.news.News;
+
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;

@@ -1,12 +1,14 @@
-package com.sejong.archiveservice.infrastructure.news.mapper;
+package com.sejong.projectservice.infrastructure.news.mapper;
 
-import com.sejong.archiveservice.core.common.file.Filepath;
-import com.sejong.archiveservice.core.news.Content;
-import com.sejong.archiveservice.core.news.News;
-import com.sejong.archiveservice.core.user.UserId;
-import com.sejong.archiveservice.core.user.UserIds;
-import com.sejong.archiveservice.infrastructure.news.embeddable.ContentEmbeddable;
-import com.sejong.archiveservice.infrastructure.news.entity.NewsEntity;
+
+import com.sejong.projectservice.core.common.file.Filepath;
+import com.sejong.projectservice.core.news.Content;
+import com.sejong.projectservice.core.news.News;
+import com.sejong.projectservice.core.user.UserId;
+import com.sejong.projectservice.core.user.UserIds;
+import com.sejong.projectservice.infrastructure.news.embeddable.ContentEmbeddable;
+import com.sejong.projectservice.infrastructure.news.entity.NewsEntity;
+
 import java.util.Arrays;
 import java.util.List;
 

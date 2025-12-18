@@ -1,17 +1,13 @@
-package com.sejong.archiveservice.infrastructure.news.entity;
+package com.sejong.projectservice.infrastructure.news.entity;
 
-import com.sejong.archiveservice.infrastructure.news.embeddable.ContentEmbeddable;
-import jakarta.persistence.Column;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+
+import com.sejong.projectservice.infrastructure.news.embeddable.ContentEmbeddable;
+import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "news")

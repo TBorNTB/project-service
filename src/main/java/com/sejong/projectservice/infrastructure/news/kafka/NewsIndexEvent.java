@@ -1,7 +1,8 @@
-package com.sejong.archiveservice.infrastructure.news.kafka;
+package com.sejong.projectservice.infrastructure.news.kafka;
 
-import com.sejong.archiveservice.core.news.News;
-import com.sejong.archiveservice.infrastructure.common.Type;
+
+import com.sejong.projectservice.core.news.News;
+import com.sejong.projectservice.infrastructure.project.kafka.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

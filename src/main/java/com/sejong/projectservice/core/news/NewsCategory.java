@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.core.news;
+package com.sejong.projectservice.core.news;
 
 import java.util.Arrays;
 

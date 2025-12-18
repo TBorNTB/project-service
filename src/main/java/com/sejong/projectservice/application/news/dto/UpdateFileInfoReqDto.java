@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.application.news.dto;
+package com.sejong.projectservice.application.news.dto;
 
 public record UpdateFileInfoReqDto(
         String thumbnailPath

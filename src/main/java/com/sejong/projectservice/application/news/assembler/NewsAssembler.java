@@ -1,11 +1,12 @@
-package com.sejong.archiveservice.application.news.assembler;
+package com.sejong.projectservice.application.news.assembler;
 
-import com.sejong.archiveservice.application.news.dto.NewsReqDto;
-import com.sejong.archiveservice.core.news.Content;
-import com.sejong.archiveservice.core.news.News;
-import com.sejong.archiveservice.core.news.NewsCategory;
-import com.sejong.archiveservice.core.user.UserId;
-import com.sejong.archiveservice.core.user.UserIds;
+
+import com.sejong.projectservice.application.news.dto.NewsReqDto;
+import com.sejong.projectservice.core.news.Content;
+import com.sejong.projectservice.core.news.News;
+import com.sejong.projectservice.core.news.NewsCategory;
+import com.sejong.projectservice.core.user.UserId;
+import com.sejong.projectservice.core.user.UserIds;
 import lombok.experimental.UtilityClass;
 
 @UtilityClass
