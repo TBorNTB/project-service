@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.infrastructure.common;
+package com.sejong.projectservice.infrastructure.common;
 
 public enum Type {
     CREATED,
