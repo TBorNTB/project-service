@@ -1,7 +1,7 @@
 package com.sejong.projectservice.application.project.dto.response;
 
 import com.sejong.projectservice.application.collaborator.dto.response.CollaboratorResponse;
-import com.sejong.projectservice.client.dto.UserNameInfo;
+import com.sejong.projectservice.client.response.UserNameInfo;
 import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;

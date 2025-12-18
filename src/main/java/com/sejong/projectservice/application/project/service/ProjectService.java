@@ -1,6 +1,5 @@
 package com.sejong.projectservice.application.project.service;
 
-import com.sejong.projectservice.application.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.application.project.assembler.Assembler;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
@@ -10,7 +9,8 @@ import com.sejong.projectservice.application.project.dto.response.ProjectPageRes
 import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.client.UserExternalService;
-import com.sejong.projectservice.client.dto.UserNameInfo;
+import com.sejong.projectservice.client.response.PostLikeCheckResponse;
+import com.sejong.projectservice.client.response.UserNameInfo;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import com.sejong.projectservice.core.project.domain.Project;
 import com.sejong.projectservice.core.project.repository.ProjectRepository;
@@ -97,7 +97,7 @@ public class ProjectService {
         boolean exists = projectRepository.existsById(postId);
         if (exists) {
             Project project = projectRepository.findOne(postId);
-            return PostLikeCheckResponse.hasOf(project, true);
+            return PostLikeCheckResponse.hasOfProject(project, true);
         }
 
         return PostLikeCheckResponse.hasNotOf();

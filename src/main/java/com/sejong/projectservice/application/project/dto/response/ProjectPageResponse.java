@@ -1,6 +1,6 @@
 package com.sejong.projectservice.application.project.dto.response;
 
-import com.sejong.projectservice.client.dto.UserNameInfo;
+import com.sejong.projectservice.client.response.UserNameInfo;
 import com.sejong.projectservice.core.project.domain.Project;
 import java.util.List;
 import java.util.Map;

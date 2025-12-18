@@ -6,7 +6,10 @@ import com.sejong.projectservice.application.project.dto.response.*;
 import com.sejong.projectservice.application.project.service.ProjectService;
 import com.sejong.projectservice.core.enums.ProjectStatus;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/project")
+@Slf4j
 public class ProjectController {
 
     private final ProjectService projectService;
@@ -29,9 +33,11 @@ public class ProjectController {
 
     @PostMapping()
     @Operation(summary = "프로젝트 생성")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ProjectAddResponse> createProject(
-            @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
             @RequestBody ProjectFormRequest projectFormRequest) {
+        log.info("username = {}", username);
         ProjectAddResponse response = projectService.createProject(projectFormRequest, username);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -40,6 +46,7 @@ public class ProjectController {
 
     @GetMapping()
     @Operation(summary = "프로젝트 조회 (페이지네이션)") // todo: 오프셋 기반 페이지네이션 수정
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ProjectPageResponse> getAll(
             @RequestParam(name = "size") int size,
             @RequestParam(name = "page") int page
@@ -55,8 +62,9 @@ public class ProjectController {
 
     @PutMapping("/{projectId}")
     @Operation(summary = "프로젝트 기본 정보 수정")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ProjectUpdateResponse> updateProject(
-            @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody ProjectUpdateRequest projectUpdateRequest
     ) {
@@ -95,12 +103,13 @@ public class ProjectController {
         ProjectPageResponse response = projectService.search(keyword, status, pageable);
         return ResponseEntity.ok(response);
     }
-    
+
     @DeleteMapping("/{projectId}")
     @Operation(summary = "프로젝트 삭제")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ProjectDeleteResponse> deleteProject(
-            @RequestHeader("X-User-Id") String username,
-            @RequestHeader("X-User-Role") String userRole,
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader("X-User-Role") String userRole,
             @PathVariable Long projectId
     ) {
         ProjectDeleteResponse response = projectService.removeProject(username, projectId, userRole);

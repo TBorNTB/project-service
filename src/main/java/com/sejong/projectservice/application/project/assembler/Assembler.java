@@ -2,7 +2,7 @@ package com.sejong.projectservice.application.project.assembler;
 
 import com.sejong.projectservice.application.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
-import com.sejong.projectservice.client.dto.UserNameInfo;
+import com.sejong.projectservice.client.response.UserNameInfo;
 import com.sejong.projectservice.core.category.Category;
 import com.sejong.projectservice.core.collaborator.domain.Collaborator;
 import com.sejong.projectservice.core.document.domain.Document;
