@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.application.config;
+package com.sejong.projectservice.application.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

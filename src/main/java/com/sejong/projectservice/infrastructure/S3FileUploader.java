@@ -1,10 +1,9 @@
-package com.sejong.archiveservice.infrastructure;
+package com.sejong.projectservice.infrastructure;
 
-import com.sejong.archiveservice.application.file.FileUploader;
-import com.sejong.archiveservice.application.file.PreSignedUrl;
-import com.sejong.archiveservice.core.common.file.Filepath;
-import java.time.Duration;
-import java.util.UUID;
+
+import com.sejong.projectservice.application.file.FileUploader;
+import com.sejong.projectservice.application.file.PreSignedUrl;
+import com.sejong.projectservice.core.common.file.Filepath;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,6 +14,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
+
+import java.time.Duration;
+import java.util.UUID;
 
 @Component
 @Slf4j
