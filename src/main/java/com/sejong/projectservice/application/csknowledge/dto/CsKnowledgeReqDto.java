@@ -1,6 +1,6 @@
-package com.sejong.archiveservice.application.csknowledge.dto;
+package com.sejong.projectservice.application.csknowledge.dto;
 
-import com.sejong.archiveservice.core.csknowledge.TechCategory;
+import com.sejong.projectservice.core.csknowledge.TechCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

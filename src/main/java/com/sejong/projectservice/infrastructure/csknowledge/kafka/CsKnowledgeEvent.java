@@ -1,13 +1,14 @@
-package com.sejong.archiveservice.infrastructure.csknowledge.kafka;
+package com.sejong.projectservice.infrastructure.csknowledge.kafka;
 
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.core.csknowledge.TechCategory;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 @Getter
 @AllArgsConstructor

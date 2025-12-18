@@ -1,9 +1,10 @@
-package com.sejong.archiveservice.core.csknowledge;
+package com.sejong.projectservice.core.csknowledge;
 
-import com.sejong.archiveservice.core.common.pagination.CursorPageRequest;
-import com.sejong.archiveservice.core.common.pagination.CursorPageResponse;
-import com.sejong.archiveservice.core.common.pagination.CustomPageRequest;
-import com.sejong.archiveservice.core.common.pagination.OffsetPageResponse;
+import com.sejong.projectservice.core.common.pagination.CursorPageRequest;
+import com.sejong.projectservice.core.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.core.common.pagination.CustomPageRequest;
+import com.sejong.projectservice.core.common.pagination.OffsetPageResponse;
+
 import java.util.List;
 import java.util.Optional;
 

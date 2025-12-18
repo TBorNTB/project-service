@@ -1,14 +1,15 @@
-package com.sejong.archiveservice.core.csknowledge;
+package com.sejong.projectservice.core.csknowledge;
 
-import java.time.LocalDateTime;
 
-import com.sejong.archiveservice.application.exception.BaseException;
-import com.sejong.archiveservice.application.exception.ExceptionType;
-import com.sejong.archiveservice.core.user.UserId;
+import com.sejong.projectservice.application.exception.BaseException;
+import com.sejong.projectservice.application.exception.ExceptionType;
+import com.sejong.projectservice.core.user.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Getter
 @AllArgsConstructor

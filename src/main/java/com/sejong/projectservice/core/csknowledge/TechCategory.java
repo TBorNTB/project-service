@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.core.csknowledge;
+package com.sejong.projectservice.core.csknowledge;
 
 public enum TechCategory {
     SYSTEM_HACKING,

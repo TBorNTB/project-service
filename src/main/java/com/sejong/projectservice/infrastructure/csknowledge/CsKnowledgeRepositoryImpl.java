@@ -1,18 +1,15 @@
-package com.sejong.archiveservice.infrastructure.csknowledge;
+package com.sejong.projectservice.infrastructure.csknowledge;
 
-import com.sejong.archiveservice.application.exception.BaseException;
-import com.sejong.archiveservice.application.exception.ExceptionType;
-import com.sejong.archiveservice.core.common.pagination.CursorPageRequest;
-import com.sejong.archiveservice.core.common.pagination.CursorPageResponse;
-import com.sejong.archiveservice.core.common.pagination.CustomPageRequest;
-import com.sejong.archiveservice.core.common.pagination.OffsetPageResponse;
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.core.csknowledge.CsKnowledgeRepository;
-import com.sejong.archiveservice.core.csknowledge.TechCategory;
 
-import java.util.List;
-import java.util.Optional;
-
+import com.sejong.projectservice.application.exception.BaseException;
+import com.sejong.projectservice.application.exception.ExceptionType;
+import com.sejong.projectservice.core.common.pagination.CursorPageRequest;
+import com.sejong.projectservice.core.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.core.common.pagination.CustomPageRequest;
+import com.sejong.projectservice.core.common.pagination.OffsetPageResponse;
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
+import com.sejong.projectservice.core.csknowledge.CsKnowledgeRepository;
+import com.sejong.projectservice.core.csknowledge.TechCategory;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -20,6 +17,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -99,7 +99,7 @@ public class CsKnowledgeRepositoryImpl implements CsKnowledgeRepository {
         if (cursorPageRequest.getCursor() == null) {
             entities = repository.findAll(pageable).getContent();
         } else {
-            entities = repository.findByIdGreaterThan(cursorPageRequest.getCursor(), pageable);
+            entities = repository.findByIdGreaterThan(cursorPageRequest.getCursor().getProjectId(), pageable);
         }
 
         boolean hasNext = entities.size() > cursorPageRequest.getSize();

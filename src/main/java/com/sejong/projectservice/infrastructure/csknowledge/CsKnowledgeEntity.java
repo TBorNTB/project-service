@@ -1,23 +1,16 @@
-package com.sejong.archiveservice.infrastructure.csknowledge;
+package com.sejong.projectservice.infrastructure.csknowledge;
 
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.core.csknowledge.TechCategory;
-import com.sejong.archiveservice.core.user.UserId;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Index;
-import jakarta.persistence.Lob;
-import jakarta.persistence.Table;
-import java.time.LocalDateTime;
+
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
+import com.sejong.projectservice.core.csknowledge.TechCategory;
+import com.sejong.projectservice.core.user.UserId;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(

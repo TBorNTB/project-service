@@ -1,8 +1,10 @@
-package com.sejong.archiveservice.application.csknowledge.assembler;
+package com.sejong.projectservice.application.csknowledge.assembler;
 
-import com.sejong.archiveservice.application.csknowledge.dto.CsKnowledgeReqDto;
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.core.user.UserId;
+
+
+import com.sejong.projectservice.application.csknowledge.dto.CsKnowledgeReqDto;
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
+import com.sejong.projectservice.core.user.UserId;
 
 import java.time.LocalDateTime;
 

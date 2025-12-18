@@ -1,36 +1,26 @@
-package com.sejong.archiveservice.application.csknowledge.controller;
+package com.sejong.projectservice.application.csknowledge.controller;
 
-import com.sejong.archiveservice.application.config.security.UserContext;
-import com.sejong.archiveservice.application.csknowledge.dto.CsKnowledgeReqDto;
-import com.sejong.archiveservice.application.csknowledge.dto.CsKnowledgeResDto;
-import com.sejong.archiveservice.application.csknowledge.service.CsKnowledgeService;
-import com.sejong.archiveservice.application.pagination.CursorPageReqDto;
-import com.sejong.archiveservice.application.pagination.OffsetPageReqDto;
-import com.sejong.archiveservice.core.common.pagination.CursorPageResponse;
-import com.sejong.archiveservice.core.common.pagination.OffsetPageResponse;
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.core.csknowledge.TechCategory;
+
+import com.sejong.projectservice.application.csknowledge.dto.CsKnowledgeReqDto;
+import com.sejong.projectservice.application.csknowledge.dto.CsKnowledgeResDto;
+import com.sejong.projectservice.application.csknowledge.service.CsKnowledgeService;
+import com.sejong.projectservice.application.pagination.CursorPageReqDto;
+import com.sejong.projectservice.application.pagination.OffsetPageReqDto;
+import com.sejong.projectservice.core.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.core.common.pagination.OffsetPageResponse;
+import com.sejong.projectservice.core.csknowledge.TechCategory;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-
-import java.util.List;
-import java.util.Optional;
-
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/cs-knowledge")
@@ -42,9 +32,11 @@ public class CsKnowledgeController {
     @PostMapping
     @Operation(summary = "CS 지식 생성 ")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<CsKnowledgeResDto> createCsKnowledge(@Valid @RequestBody CsKnowledgeReqDto csKnowledgeReqDto) {
-        UserContext currentUser = getCurrentUser();
-        CsKnowledgeResDto response = csKnowledgeService.createCsKnowledge(csKnowledgeReqDto, currentUser.getUsername());
+    public ResponseEntity<CsKnowledgeResDto> createCsKnowledge(
+            @Valid @RequestBody CsKnowledgeReqDto csKnowledgeReqDto,
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username
+    ) {
+        CsKnowledgeResDto response = csKnowledgeService.createCsKnowledge(csKnowledgeReqDto, username);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -53,18 +45,21 @@ public class CsKnowledgeController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<CsKnowledgeResDto> updateCsKnowledge(
             @PathVariable Long csKnowledgeId,
-            @Valid @RequestBody CsKnowledgeReqDto csKnowledgeReqDto) {
-        UserContext currentUser = getCurrentUser();
-        CsKnowledgeResDto response = csKnowledgeService.updateCsKnowledge(csKnowledgeId, csKnowledgeReqDto, currentUser.getUsername());
+            @Valid @RequestBody CsKnowledgeReqDto csKnowledgeReqDto,
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username) {
+        CsKnowledgeResDto response = csKnowledgeService.updateCsKnowledge(csKnowledgeId, csKnowledgeReqDto, username);
         return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{csKnowledgeId}")
     @Operation(summary = "CS 지식 삭제")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<Void> deleteCsKnowledge(@PathVariable Long csKnowledgeId) {
-        UserContext currentUser = getCurrentUser();
-        csKnowledgeService.deleteCsKnowledge(csKnowledgeId, currentUser.getUsername(), currentUser.getUserRole());
+    public ResponseEntity<Void> deleteCsKnowledge(
+            @PathVariable Long csKnowledgeId,
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader("X-User-Role") String userRole) {
+
+        csKnowledgeService.deleteCsKnowledge(csKnowledgeId, username, userRole);
         return ResponseEntity.noContent().build();
     }
 
@@ -114,10 +109,5 @@ public class CsKnowledgeController {
             @ParameterObject @Valid CursorPageReqDto cursorPageReqDto) {
         CursorPageResponse<List<CsKnowledgeResDto>> response = csKnowledgeService.getCursorCsKnowledge(cursorPageReqDto);
         return ResponseEntity.ok(response);
-    }
-
-    private UserContext getCurrentUser() {
-        return (UserContext) SecurityContextHolder.getContext()
-                .getAuthentication().getPrincipal();
     }
 }

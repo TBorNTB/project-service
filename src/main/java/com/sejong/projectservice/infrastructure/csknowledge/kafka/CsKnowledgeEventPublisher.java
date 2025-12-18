@@ -1,15 +1,17 @@
-package com.sejong.archiveservice.infrastructure.csknowledge.kafka;
+package com.sejong.projectservice.infrastructure.csknowledge.kafka;
 
-import static com.sejong.archiveservice.infrastructure.common.Type.CREATED;
-import static com.sejong.archiveservice.infrastructure.common.Type.UPDATED;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.infrastructure.common.Type;
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
+import com.sejong.projectservice.infrastructure.project.kafka.enums.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
+import static com.sejong.projectservice.infrastructure.project.kafka.enums.Type.CREATED;
+import static com.sejong.projectservice.infrastructure.project.kafka.enums.Type.UPDATED;
+
 
 @Service
 @RequiredArgsConstructor

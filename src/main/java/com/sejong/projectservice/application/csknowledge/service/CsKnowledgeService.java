@@ -1,28 +1,30 @@
-package com.sejong.archiveservice.application.csknowledge.service;
+package com.sejong.projectservice.application.csknowledge.service;
 
-import com.sejong.archiveservice.application.csknowledge.assembler.CsKnowledgeAssembler;
-import com.sejong.archiveservice.application.csknowledge.dto.CsKnowledgeReqDto;
-import com.sejong.archiveservice.application.csknowledge.dto.CsKnowledgeResDto;
-import com.sejong.archiveservice.application.internal.UserExternalService;
-import com.sejong.archiveservice.application.internal.response.PostLikeCheckResponse;
-import com.sejong.archiveservice.application.pagination.CursorPageReqDto;
-import com.sejong.archiveservice.application.pagination.OffsetPageReqDto;
-import com.sejong.archiveservice.client.dto.UserNameInfo;
-import com.sejong.archiveservice.core.common.extractor.ExtractorUsername;
-import com.sejong.archiveservice.core.common.pagination.CursorPageRequest;
-import com.sejong.archiveservice.core.common.pagination.CursorPageResponse;
-import com.sejong.archiveservice.core.common.pagination.CustomPageRequest;
-import com.sejong.archiveservice.core.common.pagination.OffsetPageResponse;
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.core.csknowledge.CsKnowledgeRepository;
-import com.sejong.archiveservice.core.csknowledge.TechCategory;
-import com.sejong.archiveservice.infrastructure.csknowledge.kafka.CsKnowledgeEventPublisher;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+
+import com.sejong.projectservice.application.csknowledge.assembler.CsKnowledgeAssembler;
+import com.sejong.projectservice.application.csknowledge.dto.CsKnowledgeReqDto;
+import com.sejong.projectservice.application.csknowledge.dto.CsKnowledgeResDto;
+import com.sejong.projectservice.application.pagination.CursorPageReqDto;
+import com.sejong.projectservice.application.pagination.OffsetPageReqDto;
+import com.sejong.projectservice.client.UserExternalService;
+import com.sejong.projectservice.client.response.PostLikeCheckResponse;
+import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.core.common.extractor.ExtractorUsername;
+import com.sejong.projectservice.core.common.pagination.CursorPageRequest;
+import com.sejong.projectservice.core.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.core.common.pagination.CustomPageRequest;
+import com.sejong.projectservice.core.common.pagination.OffsetPageResponse;
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
+import com.sejong.projectservice.core.csknowledge.CsKnowledgeRepository;
+import com.sejong.projectservice.core.csknowledge.TechCategory;
+import com.sejong.projectservice.infrastructure.csknowledge.kafka.CsKnowledgeEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -118,7 +120,7 @@ public class CsKnowledgeService {
         CursorPageRequest pageRequest = cursorPageReqDto.toPageRequest();
         CursorPageResponse<List<CsKnowledge>> csKnowledges = csKnowledgeRepository.findAllWithCursor(pageRequest);
 
-        List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(csKnowledges.getData());
+        List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(csKnowledges.getContent());
 
         return CursorPageResponse.ok(
                 csKnowledges.getNextCursor(),
@@ -129,13 +131,13 @@ public class CsKnowledgeService {
 
     private CsKnowledgeResDto resolveUsername(CsKnowledge csKnowledge) {
         List<String> usernames = ExtractorUsername.FromKnowledge(csKnowledge);
-        Map<String, UserNameInfo> usernamesMap = userExternalService.getAllUsernames(usernames);
+        Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
         return CsKnowledgeResDto.from(csKnowledge, usernamesMap.get(csKnowledge.getWriterId().userId()).nickname());
     }
 
     private List<CsKnowledgeResDto> resolveUsernames(List<CsKnowledge> csKnowledges) {
         List<String> usernames = ExtractorUsername.FromKnowledges(csKnowledges);
-        Map<String, UserNameInfo> usernamesMap = userExternalService.getAllUsernames(usernames);
+        Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
         return csKnowledges.stream()
                 .map(cs -> CsKnowledgeResDto.from(cs, usernamesMap.get(cs.getWriterId().userId()).nickname()))
                 .toList();

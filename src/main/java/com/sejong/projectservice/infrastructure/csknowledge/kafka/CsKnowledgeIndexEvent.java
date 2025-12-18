@@ -1,7 +1,8 @@
-package com.sejong.archiveservice.infrastructure.csknowledge.kafka;
+package com.sejong.projectservice.infrastructure.csknowledge.kafka;
 
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.infrastructure.common.Type;
+
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
+import com.sejong.projectservice.infrastructure.project.kafka.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
