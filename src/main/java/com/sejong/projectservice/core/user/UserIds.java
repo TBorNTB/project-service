@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.core.user;
+package com.sejong.projectservice.core.user;
 
 import java.util.Arrays;
 import java.util.List;
@@ -12,9 +12,17 @@ public class UserIds {
     }
 
     public static UserIds of(String ids) {
-        String[] splits = ids.split(",");
-        List<String> convertedIds = Arrays.stream(splits).toList();
-        return UserIds.of(convertedIds);
+        if (ids == null || ids.isBlank()) {
+            return new UserIds(List.of());
+        }
+
+        List<UserId> userIds = Arrays.stream(ids.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isBlank())
+                .map(UserId::of)
+                .toList();
+
+        return new UserIds(userIds);
     }
 
     public static UserIds of(List<String> ids) {

@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.core.user;
+package com.sejong.projectservice.core.user;
 
 
 import java.util.Objects;
