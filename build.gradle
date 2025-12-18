@@ -79,12 +79,16 @@ dependencies {
     // Logback과의 통합을 위한 라이브러리
     implementation 'io.github.dibog:cloudwatch-logback-appender:2.0.0'
 
+    // ★ S3Client용 HTTP 클라이언트 추가
+    implementation platform('software.amazon.awssdk:bom:2.21.46')
+    implementation 'software.amazon.awssdk:apache-client'
+
     // S3 의존성
     implementation 'io.awspring.cloud:spring-cloud-aws-starter-s3'
 
     // Spring Cloud AWS BOM - AWS 관련 라이브러리들의 버전을 통합 관리
     implementation platform('io.awspring.cloud:spring-cloud-aws-dependencies:3.1.1')
-    
+
     testRuntimeOnly 'com.h2database:h2'
 }
 

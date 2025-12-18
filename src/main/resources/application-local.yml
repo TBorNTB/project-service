@@ -102,3 +102,8 @@ logging:
 app:
   kafka:
     topic: project-events
+
+aws:
+  s3:
+    bucket: ${S3_BUCKET}
+    region: ap-northeast-2
