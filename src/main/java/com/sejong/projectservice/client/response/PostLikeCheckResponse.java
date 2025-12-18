@@ -1,6 +1,6 @@
 package com.sejong.projectservice.application.internal.response;
 
-import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,13 +14,19 @@ public class PostLikeCheckResponse {
     private String ownerUsername;
     private boolean isStored;
 
-    public static PostLikeCheckResponse hasOf(Project project, boolean isStored) {
+    public static PostLikeCheckResponse hasOfNews(News news, boolean isStored) {
         return PostLikeCheckResponse.builder()
-                .ownerUsername(project.getUsername())
+                .ownerUsername(news.getWriterId().userId())
                 .isStored(isStored)
                 .build();
     }
 
+    public static PostLikeCheckResponse hasOfCS(CsKnowledge csKnowledge, boolean isStored) {
+        return PostLikeCheckResponse.builder()
+                .ownerUsername(csKnowledge.getWriterId().userId())
+                .isStored(isStored)
+                .build();
+    }
     public static PostLikeCheckResponse hasNotOf() {
         return PostLikeCheckResponse.builder()
                 .ownerUsername(null)
