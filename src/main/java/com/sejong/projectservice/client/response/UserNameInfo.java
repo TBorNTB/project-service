@@ -1,4 +1,4 @@
-package com.sejong.projectservice.application.internal.response;
+package com.sejong.projectservice.client.response;
 
 public record UserNameInfo(String nickname, String realName) {
 }

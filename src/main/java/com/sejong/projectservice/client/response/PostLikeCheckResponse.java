@@ -1,6 +1,8 @@
-package com.sejong.projectservice.application.internal.response;
+package com.sejong.projectservice.client.response;
 
 import com.sejong.projectservice.core.csknowledge.CsKnowledge;
+import com.sejong.projectservice.core.news.News;
+import com.sejong.projectservice.core.project.domain.Project;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,6 +32,13 @@ public class PostLikeCheckResponse {
     public static PostLikeCheckResponse hasNotOf() {
         return PostLikeCheckResponse.builder()
                 .ownerUsername(null)
+                .isStored(false)
+                .build();
+    }
+
+    public static PostLikeCheckResponse hasOfProject(Project project, boolean isStored) {
+        return PostLikeCheckResponse.builder()
+                .ownerUsername(project.getUsername())
                 .isStored(false)
                 .build();
     }

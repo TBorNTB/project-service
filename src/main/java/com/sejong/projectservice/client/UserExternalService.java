@@ -1,13 +1,17 @@
 package com.sejong.projectservice.client;
 
 import static com.sejong.projectservice.application.common.error.code.ErrorCode.INVALID_USERS_NICKNAME;
+import static com.sejong.projectservice.application.exception.ExceptionType.EXTERNAL_SERVICE_ERROR;
 
 import com.sejong.projectservice.application.common.error.code.ErrorCode;
 import com.sejong.projectservice.application.common.error.exception.ApiException;
-import com.sejong.projectservice.client.dto.UserNameInfo;
+import com.sejong.projectservice.application.exception.BaseException;
+import com.sejong.projectservice.client.response.UserNameInfo;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+
 import java.util.List;
 import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +23,22 @@ import org.springframework.stereotype.Component;
 public class UserExternalService {
 
     private final UserClient userClient;
+
+    @CircuitBreaker(name = "user-circuit-breaker", fallbackMethod = "validateExistenceFallback")
+    public void validateExistence(String username) {
+        ResponseEntity<Boolean> response = userClient.exists(username);
+        if (response.getBody() != Boolean.TRUE) {
+            throw new BaseException(EXTERNAL_SERVICE_ERROR);
+        }
+    }
+
+    private void validateExistenceFallback(String username, Throwable t) {
+        if (t instanceof org.apache.kafka.common.errors.ApiException) {
+            throw (org.apache.kafka.common.errors.ApiException) t;
+        }
+
+        throw new BaseException(EXTERNAL_SERVICE_ERROR);
+    }
 
     @CircuitBreaker(name = "user-circuit-breaker", fallbackMethod = "validateExistenceFallback")
     public void validateExistence(List<String> userNicknames) {
@@ -64,7 +84,7 @@ public class UserExternalService {
         return response.getBody();
     }
 
-    private void getUserNameInfosFallback(List<String> usernames, Throwable t) {
+    private Map<String, UserNameInfo> getUserNameInfosFallback(List<String> usernames, Throwable t) {
         log.info("getUserNameInfosFallback 작동");
         if (t instanceof ApiException) {
             throw (ApiException) t;

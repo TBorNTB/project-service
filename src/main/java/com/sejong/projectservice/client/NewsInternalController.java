@@ -1,7 +1,8 @@
-package com.sejong.projectservice.application.internal;
+package com.sejong.projectservice.client;
 
 import com.sejong.projectservice.application.csknowledge.service.CsKnowledgeService;
-import com.sejong.projectservice.application.internal.response.PostLikeCheckResponse;
+import com.sejong.projectservice.application.news.service.NewsService;
+import com.sejong.projectservice.client.response.PostLikeCheckResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

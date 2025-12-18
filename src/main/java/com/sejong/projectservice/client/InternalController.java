@@ -1,8 +1,8 @@
-package com.sejong.projectservice.application.internal;
+package com.sejong.projectservice.client;
 
-import com.sejong.projectservice.application.internal.response.PostLikeCheckResponse;
-import com.sejong.projectservice.application.internal.response.ProjectResponse;
 import com.sejong.projectservice.application.project.service.ProjectService;
+import com.sejong.projectservice.client.response.PostLikeCheckResponse;
+import com.sejong.projectservice.client.response.ProjectResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
