@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.application.exception;
+package com.sejong.projectservice.application.exception;
 
 import java.time.LocalDateTime;
 
