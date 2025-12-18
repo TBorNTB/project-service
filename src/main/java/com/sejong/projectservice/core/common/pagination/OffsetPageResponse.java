@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.core.common.pagination;
+package com.sejong.projectservice.core.common.pagination;
 
 import lombok.Getter;
 

@@ -1,4 +1,4 @@
-package com.sejong.archiveservice.core.common.file;
+package com.sejong.projectservice.core.common.file;
 
 
 import java.util.Objects;

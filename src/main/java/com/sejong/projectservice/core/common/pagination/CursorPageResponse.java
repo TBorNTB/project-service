@@ -19,10 +19,18 @@ public class CursorPageResponse<T> {
     private Cursor nextCursor;
     private boolean hasNext;
 
-    private static <T> CursorPageResponse<T> ok(Cursor nextCursor, boolean hasNext, T content) {
+    public static <T> CursorPageResponse<T> ok(Cursor nextCursor, boolean hasNext, T content) {
         return CursorPageResponse.<T>builder()
                 .content(content)
                 .nextCursor(nextCursor)
+                .hasNext(hasNext)
+                .build();
+    }
+
+    public static <T> CursorPageResponse<T> ok(Long cursorId, boolean hasNext, T content) {
+        return CursorPageResponse.<T>builder()
+                .content(content)
+                .nextCursor(Cursor.of(cursorId))
                 .hasNext(hasNext)
                 .build();
     }

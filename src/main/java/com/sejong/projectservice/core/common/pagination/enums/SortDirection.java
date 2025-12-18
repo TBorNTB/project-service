@@ -3,6 +3,7 @@ package com.sejong.projectservice.core.common.pagination.enums;
 
 import com.sejong.projectservice.application.common.error.code.ErrorCode;
 import com.sejong.projectservice.application.common.error.exception.ApiException;
+import com.sejong.projectservice.core.common.pagination.CustomPageRequest;
 
 import java.util.Arrays;
 

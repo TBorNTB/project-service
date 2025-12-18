@@ -1,7 +1,10 @@
-package com.sejong.archiveservice.core.common.extractor;
+package com.sejong.projectservice.core.common.extractor;
 
-import com.sejong.archiveservice.core.csknowledge.CsKnowledge;
-import com.sejong.archiveservice.core.news.News;
+
+
+import com.sejong.projectservice.core.csknowledge.CsKnowledge;
+import com.sejong.projectservice.core.news.News;
+
 import java.util.List;
 
 public class ExtractorUsername {

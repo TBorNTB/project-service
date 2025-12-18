@@ -4,6 +4,8 @@ package com.sejong.projectservice.core.common.pagination;
 import com.sejong.projectservice.core.common.pagination.enums.SortDirection;
 import lombok.Getter;
 
+import java.util.Arrays;
+
 @Getter
 public class CustomPageRequest {
     private final int page;
