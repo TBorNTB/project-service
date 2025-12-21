@@ -16,15 +16,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.application.project.config.MockBeansConfig;
-import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
-import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
-import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
-import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
-import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
-import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
-import com.sejong.projectservice.application.project.service.ProjectService;
-import com.sejong.projectservice.core.enums.ProjectStatus;
-import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
+import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
+import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
+import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
+import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfo;
+import com.sejong.projectservice.domains.project.dto.response.ProjectUpdateResponse;
+import com.sejong.projectservice.domains.project.service.ProjectService;
+import com.sejong.projectservice.domains.enums.ProjectStatus;
+import com.sejong.projectservice.domains.project.domain.Project;
+import com.sejong.projectservice.domains.project.controller.ProjectController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

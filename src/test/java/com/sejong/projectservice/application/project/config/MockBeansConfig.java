@@ -1,7 +1,7 @@
 package com.sejong.projectservice.application.project.config;
 
-import com.sejong.projectservice.application.project.service.ProjectService;
-import com.sejong.projectservice.application.yorkie.service.YorkieService;
+import com.sejong.projectservice.domains.project.service.ProjectService;
+import com.sejong.projectservice.domains.yorkie.service.YorkieService;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 

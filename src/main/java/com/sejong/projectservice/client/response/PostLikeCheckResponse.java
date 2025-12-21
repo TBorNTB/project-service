@@ -1,8 +1,8 @@
 package com.sejong.projectservice.client.response;
 
-import com.sejong.projectservice.core.csknowledge.CsKnowledge;
-import com.sejong.projectservice.core.news.News;
-import com.sejong.projectservice.core.project.domain.Project;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
+import com.sejong.projectservice.domains.news.domain.News;
+import com.sejong.projectservice.domains.project.domain.Project;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

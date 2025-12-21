@@ -1,6 +1,6 @@
 package com.sejong.projectservice.client;
 
-import com.sejong.projectservice.application.project.service.ProjectService;
+import com.sejong.projectservice.domains.project.service.ProjectService;
 import com.sejong.projectservice.client.response.PostLikeCheckResponse;
 import com.sejong.projectservice.client.response.ProjectResponse;
 import lombok.RequiredArgsConstructor;
