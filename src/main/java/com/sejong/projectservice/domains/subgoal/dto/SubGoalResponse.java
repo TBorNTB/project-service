@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.subgoal.dto;
 
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,7 +16,7 @@ public class SubGoalResponse {
     private boolean isCompleted;
     private String message;
 
-    public static SubGoalResponse from(SubGoal subGoal) {
+    public static SubGoalResponse from(SubGoalEntity subGoal) {
         return SubGoalResponse.builder()
                 .content(subGoal.getContent())
                 .isCompleted(subGoal.getCompleted())

@@ -1,17 +1,17 @@
 package com.sejong.projectservice.domains.subgoal.repository;
 
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
 
 import java.util.List;
 
 public interface SubGoalRepository {
-    SubGoal findOne(Long subGoalId);
+    SubGoalDto findOne(Long subGoalId);
 
-    SubGoal update(SubGoal subGoal);
+    SubGoalDto update(SubGoalDto subGoalDto);
 
-    SubGoal save(Long projectId, SubGoal subGoal);
+    SubGoalDto save(Long projectId, SubGoalDto subGoalDto);
 
     void delete(Long subGoalId);
 
-    List<SubGoal> getAll(Long projectId);
+    List<SubGoalDto> getAll(Long projectId);
 }

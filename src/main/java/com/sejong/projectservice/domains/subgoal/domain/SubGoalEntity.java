@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.subgoal.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -9,7 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -35,21 +38,35 @@ public class SubGoalEntity {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
-    public static SubGoalEntity from(SubGoal subGoal) {
+    public static SubGoalEntity from(SubGoalDto subGoalDto) {
         return SubGoalEntity.builder()
                 .id(null)
-                .content(subGoal.getContent())
-                .completed(subGoal.getCompleted())
-                .createdAt(subGoal.getCreatedAt())
-                .updatedAt(subGoal.getUpdatedAt())
+                .content(subGoalDto.getContent())
+                .completed(subGoalDto.getCompleted())
+                .createdAt(subGoalDto.getCreatedAt())
+                .updatedAt(subGoalDto.getUpdatedAt())
                 .build();
     }
 
-    public SubGoal toDomain() {
-        return SubGoal.builder()
+    public static SubGoalEntity of(String content, boolean isCompleted, LocalDateTime createdAt, LocalDateTime updatedAt, ProjectEntity projectEntity) {
+        SubGoalEntity subGoalEntity = SubGoalEntity.builder()
+                .id(null)
+                .content(content)
+                .completed(isCompleted)
+                .createdAt(createdAt)
+                .updatedAt(updatedAt)
+                .build();
+        projectEntity.addSubGoal(subGoalEntity);
+        return subGoalEntity;
+
+    }
+
+    public SubGoalDto toDomain() {
+        return SubGoalDto.builder()
                 .id(id)
                 .content(content)
                 .completed(completed)
@@ -63,11 +80,16 @@ public class SubGoalEntity {
     }
 
 
-    public void update(SubGoal subGoal) {
-        this.id = subGoal.getId();
-        this.content = subGoal.getContent();
-        this.completed = subGoal.getCompleted();
-        this.createdAt = subGoal.getCreatedAt();
-        this.updatedAt = subGoal.getUpdatedAt();
+    public void update(SubGoalDto subGoalDto) {
+        this.id = subGoalDto.getId();
+        this.content = subGoalDto.getContent();
+        this.completed = subGoalDto.getCompleted();
+        this.createdAt = subGoalDto.getCreatedAt();
+        this.updatedAt = subGoalDto.getUpdatedAt();
+    }
+
+    public void check(){
+        if(completed) completed = false;
+        else completed = true;
     }
 }

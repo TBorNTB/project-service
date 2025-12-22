@@ -12,7 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class SubGoal {
+public class SubGoalDto {
 
     private Long id;
     private String content;
@@ -20,8 +20,8 @@ public class SubGoal {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static SubGoal from(String content, Boolean completed,LocalDateTime createdAt, LocalDateTime updatedAt) {
-        return SubGoal.builder()
+    public static SubGoalDto from(String content, Boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        return SubGoalDto.builder()
                 .id(null)
                 .content(content)
                 .completed(completed)
@@ -30,13 +30,13 @@ public class SubGoal {
                 .build();
     }
 
-    public static List<SubGoal> toDtoList(List<SubGoalEntity> subGoals) {
+    public static List<SubGoalDto> toDtoList(List<SubGoalEntity> subGoals) {
         return subGoals.stream()
-                .map(SubGoal::toDto).toList();
+                .map(SubGoalDto::toDto).toList();
     }
 
-    private static SubGoal toDto(SubGoalEntity subGoalEntity) {
-        return SubGoal.builder()
+    private static SubGoalDto toDto(SubGoalEntity subGoalEntity) {
+        return SubGoalDto.builder()
                 .id(subGoalEntity.getId())
                 .content(subGoalEntity.getContent())
                 .completed(subGoalEntity.getCompleted())

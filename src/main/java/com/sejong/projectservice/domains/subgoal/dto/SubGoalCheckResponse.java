@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.subgoal.dto;
 
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ public class SubGoalCheckResponse {
     private String content;
     private String message;
 
-    public static SubGoalCheckResponse from(SubGoal subGoal) {
+    public static SubGoalCheckResponse from(SubGoalEntity subGoal) {
         return SubGoalCheckResponse.builder()
                 .isCheck(subGoal.getCompleted())
                 .message("체크 선택 or 미선택 완료")
