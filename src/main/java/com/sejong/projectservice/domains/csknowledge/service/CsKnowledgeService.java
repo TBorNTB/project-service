@@ -49,44 +49,44 @@ public class CsKnowledgeService {
         CsKnowledgeDto csKnowledgeDto = CsKnowledgeAssembler.toCsKnowledge(csKnowledgeReqDto, username);
         CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledgeDto);
         CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(entity);
-        CsKnowledgeDto domain = savedEntity.toDomain();
+        CsKnowledgeDto dto = savedEntity.toDto();
 
-        CsKnowledgeResDto response = resolveUsername(domain);
-        csKnowledgeEventPublisher.publishCreated(domain);
+        CsKnowledgeResDto response = resolveUsername(dto);
+        csKnowledgeEventPublisher.publishCreated(dto);
         return response;
     }
 
     @Transactional
     public CsKnowledgeResDto updateCsKnowledge(Long csKnowledgeId, CsKnowledgeReqDto csKnowledgeReqDto, String username) {
-        CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
+        CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
 
-        entity.validateOwnerPermission(username);
-        entity.update(csKnowledgeId,
+        csKnowledgeEntity.validateOwnerPermission(username);
+        csKnowledgeEntity.update(csKnowledgeId,
                 csKnowledgeReqDto,
                 LocalDateTime.now(),
                 username);
 
-        CsKnowledgeDto domain = entity.toDomain();
+        CsKnowledgeDto dto = csKnowledgeEntity.toDto();
 
-        CsKnowledgeResDto response = resolveUsername(domain);
-        csKnowledgeEventPublisher.publishUpdated(domain);
+        CsKnowledgeResDto response = resolveUsername(dto);
+        csKnowledgeEventPublisher.publishUpdated(dto);
         return response;
     }
 
     @Transactional
     public void deleteCsKnowledge(Long csKnowledgeId, String username, String userRole) {
-        CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
+        CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
-        entity.validateOwnerPermission(username, userRole);
-        csKnowledgeRepository.deleteById(entity.getId());
+        csKnowledgeEntity.validateOwnerPermission(username, userRole);
+        csKnowledgeRepository.deleteById(csKnowledgeEntity.getId());
         csKnowledgeEventPublisher.publishDeleted(csKnowledgeId);
     }
 
     public CsKnowledgeResDto findById(Long csKnowledgeId) {
-        CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
+        CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
-        return resolveUsername(entity.toDomain());
+        return resolveUsername(csKnowledgeEntity.toDto());
     }
 
     @Transactional(readOnly = true)
@@ -98,9 +98,9 @@ public class CsKnowledgeService {
     public PostLikeCheckResponse checkCS(Long csKnowledgeId) {
         boolean exists = csKnowledgeRepository.existsById(csKnowledgeId);
         if (exists) {
-            CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
+            CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                     .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
-            return PostLikeCheckResponse.hasOfCS(entity.toDomain(), true);
+            return PostLikeCheckResponse.hasOfCS(csKnowledgeEntity.toDto(), true);
         }
 
         return PostLikeCheckResponse.hasNotOf();
@@ -109,7 +109,7 @@ public class CsKnowledgeService {
     public List<CsKnowledgeResDto> findAllByTechCategory(TechCategory techCategory) {
         List<CsKnowledgeDto> csKnowledgeDtos = csKnowledgeRepository
                 .findAllByTechCategory(techCategory).stream()
-                .map(CsKnowledgeEntity::toDomain)
+                .map(CsKnowledgeEntity::toDto)
                 .toList();
         return resolveUsernames(csKnowledgeDtos);
     }
@@ -117,8 +117,8 @@ public class CsKnowledgeService {
     public Optional<CsKnowledgeResDto> findUnsentKnowledge(TechCategory categoryName, String email) {
 
         Optional<CsKnowledgeEntity> randomUnsent = csKnowledgeRepository.findRandomUnsent(categoryName.name(), email);
-        Optional<CsKnowledgeDto> csKnowledge = randomUnsent.map(CsKnowledgeEntity::toDomain);
-        return csKnowledge
+        Optional<CsKnowledgeDto> csKnowledgeDto = randomUnsent.map(CsKnowledgeEntity::toDto);
+        return csKnowledgeDto
                 .map(this::resolveUsername);
     }
 
@@ -134,11 +134,11 @@ public class CsKnowledgeService {
 
         Page<CsKnowledgeEntity> page = csKnowledgeRepository.findAll(pageable);
 
-        List<CsKnowledgeDto> knowledges = page.stream()
-                .map(CsKnowledgeEntity::toDomain)
+        List<CsKnowledgeDto> csKnowledgeDtos = page.stream()
+                .map(CsKnowledgeEntity::toDto)
                 .toList();
 
-        OffsetPageResponse<List<CsKnowledgeDto>> csKnowledges = OffsetPageResponse.ok(page.getNumber(), page.getTotalPages(), knowledges);
+        OffsetPageResponse<List<CsKnowledgeDto>> csKnowledges = OffsetPageResponse.ok(page.getNumber(), page.getTotalPages(), csKnowledgeDtos);
 
         List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(csKnowledges.getData());
 
@@ -153,18 +153,18 @@ public class CsKnowledgeService {
         CursorPageRequest pageRequest = cursorPageReqDto.toPageRequest();
         Pageable pageable = PageRequest.of(0, pageRequest.getSize() + 1);
 
-        List<CsKnowledgeEntity> entities;
+        List<CsKnowledgeEntity> csKnowledgeEntities;
         if (pageRequest.getCursor() == null) {
-            entities = csKnowledgeRepository.findAll(pageable).getContent();
+            csKnowledgeEntities = csKnowledgeRepository.findAll(pageable).getContent();
         } else {
-            entities = csKnowledgeRepository.findByIdGreaterThan(pageRequest.getCursor().getProjectId(), pageable);
+            csKnowledgeEntities = csKnowledgeRepository.findByIdGreaterThan(pageRequest.getCursor().getProjectId(), pageable);
         }
 
-        boolean hasNext = entities.size() > pageRequest.getSize();
+        boolean hasNext = csKnowledgeEntities.size() > pageRequest.getSize();
 
-        List<CsKnowledgeDto> knowledges = entities.stream()
+        List<CsKnowledgeDto> knowledges = csKnowledgeEntities.stream()
                 .limit(pageRequest.getSize())
-                .map(CsKnowledgeEntity::toDomain)
+                .map(CsKnowledgeEntity::toDto)
                 .toList();
 
         Long nextCursor = hasNext && !knowledges.isEmpty()

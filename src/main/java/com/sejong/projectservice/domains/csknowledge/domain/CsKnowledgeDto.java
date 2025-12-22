@@ -24,16 +24,4 @@ public class CsKnowledgeDto {
     private UserId writerId;
     private TechCategory category;
     private LocalDateTime createdAt;
-
-    public void validateOwnerPermission(String username) {
-        if (!writerId.userId().equals(username)) {
-            throw new BaseException(ExceptionType.FORBIDDEN);
-        }
-    }
-
-    public void validateOwnerPermission(String username, String userRole) {
-        if (!writerId.userId().equals(username) && !userRole.equalsIgnoreCase("ADMIN")) {
-            throw new BaseException(ExceptionType.FORBIDDEN);
-        }
-    }
 }

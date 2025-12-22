@@ -47,7 +47,7 @@ public class CsKnowledgeEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public CsKnowledgeDto toDomain() {
+    public CsKnowledgeDto toDto() {
         return CsKnowledgeDto.builder()
                 .id(id)
                 .title(title)
