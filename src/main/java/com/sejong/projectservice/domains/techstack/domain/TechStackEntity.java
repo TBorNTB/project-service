@@ -13,6 +13,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -44,34 +46,10 @@ public class TechStackEntity {
                 .build();
     }
 
-    public static TechStackEntity from(TechStackDto techStackDto) {
-        return TechStackEntity.builder()
-                .id(null)
-                .name(techStackDto.getName())
-                .build();
-    }
-
     public static TechStackEntity from(TechStackCreateReq techstackCreateReq) {
         return TechStackEntity.builder()
                 .id(null)
                 .name(techstackCreateReq.getName())
-                .build();
-    }
-
-    public static TechStackEntity from2(String techStackname, ProjectEntity projectEntity) {
-        TechStackEntity techStackEntity = TechStackEntity.builder()
-                .id(null)
-                .name(techStackname)
-                .projectTechStacks(new ArrayList<>())
-                .build();
-        projectEntity.addTechStack(techStackEntity);
-        return techStackEntity;
-    }
-
-    public TechStackDto toDomain() {
-        return TechStackDto.builder()
-                .id(this.getId())
-                .name(this.getName())
                 .build();
     }
 
@@ -85,5 +63,22 @@ public class TechStackEntity {
 
     public void update(TechStackDto techStackDto) {
         this.name = techStackDto.getName();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        TechStackEntity that = (TechStackEntity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

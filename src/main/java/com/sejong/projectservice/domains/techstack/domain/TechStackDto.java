@@ -23,7 +23,7 @@ public class TechStackDto {
                 .build();
     }
 
-    public static List<TechStackDto> from2(List<TechStackEntity> techStackEntities) {
+    public static List<TechStackDto> fromList(List<TechStackEntity> techStackEntities) {
         return techStackEntities.stream()
                 .map(it->{
                     return TechStackDto.builder()
@@ -31,26 +31,5 @@ public class TechStackDto {
                             .name(it.getName())
                             .build();
                 }).toList();
-    }
-
-    public void update(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        TechStackDto that = (TechStackDto) o;
-        return Objects.equals(id, that.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
     }
 }

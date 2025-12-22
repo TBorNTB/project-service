@@ -80,7 +80,7 @@ public class ProjectSpecifyInfo {
                 .thumbnailUrl(project.getThumbnailUrl())
                 .categories(CategoryDto.fromList(categoryEntityEntities))
                 .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))
-                .techStackDtos(TechStackDto.from2(techStackEntities))
+                .techStackDtos(TechStackDto.fromList(techStackEntities))
                 .collaborators(collaboratorResponseList)
                 .documentDtos(DocumentDto.from2(project.getDocumentEntities()))
                 .build();
