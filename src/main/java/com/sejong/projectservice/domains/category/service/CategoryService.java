@@ -1,13 +1,13 @@
 package com.sejong.projectservice.domains.category.service;
 
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.dto.CategoryAllResponse;
 import com.sejong.projectservice.domains.category.dto.CategoryResponse;
+import com.sejong.projectservice.domains.category.repository.CategoryJpaRepository;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.repository.ProjectJpaRepository;
 import com.sejong.projectservice.support.common.error.code.ErrorCode;
 import com.sejong.projectservice.support.common.error.exception.ApiException;
-import com.sejong.projectservice.domains.category.domain.Category;
-import com.sejong.projectservice.domains.category.repository.CategoryRepository;
-import com.sejong.projectservice.domains.project.domain.Project;
-import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,44 +18,54 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryService {
 
-    private final CategoryRepository categoryRepository;
-    private final ProjectRepository projectRepository;
+    private final CategoryJpaRepository categoryJpaRepository;
+    private final ProjectJpaRepository projectJpaRepository;
 
     @Transactional
     public CategoryResponse create(String userRole, String name) {
         validateAdminRole(userRole);
-        Category category = categoryRepository.save(name);
-        return CategoryResponse.from(category);
+        CategoryEntity categoryEntity = CategoryEntity.of(name);
+        CategoryEntity savedCategory = categoryJpaRepository.save(categoryEntity);
+        return CategoryResponse.from(savedCategory);
     }
 
     @Transactional
     public CategoryResponse update(String userRole, String prevName, String nextName) {
         validateAdminRole(userRole);
-        Category category = categoryRepository.update(prevName, nextName);
-        return CategoryResponse.updateFrom(category);
+        CategoryEntity categoryEntity = categoryJpaRepository.findByName(prevName)
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+        categoryEntity.updateName(nextName);
+        return CategoryResponse.updateFrom(categoryEntity);
     }
 
     @Transactional
     public CategoryResponse remove(String userRole, String name) {
         validateAdminRole(userRole);
-        Category category = categoryRepository.delete(name);
-        return CategoryResponse.deleteFrom(category);
+        CategoryEntity categoryEntity = categoryJpaRepository.findByName(name)
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+        categoryJpaRepository.deleteById(categoryEntity.getId());
+        return CategoryResponse.deleteFrom(categoryEntity);
     }
 
     @Transactional(readOnly = true)
     public CategoryAllResponse getAll() {
-        List<Category> categories = categoryRepository.findAll();
+        List<CategoryEntity> categories = categoryJpaRepository.findAll();
         return CategoryAllResponse.from(categories);
     }
 
     @Transactional
     public CategoryAllResponse updateProject( String username,Long projectId, List<String> categoryNames) {
-        Project project = projectRepository.findOne(projectId);
-        project.validateUserPermission(username);
-        project.updateCategory(categoryNames);
+        ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        projectEntity.validateUserPermission(username);
 
-        Project updatedProject = projectRepository.update(project);
-        return CategoryAllResponse.from(updatedProject.getCategories());
+        List<CategoryEntity> categoryEntities1 = categoryNames.stream()
+                .map(CategoryEntity::of).toList();
+
+        categoryJpaRepository.saveAll(categoryEntities1);
+        projectEntity.updateCategory(categoryNames, categoryEntities1);
+
+        return CategoryAllResponse.from(categoryEntities1);
     }
 
     private void validateAdminRole(String userRole) {
@@ -66,10 +76,10 @@ public class CategoryService {
 
     @Transactional
     public CategoryResponse updateDescription(String userRole, Long categoryId,String description) {
-       Category category = categoryRepository.findOne(categoryId);
-       category.updateDescription(description);
-       Category updatedCategory = categoryRepository.updateDescription(category);
-       return CategoryResponse.updateFrom(category);
+        CategoryEntity categoryEntity = categoryJpaRepository.findById(categoryId)
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 이름은 카테고리 목록에 없습니다."));
+        categoryEntity.updateDescription(description);
+       return CategoryResponse.updateFrom(categoryEntity);
 
     }
 }

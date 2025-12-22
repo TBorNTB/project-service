@@ -5,32 +5,32 @@ import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface CsKnowledgeRepository {
     // CRUD operations
-    CsKnowledge save(CsKnowledge csKnowledge);
+    CsKnowledgeDto save(CsKnowledgeDto csKnowledgeDto);
     
-    CsKnowledge findById(Long id);
+    CsKnowledgeDto findById(Long id);
     
     boolean existsById(Long id);
     
-    CsKnowledge update(CsKnowledge csKnowledge);
+    CsKnowledgeDto update(CsKnowledgeDto csKnowledgeDto);
     
-    void delete(CsKnowledge csKnowledge);
+    void delete(CsKnowledgeDto csKnowledgeDto);
     
     // Query operations
-    List<CsKnowledge> findAllByTechCategory(TechCategory techCategory);
+    List<CsKnowledgeDto> findAllByTechCategory(TechCategory techCategory);
     
-    Optional<CsKnowledge> findUnsentKnowledge(TechCategory categoryName, String email);
+    Optional<CsKnowledgeDto> findUnsentKnowledge(TechCategory categoryName, String email);
     
     // Pagination
-    OffsetPageResponse<List<CsKnowledge>> findAllWithOffset(CustomPageRequest customPageRequest);
+    OffsetPageResponse<List<CsKnowledgeDto>> findAllWithOffset(CustomPageRequest customPageRequest);
     
-    CursorPageResponse<List<CsKnowledge>> findAllWithCursor(CursorPageRequest cursorPageRequest);
+    CursorPageResponse<List<CsKnowledgeDto>> findAllWithCursor(CursorPageRequest cursorPageRequest);
 
     Long getCsCount();
 }

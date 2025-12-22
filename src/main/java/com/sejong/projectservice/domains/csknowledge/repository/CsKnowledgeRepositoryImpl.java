@@ -7,7 +7,7 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 import lombok.RequiredArgsConstructor;
@@ -29,14 +29,14 @@ public class CsKnowledgeRepositoryImpl implements CsKnowledgeRepository {
     private final CsKnowledgeJpaRepository repository;
 
     @Override
-    public CsKnowledge save(CsKnowledge csKnowledge) {
-        CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledge);
+    public CsKnowledgeDto save(CsKnowledgeDto csKnowledgeDto) {
+        CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledgeDto);
         CsKnowledgeEntity saved = repository.save(entity);
         return saved.toDomain();
     }
 
     @Override
-    public CsKnowledge findById(Long id) {
+    public CsKnowledgeDto findById(Long id) {
         CsKnowledgeEntity entity = repository.findById(id)
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
         return entity.toDomain();
@@ -48,19 +48,19 @@ public class CsKnowledgeRepositoryImpl implements CsKnowledgeRepository {
     }
 
     @Override
-    public CsKnowledge update(CsKnowledge csKnowledge) {
-        CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledge);
+    public CsKnowledgeDto update(CsKnowledgeDto csKnowledgeDto) {
+        CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledgeDto);
         CsKnowledgeEntity updated = repository.save(entity);
         return updated.toDomain();
     }
 
     @Override
-    public void delete(CsKnowledge csKnowledge) {
-        repository.deleteById(csKnowledge.getId());
+    public void delete(CsKnowledgeDto csKnowledgeDto) {
+        repository.deleteById(csKnowledgeDto.getId());
     }
 
     @Override
-    public List<CsKnowledge> findAllByTechCategory(TechCategory techCategory) {
+    public List<CsKnowledgeDto> findAllByTechCategory(TechCategory techCategory) {
         return repository
                 .findAllByTechCategory(techCategory).stream()
                 .map(CsKnowledgeEntity::toDomain)
@@ -68,13 +68,13 @@ public class CsKnowledgeRepositoryImpl implements CsKnowledgeRepository {
     }
 
     @Override
-    public Optional<CsKnowledge> findUnsentKnowledge(TechCategory categoryName, String email) {
+    public Optional<CsKnowledgeDto> findUnsentKnowledge(TechCategory categoryName, String email) {
         Optional<CsKnowledgeEntity> randomUnsent = repository.findRandomUnsent(categoryName.name(), email);
         return randomUnsent.map(CsKnowledgeEntity::toDomain);
     }
 
     @Override
-    public OffsetPageResponse<List<CsKnowledge>> findAllWithOffset(CustomPageRequest customPageRequest) {
+    public OffsetPageResponse<List<CsKnowledgeDto>> findAllWithOffset(CustomPageRequest customPageRequest) {
         Pageable pageable = PageRequest.of(
                 customPageRequest.getPage(),
                 customPageRequest.getSize(),
@@ -84,7 +84,7 @@ public class CsKnowledgeRepositoryImpl implements CsKnowledgeRepository {
 
         Page<CsKnowledgeEntity> page = repository.findAll(pageable);
 
-        List<CsKnowledge> knowledges = page.stream()
+        List<CsKnowledgeDto> knowledges = page.stream()
                 .map(CsKnowledgeEntity::toDomain)
                 .toList();
 
@@ -92,7 +92,7 @@ public class CsKnowledgeRepositoryImpl implements CsKnowledgeRepository {
     }
 
     @Override
-    public CursorPageResponse<List<CsKnowledge>> findAllWithCursor(CursorPageRequest cursorPageRequest) {
+    public CursorPageResponse<List<CsKnowledgeDto>> findAllWithCursor(CursorPageRequest cursorPageRequest) {
         Pageable pageable = PageRequest.of(0, cursorPageRequest.getSize() + 1);
 
         List<CsKnowledgeEntity> entities;
@@ -104,7 +104,7 @@ public class CsKnowledgeRepositoryImpl implements CsKnowledgeRepository {
 
         boolean hasNext = entities.size() > cursorPageRequest.getSize();
 
-        List<CsKnowledge> knowledges = entities.stream()
+        List<CsKnowledgeDto> knowledges = entities.stream()
                 .limit(cursorPageRequest.getSize())
                 .map(CsKnowledgeEntity::toDomain)
                 .toList();

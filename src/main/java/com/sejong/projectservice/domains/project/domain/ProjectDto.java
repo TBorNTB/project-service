@@ -41,6 +41,7 @@ public class Project {
     private List<TechStack> techStacks = new ArrayList<>();
     private List<Document> documents = new ArrayList<>();
 
+
     public void update(String title, String description,
                        ProjectStatus projectStatus, String thumbnailUrl) {
         this.title = title;

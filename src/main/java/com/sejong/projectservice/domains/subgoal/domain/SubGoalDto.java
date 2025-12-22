@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -26,6 +27,21 @@ public class SubGoal {
                 .completed(completed)
                 .createdAt(createdAt)
                 .updatedAt(updatedAt)
+                .build();
+    }
+
+    public static List<SubGoal> toDtoList(List<SubGoalEntity> subGoals) {
+        return subGoals.stream()
+                .map(SubGoal::toDto).toList();
+    }
+
+    private static SubGoal toDto(SubGoalEntity subGoalEntity) {
+        return SubGoal.builder()
+                .id(subGoalEntity.getId())
+                .content(subGoalEntity.getContent())
+                .completed(subGoalEntity.getCompleted())
+                .createdAt(subGoalEntity.getCreatedAt())
+                .updatedAt(subGoalEntity.getUpdatedAt())
                 .build();
     }
 

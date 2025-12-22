@@ -1,21 +1,21 @@
 package com.sejong.projectservice.domains.category.repository;
 
-import com.sejong.projectservice.domains.category.domain.Category;
+import com.sejong.projectservice.domains.category.domain.CategoryDto;
 
 import java.util.List;
 
 public interface CategoryRepository {
-    Category save(String name);
+    CategoryDto save(String name);
 
-    Category findByName(String name);
+    CategoryDto findByName(String name);
 
-    Category update(String prevName, String nextName);
+    CategoryDto update(String prevName, String nextName);
 
-    Category delete(String name);
+    CategoryDto delete(String name);
 
-    List<Category> findAll();
+    List<CategoryDto> findAll();
 
-    Category updateDescription(Category category);
+    CategoryDto updateDescription(CategoryDto categoryDto);
 
-    Category findOne(Long categoryId);
+    CategoryDto findOne(Long categoryId);
 }

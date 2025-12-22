@@ -3,6 +3,8 @@ package com.sejong.projectservice.domains.category.controller;
 import com.sejong.projectservice.domains.category.service.CategoryService;
 import com.sejong.projectservice.domains.category.dto.*;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,8 +21,9 @@ public class CategoryController {
 
     @PostMapping("")
     @Operation(summary = "카테고리 저장")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<CategoryResponse> addCategory(
-            @RequestHeader("X-User-Role") String userRole,
+            @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryAddRequest categoryAddRequest
     ) {
         CategoryResponse response = categoryService.create(userRole, categoryAddRequest.getName());
@@ -28,9 +31,10 @@ public class CategoryController {
     }
 
     @PatchMapping("/description/{categoryId}")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "카테고리 관련 설명 추가")
     public ResponseEntity<CategoryResponse> updateCategoryDescription(
-            @RequestHeader("X-User-Role") String userRole,
+            @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
             @PathVariable(name="categoryId") Long categoryId,
             @RequestBody @Valid CategoryDescriptionRequest categoryDescriptionRequest
     ){
@@ -39,9 +43,10 @@ public class CategoryController {
     }
 
     @PutMapping("")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "카테고리 수정")
     public ResponseEntity<CategoryResponse> updateCategory(
-            @RequestHeader("X-User-Role") String userRole,
+            @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryUpdateRequest categoryUpdateRequest
     ) {
         CategoryResponse response = categoryService.update(userRole, categoryUpdateRequest.getPrevName(),categoryUpdateRequest.getNextName());
@@ -49,9 +54,10 @@ public class CategoryController {
     }
 
     @DeleteMapping("")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "카테고리 삭제")
     public ResponseEntity<CategoryResponse> deleteCategory(
-            @RequestHeader("X-User-Role") String userRole,
+            @Parameter(hidden= true)  @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryDeleteRequest categoryDeleteRequest
     ) {
         CategoryResponse response = categoryService.remove(userRole, categoryDeleteRequest.getName());
@@ -66,9 +72,10 @@ public class CategoryController {
     }
 
     @PutMapping("/{postId}")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "프로젝트의 카테고리 수정")
     public ResponseEntity<CategoryAllResponse> updateProjectCategory(
-            @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden= true) @RequestHeader("X-User-Id") String username,
             @PathVariable(name="postId") Long projectId,
             @RequestParam List<String> categoryNames
     ) {

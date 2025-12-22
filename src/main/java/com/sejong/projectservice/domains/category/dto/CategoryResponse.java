@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.category.dto;
 
-import com.sejong.projectservice.domains.category.domain.Category;
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,7 +15,7 @@ public class CategoryResponse {
     private String name;
     private String message;
 
-    public static CategoryResponse from(Category category) {
+    public static CategoryResponse from(CategoryEntity category) {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
@@ -23,14 +23,14 @@ public class CategoryResponse {
                 .build();
     }
 
-    public static CategoryResponse updateFrom(Category category) {
+    public static CategoryResponse updateFrom(CategoryEntity category) {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
                 .message("카테고리 수정 완료")
                 .build();
     }
-    public static CategoryResponse deleteFrom(Category category) {
+    public static CategoryResponse deleteFrom(CategoryEntity category) {
         return CategoryResponse.builder()
                 .id(category.getId())
                 .name(category.getName())
