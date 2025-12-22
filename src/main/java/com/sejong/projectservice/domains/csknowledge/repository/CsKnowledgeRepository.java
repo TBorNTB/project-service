@@ -15,7 +15,7 @@ import java.util.Optional;
 @Repository
 public interface CsKnowledgeRepository extends JpaRepository<CsKnowledgeEntity, Long> {
 
-    List<CsKnowledgeEntity> findAllByTechCategory(TechCategory techCategory);
+    List<CsKnowledgeEntity> findAllByCategoryEntity_Name(String name);
 
     List<CsKnowledgeEntity> findByIdGreaterThan(Long id, Pageable pageable);
 

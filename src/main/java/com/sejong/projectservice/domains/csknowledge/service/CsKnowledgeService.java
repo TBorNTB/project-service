@@ -1,11 +1,15 @@
 package com.sejong.projectservice.domains.csknowledge.service;
 
 
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
+import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeRepository;
 import com.sejong.projectservice.domains.csknowledge.util.CsKnowledgeAssembler;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
+import com.sejong.projectservice.support.common.error.code.ErrorCode;
+import com.sejong.projectservice.support.common.error.exception.ApiException;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
@@ -42,12 +46,15 @@ public class CsKnowledgeService {
     private final CsKnowledgeEventPublisher csKnowledgeEventPublisher;
     private final UserExternalService userExternalService;
     private final CsKnowledgeRepository csKnowledgeRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional
     public CsKnowledgeResDto createCsKnowledge(CsKnowledgeReqDto csKnowledgeReqDto, String username) {
         userExternalService.validateExistence(username);
+        CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
         CsKnowledgeDto csKnowledgeDto = CsKnowledgeAssembler.toCsKnowledge(csKnowledgeReqDto, username);
-        CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledgeDto);
+        CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledgeDto, categoryEntity);
         CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(entity);
         CsKnowledgeDto dto = savedEntity.toDto();
 
@@ -60,12 +67,11 @@ public class CsKnowledgeService {
     public CsKnowledgeResDto updateCsKnowledge(Long csKnowledgeId, CsKnowledgeReqDto csKnowledgeReqDto, String username) {
         CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
+        CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
 
         csKnowledgeEntity.validateOwnerPermission(username);
-        csKnowledgeEntity.update(csKnowledgeId,
-                csKnowledgeReqDto,
-                LocalDateTime.now(),
-                username);
+        csKnowledgeEntity.update(csKnowledgeReqDto,LocalDateTime.now(),username,categoryEntity);
 
         CsKnowledgeDto dto = csKnowledgeEntity.toDto();
 
@@ -106,17 +112,17 @@ public class CsKnowledgeService {
         return PostLikeCheckResponse.hasNotOf();
     }
 
-    public List<CsKnowledgeResDto> findAllByTechCategory(TechCategory techCategory) {
+    public List<CsKnowledgeResDto> findAllByTechCategory(String categoryName) {
         List<CsKnowledgeDto> csKnowledgeDtos = csKnowledgeRepository
-                .findAllByTechCategory(techCategory).stream()
+                .findAllByCategoryEntity_Name(categoryName).stream()
                 .map(CsKnowledgeEntity::toDto)
                 .toList();
         return resolveUsernames(csKnowledgeDtos);
     }
 
-    public Optional<CsKnowledgeResDto> findUnsentKnowledge(TechCategory categoryName, String email) {
+    public Optional<CsKnowledgeResDto> findUnsentKnowledge(String categoryName, String email) {
 
-        Optional<CsKnowledgeEntity> randomUnsent = csKnowledgeRepository.findRandomUnsent(categoryName.name(), email);
+        Optional<CsKnowledgeEntity> randomUnsent = csKnowledgeRepository.findRandomUnsent(categoryName, email);
         Optional<CsKnowledgeDto> csKnowledgeDto = randomUnsent.map(CsKnowledgeEntity::toDto);
         return csKnowledgeDto
                 .map(this::resolveUsername);

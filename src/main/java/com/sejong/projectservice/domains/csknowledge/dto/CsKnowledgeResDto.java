@@ -11,7 +11,7 @@ public record CsKnowledgeResDto(
         String content,
         String writerId,
         String nickname,
-        TechCategory category,
+        String category,
         LocalDateTime createdAt
 ) {
     public static CsKnowledgeResDto from(CsKnowledgeDto csKnowledgeDto, String nickname) {

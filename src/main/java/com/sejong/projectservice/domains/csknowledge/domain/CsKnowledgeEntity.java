@@ -1,6 +1,7 @@
 package com.sejong.projectservice.domains.csknowledge.domain;
 
 
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 import com.sejong.projectservice.domains.user.UserId;
@@ -13,12 +14,14 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(
         name = "cs_knowledge",
         indexes = {
-                @Index(name = "idx_cs_knowledge_category_id", columnList = "categoryName, id")
+                @Index(name = "idx_cs_knowledge_category_id", columnList = "category_id, id")
         }
 )
 @Getter
@@ -40,9 +43,9 @@ public class CsKnowledgeEntity {
     @Lob
     private String content;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "categoryName", columnDefinition = "VARCHAR(50)", nullable = false)
-    private TechCategory techCategory;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private CategoryEntity categoryEntity;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -53,29 +56,29 @@ public class CsKnowledgeEntity {
                 .title(title)
                 .writerId(UserId.of(writerId))
                 .content(content)
-                .category(techCategory)
+                .category(categoryEntity.getName())
                 .createdAt(createdAt)
                 .build();
     }
 
-    public static CsKnowledgeEntity from(CsKnowledgeDto knowledge) {
+    public static CsKnowledgeEntity from(CsKnowledgeDto knowledge, CategoryEntity categoryEntity) {
         return CsKnowledgeEntity.builder()
                 .id(knowledge.getId())
                 .title(knowledge.getTitle())
                 .writerId(knowledge.getWriterId().userId())
                 .content(knowledge.getContent())
-                .techCategory(knowledge.getCategory())
+                .categoryEntity(categoryEntity)
                 .createdAt(knowledge.getCreatedAt())
+                .updatedAt(knowledge.getCreatedAt())
                 .build();
     }
 
-    public void update(Long id, CsKnowledgeReqDto reqDto, LocalDateTime updatedAt, String username) {
-         this.id=id;
-         this.title = reqDto.title();
-         this.writerId = username;
-         this.content = reqDto.content();
-         this.techCategory = reqDto.category();
-         this.updatedAt = updatedAt;
+    public void update(CsKnowledgeReqDto reqDto, LocalDateTime updatedAt, String username, CategoryEntity categoryEntity) {
+        this.title = reqDto.title();
+        this.writerId = username;
+        this.content = reqDto.content();
+        this.categoryEntity = categoryEntity;
+        this.updatedAt = updatedAt;
     }
 
     public void validateOwnerPermission(String username) {

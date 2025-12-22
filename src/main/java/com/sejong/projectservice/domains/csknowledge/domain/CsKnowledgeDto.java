@@ -22,6 +22,6 @@ public class CsKnowledgeDto {
     private String title;
     private String content;
     private UserId writerId;
-    private TechCategory category;
+    private String category;
     private LocalDateTime createdAt;
 }

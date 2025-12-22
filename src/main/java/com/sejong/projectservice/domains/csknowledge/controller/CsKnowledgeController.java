@@ -79,15 +79,15 @@ public class CsKnowledgeController {
 
     @GetMapping("/category/{techCategory}")
     @Operation(summary = "카테고리별 CS 지식 조회")
-    public ResponseEntity<List<CsKnowledgeResDto>> getCsKnowledgeByCategory(@PathVariable TechCategory techCategory) {
-        List<CsKnowledgeResDto> response = csKnowledgeService.findAllByTechCategory(techCategory);
+    public ResponseEntity<List<CsKnowledgeResDto>> getCsKnowledgeByCategory(@PathVariable String categoryName) {
+        List<CsKnowledgeResDto> response = csKnowledgeService.findAllByTechCategory(categoryName);
         return ResponseEntity.ok(response);
     }
 
     @GetMapping("/unsent")
     @Operation(summary = "미전송 CS 지식 조회")
     public ResponseEntity<CsKnowledgeResDto> getUnsentKnowledge(
-            @RequestParam TechCategory categoryName,
+            @RequestParam String categoryName,
             @RequestParam String email) {
         Optional<CsKnowledgeResDto> unsentKnowledge = csKnowledgeService.findUnsentKnowledge(categoryName, email);
         return unsentKnowledge

@@ -31,7 +31,7 @@ public class CsKnowledgeEvent {
                 .title(csKnowledgeDto.getTitle())
                 .writerId(csKnowledgeDto.getWriterId().userId())
                 .content(csKnowledgeDto.getContent())
-                .category(csKnowledgeDto.getCategory().name())
+                .category(csKnowledgeDto.getCategory())
                 .createdAt(csKnowledgeDto.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .build();
     }
