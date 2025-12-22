@@ -65,20 +65,9 @@ public class SubGoalEntity {
 
     }
 
-    public SubGoalDto toDomain() {
-        return SubGoalDto.builder()
-                .id(id)
-                .content(content)
-                .completed(completed)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .build();
-    }
-
     public void assignProjectEntity(ProjectEntity projectEntity) {
         this.projectEntity = projectEntity;
     }
-
 
     public void update(SubGoalDto subGoalDto) {
         this.id = subGoalDto.getId();

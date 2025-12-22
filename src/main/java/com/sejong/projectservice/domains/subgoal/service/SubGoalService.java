@@ -30,7 +30,7 @@ public class SubGoalService {
         projectEntity.validateUserPermission(username);
         SubGoalEntity subGoalEntity = subGoalRepository.findById(subGoalId)
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 서브 목표는 존재하지 않습니다."));
-        subGoalEntity.check(); //변경감지 되어서 자동 update
+        projectEntity.checkSubGoal(subGoalEntity.getId());
         return SubGoalCheckResponse.from(subGoalEntity);
     }
 

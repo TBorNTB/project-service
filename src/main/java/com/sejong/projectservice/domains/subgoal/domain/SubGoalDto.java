@@ -45,8 +45,4 @@ public class SubGoalDto {
                 .build();
     }
 
-    public void check(){
-        if(completed) completed = false;
-        else completed = true;
-    }
 }
