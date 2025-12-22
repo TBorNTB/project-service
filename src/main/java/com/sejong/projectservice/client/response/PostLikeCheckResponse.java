@@ -1,8 +1,8 @@
 package com.sejong.projectservice.client.response;
 
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
-import com.sejong.projectservice.domains.news.domain.News;
-import com.sejong.projectservice.domains.project.domain.Project;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
+import com.sejong.projectservice.domains.news.domain.NewsDto;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,16 +16,16 @@ public class PostLikeCheckResponse {
     private String ownerUsername;
     private boolean isStored;
 
-    public static PostLikeCheckResponse hasOfNews(News news, boolean isStored) {
+    public static PostLikeCheckResponse hasOfNews(NewsDto newsDto, boolean isStored) {
         return PostLikeCheckResponse.builder()
-                .ownerUsername(news.getWriterId().userId())
+                .ownerUsername(newsDto.getWriterId().userId())
                 .isStored(isStored)
                 .build();
     }
 
-    public static PostLikeCheckResponse hasOfCS(CsKnowledge csKnowledge, boolean isStored) {
+    public static PostLikeCheckResponse hasOfCS(CsKnowledgeDto csKnowledgeDto, boolean isStored) {
         return PostLikeCheckResponse.builder()
-                .ownerUsername(csKnowledge.getWriterId().userId())
+                .ownerUsername(csKnowledgeDto.getWriterId().userId())
                 .isStored(isStored)
                 .build();
     }
@@ -36,7 +36,7 @@ public class PostLikeCheckResponse {
                 .build();
     }
 
-    public static PostLikeCheckResponse hasOfProject(Project project, boolean isStored) {
+    public static PostLikeCheckResponse hasOfProject(ProjectEntity project, boolean isStored) {
         return PostLikeCheckResponse.builder()
                 .ownerUsername(project.getUsername())
                 .isStored(false)
