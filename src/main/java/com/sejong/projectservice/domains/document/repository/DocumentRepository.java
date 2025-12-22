@@ -1,13 +1,13 @@
 package com.sejong.projectservice.domains.document.repository;
 
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.domains.document.domain.DocumentDto;
 
 public interface DocumentRepository {
-    Document findByIdAndProjectId(Long documentId, Long projectId);
+    DocumentDto findByIdAndProjectId(Long documentId, Long projectId);
 
-    Document findById(Long documentId);
+    DocumentDto findById(Long documentId);
 
-    Document save(Document document);
+    DocumentDto save(DocumentDto documentDto);
 
-    void delete(Document document);
+    void delete(DocumentDto documentDto);
 }

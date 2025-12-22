@@ -1,7 +1,8 @@
 package com.sejong.projectservice.domains.document.dto;
 
-import com.sejong.projectservice.domains.document.domain.Document;
 import java.time.LocalDateTime;
+
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -23,7 +24,7 @@ public class DocumentInfoRes {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static DocumentInfoRes from(Document document) {
+    public static DocumentInfoRes from(DocumentEntity document) {
         return DocumentInfoRes.builder()
                 .id(document.getId())
                 .yorkieDocumentId(document.getYorkieDocumentId())

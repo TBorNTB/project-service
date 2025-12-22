@@ -5,6 +5,8 @@ import com.sejong.projectservice.domains.document.dto.DocumentInfoRes;
 import com.sejong.projectservice.domains.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.domains.document.service.DocumentService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,9 +20,10 @@ public class DocumentController {
     private final DocumentService documentService;
 
     @PostMapping("/{projectId}")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "다큐먼트 생성")
     public ResponseEntity<DocumentInfoRes> createDocumentInProject(
-            @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden= true) @RequestHeader("X-User-Id") String username,
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody DocumentCreateReq request
     ) {
@@ -40,9 +43,10 @@ public class DocumentController {
     }
 
     @PutMapping("/{documentId}")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "다큐먼트 수정")
     public ResponseEntity<DocumentInfoRes> updateDocument(
-            @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden= true) @RequestHeader("X-User-Id") String username,
             @PathVariable(name = "documentId") Long documentId,
             @RequestBody DocumentUpdateReq request
     ) {
@@ -51,9 +55,10 @@ public class DocumentController {
     }
 
     @DeleteMapping("/{documentId}")
+    @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "다큐먼트 삭제")
     public ResponseEntity<Void> deleteDocument(
-            @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden= true)  @RequestHeader("X-User-Id") String username,
             @PathVariable(name = "documentId") Long documentId
     ) {
 

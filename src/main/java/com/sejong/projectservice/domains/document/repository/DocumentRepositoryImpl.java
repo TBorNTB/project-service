@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.document.repository;
 
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.domains.document.domain.DocumentDto;
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectJpaRepository;
@@ -15,40 +15,40 @@ public class DocumentRepositoryImpl implements DocumentRepository {
     private final DocumentJpaRepository documentJpaRepository;
 
     @Override
-    public Document findByIdAndProjectId(Long documentId, Long projectId) {
+    public DocumentDto findByIdAndProjectId(Long documentId, Long projectId) {
         DocumentEntity documentEntity = documentJpaRepository.findByIdAndProjectId(documentId, projectId)
                 .orElseThrow(() -> new RuntimeException("Document not found or not belongs in Project"));
         return documentEntity.toDomain();
     }
 
     @Override
-    public Document findById(Long documentId) {
+    public DocumentDto findById(Long documentId) {
         DocumentEntity documentEntity = documentJpaRepository.findById(documentId)
                 .orElseThrow(() -> new RuntimeException("Document not found"));
         return documentEntity.toDomain();
     }
 
     @Override
-    public Document save(Document document) {
+    public DocumentDto save(DocumentDto documentDto) {
         DocumentEntity documentEntity;
 
-        if (document.getId() == null) {
-            ProjectEntity projectEntity = projectJpaRepository.findById(document.getProjectId())
+        if (documentDto.getId() == null) {
+            ProjectEntity projectEntity = projectJpaRepository.findById(documentDto.getProjectId())
                     .orElseThrow(() -> new RuntimeException("Project not found"));
-            documentEntity = DocumentEntity.from(document, projectEntity);
+            documentEntity = DocumentEntity.from(documentDto, projectEntity);
             DocumentEntity savedDocumentEntity = documentJpaRepository.save(documentEntity);
             return savedDocumentEntity.toDomain();
         } else {
-            documentEntity = documentJpaRepository.findById(document.getId())
+            documentEntity = documentJpaRepository.findById(documentDto.getId())
                     .orElseThrow(() -> new RuntimeException("Document not found"));
-            documentEntity.update(document);
+            documentEntity.update(documentDto);
             return documentEntity.toDomain();
         }
     }
 
     @Override
-    public void delete(Document document) {
-        DocumentEntity documentEntity = documentJpaRepository.findById(document.getId())
+    public void delete(DocumentDto documentDto) {
+        DocumentEntity documentEntity = documentJpaRepository.findById(documentDto.getId())
                 .orElseThrow(() -> new RuntimeException("Document not found"));
         ProjectEntity projectEntity = documentEntity.getProjectEntity();
         projectEntity.removeDocument(documentEntity);

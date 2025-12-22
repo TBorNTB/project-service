@@ -1,16 +1,15 @@
 package com.sejong.projectservice.domains.document.service;
 
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.domains.document.dto.DocumentInfoRes;
 import com.sejong.projectservice.domains.document.dto.DocumentUpdateReq;
-import com.sejong.projectservice.domains.project.util.Assembler;
-import com.sejong.projectservice.domains.document.domain.Document;
-import com.sejong.projectservice.domains.document.repository.DocumentRepository;
+import com.sejong.projectservice.domains.document.repository.DocumentJpaRepository;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.repository.ProjectJpaRepository;
 
 import java.util.UUID;
 
-import com.sejong.projectservice.domains.project.domain.Project;
-import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.domains.document.kafka.DocumentEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,16 +19,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DocumentService {
 
-    private final DocumentRepository documentRepository;
     private final DocumentEventPublisher documentEventPublisher;
-    private final ProjectRepository projectRepository;
+    private final DocumentJpaRepository documentJpaRepository;
+    private final ProjectJpaRepository projectJpaRepository;
 
     @Transactional
     public DocumentInfoRes createDocument(Long projectId, DocumentCreateReq request, String username) {
-        Project project = projectRepository.findOne(projectId);
-        project.validateUserPermission(username);
-        Document document = Assembler.toDocument(request, generateYorkieDocumentId(), projectId);
-        Document savedDocument = documentRepository.save(document);
+        ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        projectEntity.validateUserPermission(username);
+        DocumentEntity documentEntity = DocumentEntity.of(request, generateYorkieDocumentId(), projectEntity);
+
+        DocumentEntity savedDocument = documentJpaRepository.save(documentEntity);
         documentEventPublisher.publishCreated(savedDocument);
         return DocumentInfoRes.from(savedDocument);
     }
@@ -43,27 +44,31 @@ public class DocumentService {
 
     @Transactional(readOnly = true)
     public DocumentInfoRes getDocument(Long documentId) {
-        Document document = documentRepository.findById(documentId);
-        return DocumentInfoRes.from(document);
+        DocumentEntity documentEntity = documentJpaRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+        return DocumentInfoRes.from(documentEntity);
     }
 
     @Transactional
     public DocumentInfoRes updateDocument(Long documentId, DocumentUpdateReq request, String username) {
-        Document document = documentRepository.findById(documentId);
-        Project project = projectRepository.findOne(document.getProjectId());
-        project.validateUserPermission(username);
-        document.update(request.getTitle(), request.getContent(), request.getDescription(), request.getThumbnailUrl());
-        Document savedDocument = documentRepository.save(document);
-        documentEventPublisher.publishUpdated(savedDocument);
-        return DocumentInfoRes.from(savedDocument);
+        DocumentEntity documentEntity = documentJpaRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+        ProjectEntity projectEntity = projectJpaRepository.findById(documentEntity.getProjectEntity().getId())
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        projectEntity.validateUserPermission(username);
+        documentEntity.update(request.getTitle(), request.getContent(), request.getDescription(), request.getThumbnailUrl());
+        documentEventPublisher.publishUpdated(documentEntity);
+        return DocumentInfoRes.from(documentEntity);
     }
 
     @Transactional
     public void deleteDocument(Long documentId, String username) {
-        Document document = documentRepository.findById(documentId);
-        Project project = projectRepository.findOne(document.getProjectId());
-        project.validateUserPermission(username);
-        documentRepository.delete(document);
+        DocumentEntity documentEntity = documentJpaRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found"));
+        ProjectEntity projectEntity = projectJpaRepository.findById(documentEntity.getProjectEntity().getId())
+                .orElseThrow(() -> new RuntimeException("Project not found"));
+        projectEntity.validateUserPermission(username);
+        documentJpaRepository.deleteById(documentEntity.getId());
         documentEventPublisher.publishDeleted(documentId.toString());
     }
 }

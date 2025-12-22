@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Document {
+public class DocumentDto {
     private Long id;
     private String yorkieDocumentId;
 
@@ -26,10 +26,10 @@ public class Document {
 
     private Long projectId;
 
-    public static List<Document> from2(List<DocumentEntity> documents) {
+    public static List<DocumentDto> from2(List<DocumentEntity> documents) {
         return documents.stream()
                 .map(it->{
-                    return Document.builder()
+                    return DocumentDto.builder()
                             .id(it.getId())
                             .yorkieDocumentId(it.getYorkieDocumentId())
                             .title(it.getTitle())

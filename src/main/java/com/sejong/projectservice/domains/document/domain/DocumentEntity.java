@@ -1,5 +1,7 @@
 package com.sejong.projectservice.domains.document.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,47 +50,66 @@ public class DocumentEntity {
     private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
-    public static DocumentEntity from(Document document) {
+    public static DocumentEntity from(DocumentDto documentDto) {
         return DocumentEntity.builder()
-                .id(document.getId() != null ? document.getId() : null)
-                .yorkieDocumentId(document.getYorkieDocumentId())
-                .title(document.getTitle())
-                .description(document.getDescription())
-                .thumbnailUrl(document.getThumbnailUrl())
-                .content(document.getContent())
-                .createdAt(document.getCreatedAt())
-                .updatedAt(document.getUpdatedAt())
+                .id(documentDto.getId() != null ? documentDto.getId() : null)
+                .yorkieDocumentId(documentDto.getYorkieDocumentId())
+                .title(documentDto.getTitle())
+                .description(documentDto.getDescription())
+                .thumbnailUrl(documentDto.getThumbnailUrl())
+                .content(documentDto.getContent())
+                .createdAt(documentDto.getCreatedAt())
+                .updatedAt(documentDto.getUpdatedAt())
                 .projectEntity(null)
                 .build();
     }
 
-    public static DocumentEntity from(Document document, ProjectEntity projectEntity) {
+    public static DocumentEntity from(DocumentDto documentDto, ProjectEntity projectEntity) {
         return DocumentEntity.builder()
-                .id(document.getId() != null ? document.getId() : null)
-                .yorkieDocumentId(document.getYorkieDocumentId())
-                .title(document.getTitle())
-                .description(document.getDescription())
-                .thumbnailUrl(document.getThumbnailUrl())
-                .content(document.getContent())
-                .createdAt(document.getCreatedAt())
-                .updatedAt(document.getUpdatedAt())
+                .id(documentDto.getId() != null ? documentDto.getId() : null)
+                .yorkieDocumentId(documentDto.getYorkieDocumentId())
+                .title(documentDto.getTitle())
+                .description(documentDto.getDescription())
+                .thumbnailUrl(documentDto.getThumbnailUrl())
+                .content(documentDto.getContent())
+                .createdAt(documentDto.getCreatedAt())
+                .updatedAt(documentDto.getUpdatedAt())
                 .projectEntity(projectEntity)
                 .build();
     }
 
-    public void update(Document document) {
-        this.title = document.getTitle();
-        this.description = document.getDescription();
-        this.thumbnailUrl = document.getThumbnailUrl();
-        this.content = document.getContent();
+    public static DocumentEntity of(DocumentCreateReq request, String yorkieDocumentId, ProjectEntity projectEntity) {
+
+        DocumentEntity documentEntity = DocumentEntity.builder()
+                .id(null)
+                .yorkieDocumentId(yorkieDocumentId)
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .thumbnailUrl(request.getThumbnailUrl())
+                .content(request.getContent())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .projectEntity(projectEntity)
+                .build();
+        projectEntity.addDocument(documentEntity);
+
+        return documentEntity;
+    }
+
+    public void update(DocumentDto documentDto) {
+        this.title = documentDto.getTitle();
+        this.description = documentDto.getDescription();
+        this.thumbnailUrl = documentDto.getThumbnailUrl();
+        this.content = documentDto.getContent();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Document toDomain() {
-        return Document.builder()
+    public DocumentDto toDomain() {
+        return DocumentDto.builder()
                 .id(id)
                 .yorkieDocumentId(yorkieDocumentId)
                 .title(title)
@@ -102,5 +123,13 @@ public class DocumentEntity {
 
     public void assignDocumentEntity(ProjectEntity projectEntity) {
         this.projectEntity = projectEntity;
+    }
+
+    public void update(String title, String content, String description, String thumbnailUrl) {
+        this.title = title;
+        this.description = description;
+        this.thumbnailUrl = thumbnailUrl;
+        this.content = content;
+        this.updatedAt = LocalDateTime.now();
     }
 }
