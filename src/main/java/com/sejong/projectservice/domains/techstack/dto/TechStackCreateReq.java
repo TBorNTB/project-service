@@ -1,6 +1,5 @@
 package com.sejong.projectservice.domains.techstack.dto;
 
-import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

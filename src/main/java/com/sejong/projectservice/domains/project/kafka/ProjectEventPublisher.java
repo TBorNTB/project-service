@@ -2,7 +2,7 @@ package com.sejong.projectservice.domains.project.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.RequiredArgsConstructor;

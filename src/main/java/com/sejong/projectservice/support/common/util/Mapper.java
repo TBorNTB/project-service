@@ -1,6 +1,6 @@
 package com.sejong.projectservice.support.common.util;
 
-import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;

@@ -22,7 +22,7 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
+import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.domains.csknowledge.kafka.CsKnowledgeEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

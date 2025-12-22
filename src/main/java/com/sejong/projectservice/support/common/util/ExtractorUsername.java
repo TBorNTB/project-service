@@ -2,8 +2,8 @@ package com.sejong.projectservice.support.common.util;
 
 
 
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
-import com.sejong.projectservice.domains.news.domain.NewsDto;
+import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
+import com.sejong.projectservice.domains.news.dto.NewsDto;
 
 import java.util.List;
 

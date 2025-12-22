@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.collaborator.controller;
 
 
-import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
+import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
 import com.sejong.projectservice.domains.collaborator.service.CollaboratorService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

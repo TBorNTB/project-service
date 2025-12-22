@@ -1,6 +1,7 @@
 package com.sejong.projectservice.domains.collaborator.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

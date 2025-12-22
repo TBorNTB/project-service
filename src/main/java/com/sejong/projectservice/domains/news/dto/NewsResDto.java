@@ -1,7 +1,6 @@
 package com.sejong.projectservice.domains.news.dto;
 
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
-import com.sejong.projectservice.domains.news.domain.NewsDto;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;

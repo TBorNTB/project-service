@@ -1,6 +1,6 @@
 package com.sejong.projectservice.support.common.redis;
 
-import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
+import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;

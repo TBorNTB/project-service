@@ -3,7 +3,7 @@ package com.sejong.projectservice.domains.csknowledge.util;
 
 
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
+import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.domains.user.UserId;
 
 import java.time.LocalDateTime;

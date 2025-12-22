@@ -2,16 +2,16 @@ package com.sejong.projectservice.application.project.controller.fixture;
 
 import static org.mockito.Mockito.mock;
 
-import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
-import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
+import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
 import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
-import com.sejong.projectservice.domains.category.domain.CategoryDto;
+import com.sejong.projectservice.domains.category.dto.CategoryDto;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
-import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
+import com.sejong.projectservice.domains.subgoal.dto.SubGoalDto;
+import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;

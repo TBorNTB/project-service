@@ -1,12 +1,12 @@
 package com.sejong.projectservice.domains.project.kafka;
 
-import com.sejong.projectservice.domains.category.domain.CategoryDto;
-import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
+import com.sejong.projectservice.domains.category.dto.CategoryDto;
+import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
-import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
+import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

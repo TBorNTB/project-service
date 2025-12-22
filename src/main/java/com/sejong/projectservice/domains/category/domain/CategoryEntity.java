@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.category.domain;
 
-import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.category.dto.CategoryDto;
 import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;

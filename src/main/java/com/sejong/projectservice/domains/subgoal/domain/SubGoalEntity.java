@@ -2,6 +2,7 @@ package com.sejong.projectservice.domains.subgoal.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.subgoal.dto.SubGoalDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

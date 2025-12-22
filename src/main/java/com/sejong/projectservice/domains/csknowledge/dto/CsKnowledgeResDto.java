@@ -1,7 +1,5 @@
 package com.sejong.projectservice.domains.csknowledge.dto;
 
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
-
 import java.time.LocalDateTime;
 
 public record CsKnowledgeResDto(

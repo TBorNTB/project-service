@@ -21,7 +21,7 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
-import com.sejong.projectservice.domains.news.domain.NewsDto;
+import com.sejong.projectservice.domains.news.dto.NewsDto;
 import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.domains.news.kafka.NewsEventPublisher;
 import lombok.RequiredArgsConstructor;

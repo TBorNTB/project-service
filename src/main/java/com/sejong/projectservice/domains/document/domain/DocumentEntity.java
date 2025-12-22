@@ -2,6 +2,7 @@ package com.sejong.projectservice.domains.document.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
+import com.sejong.projectservice.domains.document.dto.DocumentDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

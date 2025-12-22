@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.csknowledge.kafka;
 
 
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
+import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

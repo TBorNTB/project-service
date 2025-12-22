@@ -2,7 +2,7 @@ package com.sejong.projectservice.domains.subgoal.service;
 
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
+import com.sejong.projectservice.domains.subgoal.dto.SubGoalDto;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import com.sejong.projectservice.domains.subgoal.dto.SubGoalCheckResponse;
 import com.sejong.projectservice.domains.subgoal.dto.SubGoalDeleteResponse;

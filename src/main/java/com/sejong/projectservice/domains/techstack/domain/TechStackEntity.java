@@ -1,8 +1,8 @@
 package com.sejong.projectservice.domains.techstack.domain;
 
-import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.domains.techstack.dto.TechStackCreateReq;
+import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

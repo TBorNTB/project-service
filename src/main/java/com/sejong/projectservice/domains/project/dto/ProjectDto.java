@@ -1,11 +1,11 @@
-package com.sejong.projectservice.domains.project.domain;
+package com.sejong.projectservice.domains.project.dto;
 
-import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
-import com.sejong.projectservice.domains.document.domain.DocumentDto;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
-import com.sejong.projectservice.domains.category.domain.CategoryDto;
+import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
+import com.sejong.projectservice.domains.document.dto.DocumentDto;
+import com.sejong.projectservice.domains.subgoal.dto.SubGoalDto;
+import com.sejong.projectservice.domains.category.dto.CategoryDto;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
-import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
+import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

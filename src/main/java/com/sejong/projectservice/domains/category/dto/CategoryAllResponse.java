@@ -1,6 +1,5 @@
 package com.sejong.projectservice.domains.category.dto;
 
-import com.sejong.projectservice.domains.category.domain.CategoryDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

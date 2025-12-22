@@ -1,8 +1,9 @@
-package com.sejong.projectservice.domains.document.domain;
+package com.sejong.projectservice.domains.document.dto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

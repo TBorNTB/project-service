@@ -5,7 +5,7 @@ import com.sejong.projectservice.domains.subgoal.dto.SubGoalDeleteResponse;
 import com.sejong.projectservice.domains.subgoal.dto.SubGoalRequest;
 import com.sejong.projectservice.domains.subgoal.dto.SubGoalResponse;
 import com.sejong.projectservice.domains.subgoal.service.SubGoalService;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
+import com.sejong.projectservice.domains.subgoal.dto.SubGoalDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

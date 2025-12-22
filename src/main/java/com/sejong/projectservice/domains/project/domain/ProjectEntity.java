@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.project.domain;
 
+import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;

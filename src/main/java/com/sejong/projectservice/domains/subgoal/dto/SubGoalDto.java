@@ -1,5 +1,6 @@
-package com.sejong.projectservice.domains.subgoal.domain;
+package com.sejong.projectservice.domains.subgoal.dto;
 
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

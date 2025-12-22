@@ -1,8 +1,8 @@
-package com.sejong.projectservice.domains.category.domain;
+package com.sejong.projectservice.domains.category.dto;
 
 import java.util.List;
-import java.util.Objects;
 
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.collaborator.service;
 
 import com.sejong.projectservice.support.common.internal.UserExternalService;
-import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
+import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 

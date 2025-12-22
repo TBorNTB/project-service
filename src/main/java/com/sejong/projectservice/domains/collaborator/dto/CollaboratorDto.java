@@ -1,5 +1,6 @@
-package com.sejong.projectservice.domains.collaborator.domain;
+package com.sejong.projectservice.domains.collaborator.dto;
 
+import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

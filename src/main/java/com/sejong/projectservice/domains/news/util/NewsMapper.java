@@ -3,7 +3,7 @@ package com.sejong.projectservice.domains.news.util;
 
 import com.sejong.projectservice.support.common.file.Filepath;
 import com.sejong.projectservice.domains.news.domain.Content;
-import com.sejong.projectservice.domains.news.domain.NewsDto;
+import com.sejong.projectservice.domains.news.dto.NewsDto;
 import com.sejong.projectservice.domains.user.UserId;
 import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.domains.news.domain.ContentEmbeddable;

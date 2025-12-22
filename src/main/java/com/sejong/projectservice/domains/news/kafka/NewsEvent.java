@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.news.kafka;
 
 import com.sejong.projectservice.domains.news.domain.Content;
-import com.sejong.projectservice.domains.news.domain.NewsDto;
+import com.sejong.projectservice.domains.news.dto.NewsDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

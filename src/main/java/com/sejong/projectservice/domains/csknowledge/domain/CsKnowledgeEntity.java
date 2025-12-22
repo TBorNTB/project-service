@@ -2,6 +2,7 @@ package com.sejong.projectservice.domains.csknowledge.domain;
 
 
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
+import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.user.UserId;
 import com.sejong.projectservice.support.common.exception.BaseException;
@@ -13,8 +14,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(

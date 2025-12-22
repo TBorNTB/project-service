@@ -1,4 +1,4 @@
-package com.sejong.projectservice.domains.csknowledge.domain;
+package com.sejong.projectservice.domains.csknowledge.dto;
 
 
 import com.sejong.projectservice.domains.user.UserId;

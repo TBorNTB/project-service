@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.project.kafka;
 
-import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.AllArgsConstructor;

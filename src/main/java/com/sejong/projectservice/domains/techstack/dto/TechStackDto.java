@@ -1,7 +1,8 @@
-package com.sejong.projectservice.domains.techstack.domain;
+package com.sejong.projectservice.domains.techstack.dto;
 
 import java.util.List;
-import java.util.Objects;
+
+import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
