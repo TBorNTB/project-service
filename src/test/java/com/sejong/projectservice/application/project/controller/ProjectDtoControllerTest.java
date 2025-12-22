@@ -24,7 +24,7 @@ import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfo
 import com.sejong.projectservice.domains.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.domains.project.service.ProjectService;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.Project;
+import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import com.sejong.projectservice.domains.project.controller.ProjectController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +45,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @WebMvcTest(ProjectController.class)
 @AutoConfigureMockMvc
 @Import(MockBeansConfig.class)
-class ProjectControllerTest {
+class ProjectDtoControllerTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -130,8 +130,8 @@ class ProjectControllerTest {
     void 특정_프로젝트를_정상적으로_반환한다() throws Exception {
         //given
         Long projectId = 1L;
-        Project project = createProject("테스트_제목");
-        ProjectSpecifyInfo response = ProjectSpecifyInfo.from(project);
+        ProjectDto projectDto = createProject("테스트_제목");
+        ProjectSpecifyInfo response = ProjectSpecifyInfo.from(projectDto);
         when(projectService.findOne(projectId)).thenReturn(response);
 
         //when && then

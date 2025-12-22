@@ -2,16 +2,16 @@ package com.sejong.projectservice.application.project.controller.fixture;
 
 import static org.mockito.Mockito.mock;
 
+import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
+import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
 import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
-import com.sejong.projectservice.domains.category.domain.Category;
-import com.sejong.projectservice.domains.collaborator.domain.Collaborator;
+import com.sejong.projectservice.domains.category.domain.CategoryDto;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.Project;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.data.domain.Page;
@@ -55,8 +55,8 @@ public class ProjectFixture {
         return ProjectAddResponse.from(title, "저장 완료!");
     }
 
-    public static Project createProject(String title) {
-        return Project.builder()
+    public static ProjectDto createProject(String title) {
+        return ProjectDto.builder()
                 .id(1L)
                 .title(title)
                 .description("Spring Boot를 활용한 REST API 서버 개발 프로젝트입니다.")
@@ -74,23 +74,23 @@ public class ProjectFixture {
 //                            }
 //                        """)
 //                .userId(userId)
-                .categories(List.of(mock(Category.class), mock(Category.class)))
-                .collaborators(List.of(mock(Collaborator.class), mock(Collaborator.class)))
-                .techStacks(List.of(mock(TechStack.class), mock(TechStack.class)))
-                .subGoals(List.of(mock(SubGoal.class), mock(SubGoal.class)))
+                .categories(List.of(mock(CategoryDto.class), mock(CategoryDto.class)))
+                .collaboratorDtos(List.of(mock(CollaboratorDto.class), mock(CollaboratorDto.class)))
+                .techStackDtos(List.of(mock(TechStackDto.class), mock(TechStackDto.class)))
+                .subGoalDtos(List.of(mock(SubGoalDto.class), mock(SubGoalDto.class)))
                 .build();
     }
 
     public static ProjectPageResponse createProjectPageResponse() {
-        List<Project> projects = List.of(
+        List<ProjectDto> projectDtos = List.of(
                 createProject("테스트 프로젝트 A"),
                 createProject("테스트 프로젝트 B")
         );
 
-        Page<Project> projectPage = new PageImpl<>(
-                projects,
+        Page<ProjectDto> projectPage = new PageImpl<>(
+                projectDtos,
                 PageRequest.of(0, 10),
-                projects.size()
+                projectDtos.size()
         );
 
         return ProjectPageResponse.from(projectPage);
