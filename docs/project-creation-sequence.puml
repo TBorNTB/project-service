@@ -1,4 +1,4 @@
-@startuml project-creation-sequence
+@startuml projectDto-creation-sequence
 !theme plain
 skinparam backgroundColor #FFFFFF
 
@@ -9,7 +9,7 @@ participant "ProjectRepository" as Repository
 participant "ElasticRepository" as Elastic
 participant "Redis" as Cache
 
-User -> Controller: POST /projects
+User -> Controller: POST /projectDtos
 activate Controller
 
 Controller -> Service: createProject(request)
@@ -27,7 +27,7 @@ deactivate Repository
 Service -> Service: createProjectDoc()
 Service -> Elastic: save(projectDoc)
 activate Elastic
-Elastic -> Elastic: index document
+Elastic -> Elastic: index documentDto
 Elastic --> Service: indexed
 deactivate Elastic
 
@@ -44,3 +44,4 @@ Controller --> User: 201 Created + Project Info
 deactivate Controller
 
 @enduml
+

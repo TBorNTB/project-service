@@ -3,7 +3,7 @@
 skinparam backgroundColor #FFFFFF
 skinparam linetype ortho
 
-entity "projects" {
+entity "projectDtos" {
   * id : BIGINT
   --
   * title : VARCHAR(255)
@@ -30,7 +30,7 @@ entity "tech_stacks" {
   * icon_url : VARCHAR(500)
 }
 
-entity "collaborators" {
+entity "collaboratorDtos" {
   * id : BIGINT
   --
   * project_id : BIGINT
@@ -74,15 +74,16 @@ entity "project_tech_stacks" {
 }
 
 ' Relationships
-projects ||--o{ collaborators : has
-projects ||--o{ sub_goals : contains
-projects ||--o{ documents : contains
-projects }o--o{ categories : belongs_to
-projects }o--o{ tech_stacks : uses
+projectDtos ||--o{ collaboratorDtos : has
+projectDtos ||--o{ sub_goals : contains
+projectDtos ||--o{ documents : contains
+projectDtos }o--o{ categories : belongs_to
+projectDtos }o--o{ tech_stacks : uses
 
-project_categories }o--|| projects : references
+project_categories }o--|| projectDtos : references
 project_categories }o--|| categories : references
-project_tech_stacks }o--|| projects : references
+project_tech_stacks }o--|| projectDtos : references
 project_tech_stacks }o--|| tech_stacks : references
 
 @enduml
+

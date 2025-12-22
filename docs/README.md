@@ -9,12 +9,12 @@
 - 외부 서비스와의 연동 관계
 - 데이터베이스 연결 구조
 
-### 2. `project-class.puml` - Project 도메인 클래스 구조
+### 2. `projectDto-class.puml` - Project 도메인 클래스 구조
 - Project 관련 도메인 클래스들의 관계
 - Application, Core, Infrastructure 레이어 구조
 - 주요 메서드와 속성
 
-### 3. `project-creation-sequence.puml` - 프로젝트 생성 시퀀스
+### 3. `projectDto-creation-sequence.puml` - 프로젝트 생성 시퀀스
 - 프로젝트 생성 과정의 상세한 흐름
 - 각 컴포넌트 간의 상호작용
 - 데이터 저장 및 캐시 갱신 과정
@@ -73,3 +73,4 @@ VS Code PlantUML 확장 프로그램에서:
 - 모든 `.puml` 파일은 UTF-8 인코딩으로 저장
 - 한글 텍스트 사용 가능
 - 다이어그램 수정 시 Git에 커밋하여 버전 관리
+
