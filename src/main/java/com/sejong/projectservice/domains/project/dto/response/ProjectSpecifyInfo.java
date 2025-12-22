@@ -1,17 +1,23 @@
 package com.sejong.projectservice.domains.project.dto.response;
 
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.collaborator.dto.CollaboratorResponse;
 import com.sejong.projectservice.client.response.UserNameInfo;
-import com.sejong.projectservice.domains.category.domain.Category;
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.domains.category.domain.CategoryDto;
+import com.sejong.projectservice.domains.document.domain.DocumentDto;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.Project;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
+import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,13 +44,13 @@ public class ProjectSpecifyInfo {
     private String thumbnailUrl;
     private String contentJson;
 
-    private List<SubGoal> subGoals = new ArrayList<>();
-    private List<Category> categories = new ArrayList<>();
-    private List<TechStack> techStacks = new ArrayList<>();
+    private List<SubGoalDto> subGoalDtos = new ArrayList<>();
+    private List<CategoryDto> categories = new ArrayList<>();
+    private List<TechStackDto> techStackDtos = new ArrayList<>();
     private List<CollaboratorResponse> collaborators = new ArrayList<>();
-    private List<Document> documents = new ArrayList<>();
+    private List<DocumentDto> documentDtos = new ArrayList<>();
 
-    public static ProjectSpecifyInfo from(Project project, Map<String, UserNameInfo> usernames) {
+    public static ProjectSpecifyInfo from(ProjectEntity project, Map<String, UserNameInfo> usernames) {
 
         List<CollaboratorResponse> collaboratorResponseList = project.getCollaborators().stream()
                 .map(collaborator -> {
@@ -52,6 +58,14 @@ public class ProjectSpecifyInfo {
                             usernames.get(collaborator.getCollaboratorName()).nickname(),
                             usernames.get(collaborator.getCollaboratorName()).realName());
                 }).toList();
+
+
+        List<CategoryEntity> categoryEntities = project.getProjectCategories().stream()
+                .map(ProjectCategoryEntity::getCategoryEntity).toList();
+
+        List<TechStackEntity> techStackEntities = project.getProjectTechStacks().stream()
+                .map(ProjectTechStackEntity::getTechStackEntity)
+                .toList();
 
         return ProjectSpecifyInfo.builder()
                 .id(project.getId())
@@ -64,11 +78,11 @@ public class ProjectSpecifyInfo {
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .thumbnailUrl(project.getThumbnailUrl())
-                .categories(project.getCategories())
-                .subGoals(project.getSubGoals())
-                .techStacks(project.getTechStacks())
+                .categories(CategoryDto.from2(categoryEntities))
+                .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))
+                .techStackDtos(TechStackDto.from2(techStackEntities))
                 .collaborators(collaboratorResponseList)
-                .documents(project.getDocuments())
+                .documentDtos(DocumentDto.from2(project.getDocuments()))
                 .build();
     }
 }

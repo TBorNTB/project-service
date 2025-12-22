@@ -1,28 +1,28 @@
 package com.sejong.projectservice.domains.project.repository;
 
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.Project;
+import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ProjectRepository {
 
-    Project save(Project project);
+    ProjectDto save(ProjectDto projectDto);
 
-    Page<Project> findAll(Pageable pageable);
+    Page<ProjectDto> findAll(Pageable pageable);
 
-    Page<Project> searchWithFilters(String keyword, ProjectStatus status, Pageable pageable);
+    Page<ProjectDto> searchWithFilters(String keyword, ProjectStatus status, Pageable pageable);
 
-    Project findOne(Long projectId);
+    ProjectDto findOne(Long projectId);
 
     boolean existsById(Long postId);
 
     void deleteById(Long projectId);
 
 
-    Project updateCollaborator(Project project);
+    ProjectDto updateCollaborator(ProjectDto projectDto);
 
-    Project update(Project project);
+    ProjectDto update(ProjectDto projectDto);
 
     Long getProjectCount();
 }

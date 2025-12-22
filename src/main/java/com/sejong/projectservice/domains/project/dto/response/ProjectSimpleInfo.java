@@ -1,16 +1,21 @@
 package com.sejong.projectservice.domains.project.dto.response;
 
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.collaborator.dto.CollaboratorResponse;
 import com.sejong.projectservice.client.response.UserNameInfo;
-import com.sejong.projectservice.domains.category.domain.Category;
+import com.sejong.projectservice.domains.category.domain.CategoryDto;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.Project;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
+import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,13 +39,13 @@ public class ProjectSimpleInfo {
     private LocalDateTime updatedAt;
     private String thumbnailUrl;
 
-    private List<SubGoal> subGoals = new ArrayList<>();
-    private List<Category> categories = new ArrayList<>();
-    private List<TechStack> techStacks = new ArrayList<>();
+    private List<SubGoalDto> subGoalDtos = new ArrayList<>();
+    private List<CategoryDto> categories = new ArrayList<>();
+    private List<TechStackDto> techStackDtos = new ArrayList<>();
     private List<CollaboratorResponse> collaborators = new ArrayList<>();
     private Integer collaboratorSize;
 
-    public static ProjectSimpleInfo from(Project project, Map<String, UserNameInfo> userNameInfos) {
+    public static ProjectSimpleInfo from(ProjectEntity project, Map<String, UserNameInfo> userNameInfos) {
 
         List<CollaboratorResponse> collaboratorList = project.getCollaborators().stream()
                 .map(collaborator -> {
@@ -50,6 +55,13 @@ public class ProjectSimpleInfo {
                             userNameInfos.get(collaborator.getCollaboratorName()).nickname(),
                             userNameInfos.get(collaborator.getCollaboratorName()).realName());
                 }).toList();
+
+        List<CategoryEntity> categoryEntities = project.getProjectCategories().stream()
+                .map(ProjectCategoryEntity::getCategoryEntity).toList();
+
+        List<TechStackEntity> techStackEntities = project.getProjectTechStacks().stream()
+                .map(ProjectTechStackEntity::getTechStackEntity)
+                .toList();
 
         return ProjectSimpleInfo.builder()
                 .id(project.getId())
@@ -62,10 +74,10 @@ public class ProjectSimpleInfo {
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .thumbnailUrl(project.getThumbnailUrl())
-                .categories(project.getCategories())
-                .techStacks(project.getTechStacks())
+                .categories(CategoryDto.from2(categoryEntities))
+                .techStackDtos(TechStackDto.from2(techStackEntities))
                 .collaborators(collaboratorList)
-                .subGoals(project.getSubGoals())
+                .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))
                 .collaboratorSize(collaboratorList.size())
                 .build();
     }

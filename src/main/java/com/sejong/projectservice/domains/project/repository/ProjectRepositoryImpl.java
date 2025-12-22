@@ -1,9 +1,9 @@
 package com.sejong.projectservice.domains.project.repository;
 
+import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import com.sejong.projectservice.support.common.error.code.ErrorCode;
 import com.sejong.projectservice.support.common.error.exception.ApiException;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.Project;
 import com.sejong.projectservice.support.common.util.Mapper;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import java.util.List;
@@ -21,58 +21,58 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     private final Mapper mapper;
 
     @Override
-    public Project save(Project project) {
+    public ProjectDto save(ProjectDto projectDto) {
         ProjectEntity projectEntity;
 
-        if (project.getId() == null) {
-            projectEntity = ProjectEntity.from(project);
+        if (projectDto.getId() == null) {
+            projectEntity = ProjectEntity.from(projectDto);
             ProjectEntity savedProjectEntity = projectJpaRepository.save(projectEntity);
 
             // collaborator, subgoal, document 엔티티들이 projectentity에 종속되어있음.
             // 따라서 projectentity가 먼저 영속화 되어있어야 함.
-            mapper.map(project, projectEntity);
+            mapper.map(projectDto, projectEntity);
             savedProjectEntity = projectJpaRepository.save(projectEntity);
 
             return savedProjectEntity.toDomain();
         } else {
-            projectEntity = projectJpaRepository.findById(project.getId())
+            projectEntity = projectJpaRepository.findById(projectDto.getId())
                     .orElseThrow(() -> new RuntimeException("project not found"));
-            projectEntity.update(project);
+            projectEntity.update(projectDto);
             return projectEntity.toDomain();
         }
     }
 
     @Override
-    public Page<Project> findAll(Pageable pageable) {
+    public Page<ProjectDto> findAll(Pageable pageable) {
         Page<ProjectEntity> pageProjectEntities = projectJpaRepository.findAll(pageable);
-        List<Project> projects = pageProjectEntities
+        List<ProjectDto> projectDtos = pageProjectEntities
                 .stream()
                 .map(ProjectEntity::toDomain)
                 .toList();
 
         return new PageImpl<>(
-                projects,
+                projectDtos,
                 pageable,
                 pageProjectEntities.getTotalElements()
         );
     }
 
     @Override
-    public Page<Project> searchWithFilters(String keyword, ProjectStatus status, Pageable pageable) {
+    public Page<ProjectDto> searchWithFilters(String keyword, ProjectStatus status, Pageable pageable) {
         Page<ProjectEntity> pageProjectEntities = projectJpaRepository.searchWithFilters(keyword, status,
                 pageable);
-        List<Project> projects = pageProjectEntities.stream()
+        List<ProjectDto> projectDtos = pageProjectEntities.stream()
                 .map(ProjectEntity::toDomain)
                 .toList();
         return new PageImpl<>(
-                projects,
+                projectDtos,
                 pageable,
                 pageProjectEntities.getTotalElements()
         );
     }
 
     @Override
-    public Project findOne(Long projectId) {
+    public ProjectDto findOne(Long projectId) {
         ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         return projectEntity.toDomain();
@@ -84,11 +84,11 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    public Project updateCollaborator(Project project) {
-        ProjectEntity projectEntity = projectJpaRepository.findById(project.getId())
+    public ProjectDto updateCollaborator(ProjectDto projectDto) {
+        ProjectEntity projectEntity = projectJpaRepository.findById(projectDto.getId())
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 프로젝트트 존재하지 않습니다."));
 
-        mapper.updateCollaborator(project, projectEntity);
+        mapper.updateCollaborator(projectDto, projectEntity);
         return projectEntity.toDomain();
     }
 
@@ -98,11 +98,11 @@ public class ProjectRepositoryImpl implements ProjectRepository {
     }
 
     @Override
-    public Project update(Project project) {
-        ProjectEntity projectEntity = projectJpaRepository.findById(project.getId())
+    public ProjectDto update(ProjectDto projectDto) {
+        ProjectEntity projectEntity = projectJpaRepository.findById(projectDto.getId())
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 사용자는 존재하지 않습니다."));
 
-        mapper.updateCategory(project, projectEntity);
+        mapper.updateCategory(projectDto, projectEntity);
         return projectEntity.toDomain();
     }
 

@@ -1,13 +1,13 @@
 package com.sejong.projectservice.domains.project.domain;
 
+import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
+import com.sejong.projectservice.domains.document.domain.DocumentDto;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
 import com.sejong.projectservice.support.common.error.code.ErrorCode;
 import com.sejong.projectservice.support.common.error.exception.ApiException;
-import com.sejong.projectservice.domains.category.domain.Category;
-import com.sejong.projectservice.domains.collaborator.domain.Collaborator;
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.domains.category.domain.CategoryDto;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Project {
+public class ProjectDto {
 
     private LocalDateTime updatedAt;
     private LocalDateTime createdAt;
@@ -29,17 +29,17 @@ public class Project {
     private String username;
     private String nickname;
     private String realname;
-    private List<Collaborator> collaborators = new ArrayList<>();
+    private List<CollaboratorDto> collaboratorDtos = new ArrayList<>();
 
     private String title;
     private String description;
     private ProjectStatus projectStatus;
     private String thumbnailUrl;
 
-    private List<SubGoal> subGoals = new ArrayList<>();
-    private List<Category> categories = new ArrayList<>();
-    private List<TechStack> techStacks = new ArrayList<>();
-    private List<Document> documents = new ArrayList<>();
+    private List<SubGoalDto> subGoalDtos = new ArrayList<>();
+    private List<CategoryDto> categories = new ArrayList<>();
+    private List<TechStackDto> techStackDtos = new ArrayList<>();
+    private List<DocumentDto> documentDtos = new ArrayList<>();
 
 
     public void update(String title, String description,
@@ -51,8 +51,8 @@ public class Project {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void addDocument(Document doc) {
-        documents.add(doc);
+    public void addDocument(DocumentDto doc) {
+        documentDtos.add(doc);
     }
 
     public void validateUserPermission(String username) {
@@ -73,24 +73,24 @@ public class Project {
     }
 
     public void updateCollaborator(List<String> collaboratorNames) {
-        List<Collaborator> collaboratorList = collaboratorNames.stream()
-                .map(Collaborator::from)
+        List<CollaboratorDto> collaboratorDtoList = collaboratorNames.stream()
+                .map(CollaboratorDto::from)
                 .distinct()
                 .toList();
 
-        this.collaborators.clear();
-        this.collaborators.addAll(collaboratorList);
+        this.collaboratorDtos.clear();
+        this.collaboratorDtos.addAll(collaboratorDtoList);
     }
 
     public boolean ensureCollaboratorExists(String userName) {
-        boolean exists = collaborators.stream()
+        boolean exists = collaboratorDtos.stream()
                 .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
 
         return exists;
     }
 
     public void checkSubGoal(Long subGoalId) {
-        SubGoal selectedSubGaol = subGoals.stream()
+        SubGoalDto selectedSubGaol = subGoalDtos.stream()
                 .filter(subGoal -> subGoal.getId().equals(subGoalId))
                 .findFirst()
                 .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 subGoalId는 관련 프로젝트 내에 없습니다."));
@@ -99,8 +99,8 @@ public class Project {
     }
 
     public void updateCategory(List<String> categoryNames) {
-        List<Category> categoriesList = categoryNames.stream()
-                .map(Category::of)
+        List<CategoryDto> categoriesList = categoryNames.stream()
+                .map(CategoryDto::of)
                 .distinct()
                 .toList();
 

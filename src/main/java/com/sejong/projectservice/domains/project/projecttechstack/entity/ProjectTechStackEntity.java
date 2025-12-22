@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.project.projecttechstack.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
 import jakarta.persistence.Column;
@@ -30,10 +31,12 @@ public class ProjectTechStackEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "techstack_id", nullable = false)
     private TechStackEntity techStackEntity;
 

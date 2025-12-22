@@ -1,21 +1,23 @@
 package com.sejong.projectservice.domains.project.util;
 
+import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
+import com.sejong.projectservice.domains.document.domain.DocumentDto;
 import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.client.response.UserNameInfo;
-import com.sejong.projectservice.domains.category.domain.Category;
-import com.sejong.projectservice.domains.collaborator.domain.Collaborator;
-import com.sejong.projectservice.domains.document.domain.Document;
-import com.sejong.projectservice.domains.project.domain.Project;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.category.domain.CategoryDto;
+import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Assembler {
-    public static Document toDocument(DocumentCreateReq request, String yorkieDocumentId, Long projectId) {
-        return Document.builder()
+    public static DocumentDto toDocument(DocumentCreateReq request, String yorkieDocumentId, Long projectId) {
+        return DocumentDto.builder()
                 .id(null)
                 .yorkieDocumentId(yorkieDocumentId)
                 .title(request.getTitle())
@@ -28,24 +30,30 @@ public class Assembler {
                 .build();
     }
 
-    public static Project toProject(ProjectFormRequest request, String username, UserNameInfo userNameInfo) {
-        List<Collaborator> collaborators = request.getCollaborators().stream()
-                .map(Collaborator::from)
+    public static ProjectEntity toProjectEntity(ProjectFormRequest request, String username, UserNameInfo userNameInfo) {
+        ProjectEntity projectEntity = ProjectEntity.of(request,username,userNameInfo);
+
+        return projectEntity;
+    }
+
+    public static ProjectDto toProject(ProjectFormRequest request, String username, UserNameInfo userNameInfo) {
+        List<CollaboratorDto> collaboratorDtos = request.getCollaborators().stream()
+                .map(CollaboratorDto::from)
                 .toList();
 
-        List<TechStack> techStacks = request.getTechStacks().stream()
-                .map(TechStack::of)
+        List<TechStackDto> techStackDtos = request.getTechStacks().stream()
+                .map(TechStackDto::of)
                 .toList();
 
-        List<Category> categories = request.getCategories().stream()
-                .map(Category::of)
+        List<CategoryDto> categories = request.getCategories().stream()
+                .map(CategoryDto::of)
                 .toList();
 
-        List<SubGoal> subGoals = request.getSubGoals().stream()
-                .map(it -> SubGoal.from(it, false, LocalDateTime.now(), LocalDateTime.now()))
+        List<SubGoalDto> subGoalDtos = request.getSubGoals().stream()
+                .map(it -> SubGoalDto.from(it, false, LocalDateTime.now(), LocalDateTime.now()))
                 .toList();
 
-        return Project.builder()
+        return ProjectDto.builder()
                 .title(request.getTitle())
                 .username(username)
                 .nickname(userNameInfo.nickname())
@@ -56,10 +64,10 @@ public class Assembler {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .thumbnailUrl(request.getThumbnail())
-                .techStacks(techStacks)
-                .collaborators(collaborators)
-                .subGoals(subGoals)
-                .documents(new ArrayList<>())
+                .techStackDtos(techStackDtos)
+                .collaboratorDtos(collaboratorDtos)
+                .subGoalDtos(subGoalDtos)
+                .documentDtos(new ArrayList<>())
                 .build();
     }
 }

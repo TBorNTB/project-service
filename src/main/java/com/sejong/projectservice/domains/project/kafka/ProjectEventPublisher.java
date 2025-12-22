@@ -2,7 +2,8 @@ package com.sejong.projectservice.domains.project.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sejong.projectservice.domains.project.domain.Project;
+import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -15,12 +16,12 @@ public class ProjectEventPublisher {
     private final ObjectMapper objectMapper;
     private final String PROJECT_EVENTS = "project";
 
-    public void publishCreated(Project project){
-        publish(project, Type.CREATED);
+    public void publishCreated(ProjectEntity project){
+        publish2(project, Type.CREATED);
     }
 
-    public void publishUpdated(Project project) {
-        publish(project, Type.UPDATED);
+    public void publishUpdated(ProjectEntity project) {
+        publish2(project, Type.UPDATED);
     }
 
     public void publishDeleted(String projectId) {
@@ -28,8 +29,12 @@ public class ProjectEventPublisher {
         kafkaTemplate.send(PROJECT_EVENTS, projectId,  toJsonString(event));
     }
 
-    private void publish(Project project, Type type) {
-        ProjectIndexEvent event = ProjectIndexEvent.of(project, type, System.currentTimeMillis());
+    private void publish(ProjectDto projectDto, Type type) {
+        ProjectIndexEvent event = ProjectIndexEvent.of(projectDto, type, System.currentTimeMillis());
+        kafkaTemplate.send(PROJECT_EVENTS, event.getAggregatedId(), toJsonString(event));
+    }
+    private void publish2(ProjectEntity project, Type type) {
+        ProjectIndexEvent event = ProjectIndexEvent.of2(project, type, System.currentTimeMillis());
         kafkaTemplate.send(PROJECT_EVENTS, event.getAggregatedId(), toJsonString(event));
     }
 

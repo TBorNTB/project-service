@@ -1,11 +1,13 @@
 package com.sejong.projectservice.domains.project.domain;
 
-import com.sejong.projectservice.domains.category.domain.Category;
-import com.sejong.projectservice.domains.collaborator.domain.Collaborator;
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.domains.category.domain.CategoryDto;
+import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
+import com.sejong.projectservice.domains.document.domain.DocumentDto;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoal;
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
+import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
@@ -13,11 +15,14 @@ import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
 import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
+import com.sejong.projectservice.support.common.error.code.ErrorCode;
+import com.sejong.projectservice.support.common.error.exception.ApiException;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,13 +39,15 @@ public class ProjectEntity {
 
     @Id
     @Column(name = "project_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     private String title;
     private String description;
 
     private String username;
+    private String nickname;
+    private String realname;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(50)")
@@ -66,15 +73,34 @@ public class ProjectEntity {
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DocumentEntity> documents = new ArrayList<>();
 
-    public static ProjectEntity from(Project project) {
+    public static ProjectEntity from(ProjectDto projectDto) {
         return ProjectEntity.builder()
-                .title(project.getTitle())
-                .description(project.getDescription())
-                .username(project.getUsername())
-                .projectStatus(project.getProjectStatus())
-                .thumbnailUrl(project.getThumbnailUrl())
-                .createdAt(project.getCreatedAt())
-                .updatedAt(project.getUpdatedAt())
+                .title(projectDto.getTitle())
+                .description(projectDto.getDescription())
+                .username(projectDto.getUsername())
+                .projectStatus(projectDto.getProjectStatus())
+                .thumbnailUrl(projectDto.getThumbnailUrl())
+                .createdAt(projectDto.getCreatedAt())
+                .updatedAt(projectDto.getUpdatedAt())
+                .projectCategories(new ArrayList<>())
+                .projectTechStacks(new ArrayList<>())
+                .collaborators(new ArrayList<>())
+                .subGoals(new ArrayList<>())
+                .documents(new ArrayList<>())
+                .build();
+    }
+
+    public static ProjectEntity of(ProjectFormRequest request, String username, UserNameInfo userNameInfo) {
+        return ProjectEntity.builder()
+                .title(request.getTitle())
+                .description(request.getDescription())
+                .username(username)
+                .realname(userNameInfo.realName())
+                .nickname(userNameInfo.nickname())
+                .projectStatus(request.getProjectStatus())
+                .thumbnailUrl(request.getThumbnail())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .projectCategories(new ArrayList<>())
                 .projectTechStacks(new ArrayList<>())
                 .collaborators(new ArrayList<>())
@@ -114,41 +140,41 @@ public class ProjectEntity {
         documents.remove(documentEntity);
     }
 
-    public void update(Project project) {
-        this.title = project.getTitle();
-        this.description = project.getDescription();
-        this.projectStatus = project.getProjectStatus();
-        this.thumbnailUrl = project.getThumbnailUrl();
+    public void update(ProjectDto projectDto) {
+        this.title = projectDto.getTitle();
+        this.description = projectDto.getDescription();
+        this.projectStatus = projectDto.getProjectStatus();
+        this.thumbnailUrl = projectDto.getThumbnailUrl();
         this.updatedAt = LocalDateTime.now();
     }
 
-    public Project toDomain() {
+    public ProjectDto toDomain() {
 
-        List<Collaborator> collaboratorList = new ArrayList<>(collaborators.stream()
+        List<CollaboratorDto> collaboratorDtoList = new ArrayList<>(collaborators.stream()
                 .map(CollaboratorEntity::toDomain)
                 .toList());
 
-        List<Category> categories = new ArrayList<>(projectCategories.stream()
+        List<CategoryDto> categories = new ArrayList<>(projectCategories.stream()
                 .map(ProjectCategoryEntity::getCategoryEntity)
                 .map(CategoryEntity::toDomain)
                 .distinct()
                 .toList());
 
-        List<TechStack> uniqueTechStackList = new ArrayList<>(projectTechStacks.stream()
+        List<TechStackDto> uniqueTechStackDtoList = new ArrayList<>(projectTechStacks.stream()
                 .map(ProjectTechStackEntity::getTechStackEntity)
                 .map(TechStackEntity::toDomain)
                 .distinct()
                 .toList());
 
-        List<SubGoal> subGoalList = new ArrayList<>(subGoals.stream()
+        List<SubGoalDto> subGoalDtoList = new ArrayList<>(subGoals.stream()
                 .map(SubGoalEntity::toDomain)
                 .toList());
 
-        List<Document> documentList = new ArrayList<>(documents.stream()
+        List<DocumentDto> documentDtoList = new ArrayList<>(documents.stream()
                 .map(DocumentEntity::toDomain)
                 .toList());
 
-        return Project.builder()
+        return ProjectDto.builder()
                 .id(this.id)
                 .title(this.title)
                 .username(this.username)
@@ -158,10 +184,73 @@ public class ProjectEntity {
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .categories(categories)
-                .collaborators(collaboratorList)
-                .techStacks(uniqueTechStackList)
-                .subGoals(subGoalList)
-                .documents(documentList)
+                .collaboratorDtos(collaboratorDtoList)
+                .techStackDtos(uniqueTechStackDtoList)
+                .subGoalDtos(subGoalDtoList)
+                .documentDtos(documentDtoList)
                 .build();
+    }
+
+    public void update(String title, String description,
+                       ProjectStatus projectStatus, String thumbnailUrl) {
+        this.title = title;
+        this.description = description;
+        this.projectStatus = projectStatus;
+        this.thumbnailUrl = thumbnailUrl;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void validateUserPermission(String username) {
+        if (this.username.equals(username)) {
+            return;
+        }
+
+        boolean exists = ensureCollaboratorExists(username);
+        if (exists == false) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "해당 유저는 프로젝트 접근 권한이 없습니다.");
+        }
+    }
+
+    public void validateOwner(String username, String userRole) {
+        if (!this.username.equals(username) && !userRole.equalsIgnoreCase("ADMIN")) {
+            throw new ApiException(ErrorCode.BAD_REQUEST, "해당 유저는 프로젝트 Owner가 아닙니다.");
+        }
+    }
+
+
+    public boolean ensureCollaboratorExists(String userName) {
+        boolean exists = collaborators.stream()
+                .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
+
+        return exists;
+    }
+
+    public void checkSubGoal(Long subGoalId) {
+        SubGoalEntity selectedSubGaol = subGoals.stream()
+                .filter(subGoal -> subGoal.getId().equals(subGoalId))
+                .findFirst()
+                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 subGoalId는 관련 프로젝트 내에 없습니다."));
+
+        selectedSubGaol.check();
+    }
+
+    public void updateCategory(List<String> categoryNames,  List<CategoryEntity> categoryEntities1) {
+        this.projectCategories.clear(); // orphanRemoval로 기존 링크 전부 삭제
+        categoryEntities1.forEach(this::addCategory);
+    }
+
+    public void updateCollaborator(List<String> collaboratorNames) {
+        List<String> uniqueNames = collaboratorNames.stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .distinct()
+                .toList();
+
+        this.collaborators.clear();
+
+        for (String name : uniqueNames) {
+          CollaboratorEntity.of(name, this);
+        }
     }
 }

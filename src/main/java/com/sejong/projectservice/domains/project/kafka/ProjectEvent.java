@@ -1,10 +1,12 @@
 package com.sejong.projectservice.domains.project.kafka;
 
-import com.sejong.projectservice.domains.category.domain.Category;
-import com.sejong.projectservice.domains.collaborator.domain.Collaborator;
+import com.sejong.projectservice.domains.category.domain.CategoryDto;
+import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
+import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.Project;
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,20 +43,55 @@ public class ProjectEvent {
 
     private List<String> collaborators = new ArrayList<>();
 
-    public static ProjectEvent from(Project project){
+    public static ProjectEvent from(ProjectDto projectDto){
 
-        List<String> categoryNames = project.getCategories().stream()
-                .map(Category::getName)
+        List<String> categoryNames = projectDto.getCategories().stream()
+                .map(CategoryDto::getName)
                 .distinct()
                 .toList();
 
-        List<String> techStackNames = project.getTechStacks().stream()
-                .map(TechStack::getName)
+        List<String> techStackNames = projectDto.getTechStackDtos().stream()
+                .map(TechStackDto::getName)
+                .distinct()
+                .toList();
+
+        List<String> collaboratorNames = projectDto.getCollaboratorDtos().stream()
+                .map(CollaboratorDto::getCollaboratorName)
+                .distinct()
+                .toList();
+
+        return ProjectEvent.builder()
+                .id(projectDto.getId().toString())
+                .title(projectDto.getTitle())
+                .description(projectDto.getDescription())
+                .thumbnailUrl(projectDto.getThumbnailUrl())
+                .projectStatus(projectDto.getProjectStatus())
+                .createdAt(projectDto.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
+                .updatedAt(projectDto.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
+                .projectCategories(categoryNames)
+                .projectTechStacks(techStackNames)
+                .collaborators(collaboratorNames)
+                .build();
+    }
+
+    public static ProjectEvent from2(ProjectEntity project) {
+
+        List<String> categoryNames = project.getProjectCategories().stream()
+                .map(it -> {
+                    return it.getCategoryEntity().getName();
+                })
+                .distinct()
+                .toList();
+
+        List<String> techStackNames = project.getProjectTechStacks().stream()
+                .map(it -> {
+                    return it.getTechStackEntity().getName();
+                })
                 .distinct()
                 .toList();
 
         List<String> collaboratorNames = project.getCollaborators().stream()
-                .map(Collaborator::getCollaboratorName)
+                .map(CollaboratorEntity::getCollaboratorName)
                 .distinct()
                 .toList();
 

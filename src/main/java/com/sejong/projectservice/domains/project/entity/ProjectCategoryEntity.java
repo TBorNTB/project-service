@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.project.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import jakarta.persistence.Column;
@@ -30,10 +31,12 @@ public class ProjectCategoryEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity categoryEntity;
 

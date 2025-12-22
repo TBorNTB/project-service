@@ -1,6 +1,7 @@
 package com.sejong.projectservice.domains.project.kafka;
 
-import com.sejong.projectservice.domains.project.domain.Project;
+import com.sejong.projectservice.domains.project.domain.ProjectDto;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +18,8 @@ public class ProjectIndexEvent {
     private long occurredAt;
     private ProjectEvent projectEvent;
 
-    public static ProjectIndexEvent of(Project project,Type type, long occurredAt) {
-        ProjectEvent document = ProjectEvent.from(project);
+    public static ProjectIndexEvent of(ProjectDto projectDto, Type type, long occurredAt) {
+        ProjectEvent document = ProjectEvent.from(projectDto);
         return ProjectIndexEvent.builder()
                 .aggregatedId(document.getId())
                 .type(type)
@@ -26,6 +27,16 @@ public class ProjectIndexEvent {
                 .projectEvent(document)
                 .build();
     }
+    public static ProjectIndexEvent of2(ProjectEntity project, Type type, long occurredAt) {
+        ProjectEvent document = ProjectEvent.from2(project);
+        return ProjectIndexEvent.builder()
+                .aggregatedId(document.getId())
+                .type(type)
+                .occurredAt(occurredAt)
+                .projectEvent(document)
+                .build();
+    }
+
 
     public static ProjectIndexEvent deleteOf(String projectId,Type type, long occurredAt) {
         return ProjectIndexEvent.builder()

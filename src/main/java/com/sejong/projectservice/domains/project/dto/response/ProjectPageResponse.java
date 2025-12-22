@@ -1,9 +1,11 @@
 package com.sejong.projectservice.domains.project.dto.response;
 
 import com.sejong.projectservice.client.response.UserNameInfo;
-import com.sejong.projectservice.domains.project.domain.Project;
+
 import java.util.List;
 import java.util.Map;
+
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,7 +23,7 @@ public class ProjectPageResponse {
     Long totalElements;
     int page;
 
-    public static ProjectPageResponse from(Page<Project> projectPage, Map<String, UserNameInfo> userNameInfos) {
+    public static ProjectPageResponse from(Page<ProjectEntity> projectPage, Map<String, UserNameInfo> userNameInfos) {
 
         List<ProjectSimpleInfo> projectSimpleInfos = projectPage.stream()
                 .map(project -> {

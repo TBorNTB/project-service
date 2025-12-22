@@ -1,6 +1,7 @@
 package com.sejong.projectservice.domains.project.service;
 
-import com.sejong.projectservice.domains.project.util.Assembler;
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.repository.ProjectJpaRepository;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
 import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
@@ -13,11 +14,13 @@ import com.sejong.projectservice.client.UserExternalService;
 import com.sejong.projectservice.client.response.PostLikeCheckResponse;
 import com.sejong.projectservice.client.response.UserNameInfo;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
-import com.sejong.projectservice.domains.project.domain.Project;
-import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.domains.project.kafka.ProjectEventPublisher;
 import java.util.List;
 import java.util.Map;
+
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,39 +31,43 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProjectService {
 
-    private final ProjectRepository projectRepository;
     private final UserExternalService userExternalService;
     private final ProjectEventPublisher projectEventPublisher;
+    private final ProjectJpaRepository projectJpaRepository;
+    private final Mapper mapper;
 
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
         userExternalService.validateExistence(username, projectFormRequest.getCollaborators());
         Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(List.of(username));
-        Project project = Assembler.
-                toProject(projectFormRequest, username, userNameInfos.get(username));
-        Project savedProject = projectRepository.save(project);
+        ProjectEntity projectEntity = ProjectEntity.of(projectFormRequest,username,userNameInfos.get(username));
+        ProjectEntity savedProject = projectJpaRepository.save(projectEntity);
+        mapper.connectJoins(savedProject,projectFormRequest);
+
         projectEventPublisher.publishCreated(savedProject);
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
     }
 
     @Transactional
     public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest, String username) {
-        Project project = projectRepository.findOne(projectId);
+        ProjectEntity project = projectJpaRepository.findById(projectId)
+                .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
         project.validateUserPermission(username);
 
         project.update(projectUpdateRequest.getTitle(), projectUpdateRequest.getDescription(),
                 projectUpdateRequest.getProjectStatus(),
                 projectUpdateRequest.getThumbnailUrl());
-        Project savedProject = projectRepository.save(project);
+        ProjectEntity savedProject = projectJpaRepository.save(project);
         projectEventPublisher.publishUpdated(savedProject);
         return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
     }
 
     @Transactional
     public ProjectDeleteResponse removeProject(String username, Long projectId, String userRole) {
-        Project project = projectRepository.findOne(projectId);
+        ProjectEntity project = projectJpaRepository.findById(projectId)
+                .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
         project.validateOwner(username, userRole);
-        projectRepository.deleteById(projectId);
+        projectJpaRepository.deleteById(projectId);
         projectEventPublisher.publishDeleted(projectId.toString());
         return ProjectDeleteResponse.of(project.getTitle(), "삭제 완료");
     }
@@ -68,36 +75,39 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public ProjectPageResponse getAllProjects(Pageable pageable) {
 
-        Page<Project> projectPage = projectRepository.findAll(pageable);
-        List<String> usernames = ProjectUsernamesExtractor.extract(projectPage.getContent());
+        Page<ProjectEntity> projectEntityPage = projectJpaRepository.findAll(pageable);
+        List<String> usernames = ProjectUsernamesExtractor.extract(projectEntityPage.getContent());
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return ProjectPageResponse.from(projectPage, usernamesMap);
+        return ProjectPageResponse.from(projectEntityPage, usernamesMap);
     }
 
     @Transactional(readOnly = true)
     public ProjectPageResponse search(String keyword, ProjectStatus status, Pageable pageable) {
-        Page<Project> projectPage = projectRepository.searchWithFilters(keyword, status, pageable);
-        List<String> usernames = ProjectUsernamesExtractor.extract(projectPage.getContent());
+        Page<ProjectEntity> projectEntitiesPage = projectJpaRepository.searchWithFilters(keyword, status, pageable);
+        List<String> usernames = ProjectUsernamesExtractor.extract(projectEntitiesPage.getContent());
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return ProjectPageResponse.from(projectPage, usernamesMap);
+        return ProjectPageResponse.from(projectEntitiesPage, usernamesMap);
     }
 
     @Transactional(readOnly = true)
     public ProjectSpecifyInfo findOne(Long projectId) {
-        Project project = projectRepository.findOne(projectId);
-        List<String> usernames = ProjectUsernamesExtractor.extract(project);
+        ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
+                .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
+
+        List<String> usernames = ProjectUsernamesExtractor.extract(projectEntity);
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return ProjectSpecifyInfo.from(project, usernamesMap);
+        return ProjectSpecifyInfo.from(projectEntity, usernamesMap);
     }
 
     @Transactional(readOnly = true)
     public PostLikeCheckResponse checkPost(Long postId) {
-        boolean exists = projectRepository.existsById(postId);
+        boolean exists = projectJpaRepository.existsById(postId);
         if (exists) {
-            Project project = projectRepository.findOne(postId);
+            ProjectEntity project  = projectJpaRepository.findById(postId)
+                    .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
             return PostLikeCheckResponse.hasOfProject(project, true);
         }
 
@@ -106,12 +116,12 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public boolean exists(Long postId) {
-        return projectRepository.existsById(postId);
+        return projectJpaRepository.existsById(postId);
     }
 
     @Transactional(readOnly = true)
     public Long getProjectCount() {
-        Long count = projectRepository.getProjectCount();
+        Long count = projectJpaRepository.getProjectCount();
         return count;
     }
 }
