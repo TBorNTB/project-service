@@ -3,7 +3,7 @@ package com.sejong.projectservice.domains.csknowledge.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -20,12 +20,12 @@ public class CsKnowledgeEventPublisher {
     private final ObjectMapper objectMapper;
     private final String CS_KNOWLEDGE_EVENTS = "cs-knowledge";
 
-    public void publishCreated(CsKnowledge csKnowledge){
-        publish(csKnowledge, CREATED);
+    public void publishCreated(CsKnowledgeDto csKnowledgeDto){
+        publish(csKnowledgeDto, CREATED);
     }
 
-    public void publishUpdated(CsKnowledge csKnowledge) {
-        publish(csKnowledge, UPDATED);
+    public void publishUpdated(CsKnowledgeDto csKnowledgeDto) {
+        publish(csKnowledgeDto, UPDATED);
     }
 
     public void publishDeleted(Long csKnowledgeId) {
@@ -33,9 +33,9 @@ public class CsKnowledgeEventPublisher {
         kafkaTemplate.send(CS_KNOWLEDGE_EVENTS, csKnowledgeId.toString(),  toJsonString(event));
     }
 
-    private void publish(CsKnowledge csKnowledge, Type type) {
-        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledge, type, System.currentTimeMillis());
-        kafkaTemplate.send(CS_KNOWLEDGE_EVENTS, csKnowledge.getId().toString(), toJsonString(event));
+    private void publish(CsKnowledgeDto csKnowledgeDto, Type type) {
+        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledgeDto, type, System.currentTimeMillis());
+        kafkaTemplate.send(CS_KNOWLEDGE_EVENTS, csKnowledgeDto.getId().toString(), toJsonString(event));
     }
 
     private String toJsonString(Object object) {

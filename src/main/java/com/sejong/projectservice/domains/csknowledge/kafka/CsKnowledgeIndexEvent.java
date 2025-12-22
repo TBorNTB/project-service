@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.csknowledge.kafka;
 
 
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +17,9 @@ public class CsKnowledgeIndexEvent {
     private Type type;
     private long occurredAt;
 
-    public static CsKnowledgeIndexEvent of(CsKnowledge csKnowledge, Type type, long occurredAt) {
+    public static CsKnowledgeIndexEvent of(CsKnowledgeDto csKnowledgeDto, Type type, long occurredAt) {
         return CsKnowledgeIndexEvent.builder()
-                .csKnowledgeEvent(CsKnowledgeEvent.from(csKnowledge))
+                .csKnowledgeEvent(CsKnowledgeEvent.from(csKnowledgeDto))
                 .type(type)
                 .occurredAt(occurredAt)
                 .build();

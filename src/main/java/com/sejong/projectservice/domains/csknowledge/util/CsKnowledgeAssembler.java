@@ -3,15 +3,15 @@ package com.sejong.projectservice.domains.csknowledge.util;
 
 
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
 import com.sejong.projectservice.domains.user.UserId;
 
 import java.time.LocalDateTime;
 
 public class CsKnowledgeAssembler {
     
-    public static CsKnowledge toCsKnowledge(CsKnowledgeReqDto reqDto, String username) {
-        return CsKnowledge.builder()
+    public static CsKnowledgeDto toCsKnowledge(CsKnowledgeReqDto reqDto, String username) {
+        return CsKnowledgeDto.builder()
                 .title(reqDto.title())
                 .content(reqDto.content())
                 .writerId(UserId.of(username))
@@ -20,8 +20,8 @@ public class CsKnowledgeAssembler {
                 .build();
     }
     
-    public static CsKnowledge toCsKnowledgeForUpdate(Long id, CsKnowledgeReqDto reqDto, LocalDateTime createdAt, String username) {
-        return CsKnowledge.builder()
+    public static CsKnowledgeDto toCsKnowledgeForUpdate(Long id, CsKnowledgeReqDto reqDto, LocalDateTime createdAt, String username) {
+        return CsKnowledgeDto.builder()
                 .id(id)
                 .title(reqDto.title())
                 .writerId(UserId.of(username))

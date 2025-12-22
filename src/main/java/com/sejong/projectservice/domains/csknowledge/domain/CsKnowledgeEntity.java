@@ -1,8 +1,11 @@
 package com.sejong.projectservice.domains.csknowledge.domain;
 
 
+import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 import com.sejong.projectservice.domains.user.UserId;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,9 +45,10 @@ public class CsKnowledgeEntity {
     private TechCategory techCategory;
 
     private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
-    public CsKnowledge toDomain() {
-        return CsKnowledge.builder()
+    public CsKnowledgeDto toDomain() {
+        return CsKnowledgeDto.builder()
                 .id(id)
                 .title(title)
                 .writerId(UserId.of(writerId))
@@ -54,7 +58,7 @@ public class CsKnowledgeEntity {
                 .build();
     }
 
-    public static CsKnowledgeEntity from(CsKnowledge knowledge) {
+    public static CsKnowledgeEntity from(CsKnowledgeDto knowledge) {
         return CsKnowledgeEntity.builder()
                 .id(knowledge.getId())
                 .title(knowledge.getTitle())
@@ -63,5 +67,26 @@ public class CsKnowledgeEntity {
                 .techCategory(knowledge.getCategory())
                 .createdAt(knowledge.getCreatedAt())
                 .build();
+    }
+
+    public void update(Long id, CsKnowledgeReqDto reqDto, LocalDateTime updatedAt, String username) {
+         this.id=id;
+         this.title = reqDto.title();
+         this.writerId = username;
+         this.content = reqDto.content();
+         this.techCategory = reqDto.category();
+         this.updatedAt = updatedAt;
+    }
+
+    public void validateOwnerPermission(String username) {
+        if (!writerId.equals(username)) {
+            throw new BaseException(ExceptionType.FORBIDDEN);
+        }
+    }
+
+    public void validateOwnerPermission(String username, String userRole) {
+        if (!writerId.equals(username) && !userRole.equalsIgnoreCase("ADMIN")) {
+            throw new BaseException(ExceptionType.FORBIDDEN);
+        }
     }
 }

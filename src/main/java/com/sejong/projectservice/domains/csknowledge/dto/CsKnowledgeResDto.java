@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.csknowledge.dto;
 
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
 import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 
 import java.time.LocalDateTime;
@@ -14,15 +14,15 @@ public record CsKnowledgeResDto(
         TechCategory category,
         LocalDateTime createdAt
 ) {
-    public static CsKnowledgeResDto from(CsKnowledge csKnowledge, String nickname) {
+    public static CsKnowledgeResDto from(CsKnowledgeDto csKnowledgeDto, String nickname) {
         return new CsKnowledgeResDto(
-                csKnowledge.getId(),
-                csKnowledge.getTitle(),
-                csKnowledge.getContent(),
-                csKnowledge.getWriterId().userId(),
+                csKnowledgeDto.getId(),
+                csKnowledgeDto.getTitle(),
+                csKnowledgeDto.getContent(),
+                csKnowledgeDto.getWriterId().userId(),
                 nickname,
-                csKnowledge.getCategory(),
-                csKnowledge.getCreatedAt()
+                csKnowledgeDto.getCategory(),
+                csKnowledgeDto.getCreatedAt()
         );
     }
 }
