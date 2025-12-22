@@ -78,7 +78,7 @@ public class ProjectSpecifyInfo {
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .thumbnailUrl(project.getThumbnailUrl())
-                .categories(CategoryDto.from2(categoryEntityEntities))
+                .categories(CategoryDto.fromList(categoryEntityEntities))
                 .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))
                 .techStackDtos(TechStackDto.from2(techStackEntities))
                 .collaborators(collaboratorResponseList)

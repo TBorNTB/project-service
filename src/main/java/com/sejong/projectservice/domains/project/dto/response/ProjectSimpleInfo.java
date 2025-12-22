@@ -74,7 +74,7 @@ public class ProjectSimpleInfo {
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .thumbnailUrl(project.getThumbnailUrl())
-                .categories(CategoryDto.from2(categoryEntityEntities))
+                .categories(CategoryDto.fromList(categoryEntityEntities))
                 .techStackDtos(TechStackDto.from2(techStackEntities))
                 .collaborators(collaboratorList)
                 .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))

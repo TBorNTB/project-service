@@ -59,13 +59,13 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         projectEntity.validateUserPermission(username);
 
-        List<CategoryEntity> categoryEntityEntities1 = categoryNames.stream()
+        List<CategoryEntity> categoryEntities = categoryNames.stream()
                 .map(CategoryEntity::of).toList();
 
-        categoryRepository.saveAll(categoryEntityEntities1);
-        projectEntity.updateCategory(categoryNames, categoryEntityEntities1);
+        categoryRepository.saveAll(categoryEntities);
+        projectEntity.updateCategory(categoryNames, categoryEntities);
 
-        return CategoryAllResponse.from(categoryEntityEntities1);
+        return CategoryAllResponse.from(categoryEntities);
     }
 
     private void validateAdminRole(String userRole) {

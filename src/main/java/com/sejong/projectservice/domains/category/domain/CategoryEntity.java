@@ -10,8 +10,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -53,24 +56,6 @@ public class CategoryEntity {
                 .build();
     }
 
-    public static CategoryEntity from2(String categoryName, ProjectEntity projectEntity) {
-        CategoryEntity categoryEntity = CategoryEntity.builder()
-                .id(null)
-                .name(categoryName)
-                .projectCategories(new ArrayList<>())
-                .build();
-        projectEntity.addCategory(categoryEntity);
-        return categoryEntity;
-    }
-
-    public CategoryDto toDomain() {
-        return CategoryDto.builder()
-                .id(this.getId())
-                .name(this.getName())
-                .description(this.getDescription())
-                .build();
-    }
-
     public void addProjectCategoryEntity(ProjectCategoryEntity pce) {
         this.projectCategories.add(pce);
     }
@@ -81,5 +66,22 @@ public class CategoryEntity {
 
     public void updateDescription(String description) {
         this.description = description;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        CategoryEntity that = (CategoryEntity) o;
+        return Objects.equals(id, that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

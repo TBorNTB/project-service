@@ -148,49 +148,6 @@ public class ProjectEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public ProjectDto toDomain() {
-
-        List<CollaboratorDto> collaboratorDtoList = new ArrayList<>(collaboratorEntities.stream()
-                .map(CollaboratorEntity::toDomain)
-                .toList());
-
-        List<CategoryDto> categories = new ArrayList<>(projectCategories.stream()
-                .map(ProjectCategoryEntity::getCategoryEntity)
-                .map(CategoryEntity::toDomain)
-                .distinct()
-                .toList());
-
-        List<TechStackDto> uniqueTechStackDtoList = new ArrayList<>(projectTechStacks.stream()
-                .map(ProjectTechStackEntity::getTechStackEntity)
-                .map(TechStackEntity::toDomain)
-                .distinct()
-                .toList());
-
-        List<SubGoalDto> subGoalDtoList = new ArrayList<>(subGoals.stream()
-                .map(SubGoalEntity::toDomain)
-                .toList());
-
-        List<DocumentDto> documentDtoList = new ArrayList<>(documents.stream()
-                .map(Document::toDomain)
-                .toList());
-
-        return ProjectDto.builder()
-                .id(this.id)
-                .title(this.title)
-                .username(this.username)
-                .description(this.description)
-                .projectStatus(this.projectStatus)
-                .thumbnailUrl(this.thumbnailUrl)
-                .createdAt(this.createdAt)
-                .updatedAt(this.updatedAt)
-                .categories(categories)
-                .collaboratorDtos(collaboratorDtoList)
-                .techStackDtos(uniqueTechStackDtoList)
-                .subGoalDtos(subGoalDtoList)
-                .documentDtos(documentDtoList)
-                .build();
-    }
-
     public void update(String title, String description,
                        ProjectStatus projectStatus, String thumbnailUrl) {
         this.title = title;
