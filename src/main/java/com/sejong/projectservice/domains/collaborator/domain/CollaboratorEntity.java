@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.collaborator.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,19 +30,30 @@ public class CollaboratorEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonIgnore
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
     private String collaboratorName;
 
-    public static CollaboratorEntity from(Collaborator collaborator) {
+    public static CollaboratorEntity of(String name, ProjectEntity projectEntity){
+
+        CollaboratorEntity collaboratorEntity = CollaboratorEntity.builder()
+                .collaboratorName(name)
+                .build();
+
+        projectEntity.addCollaborator(collaboratorEntity);
+        return collaboratorEntity;
+    }
+
+    public static CollaboratorEntity from(CollaboratorDto collaboratorDto) {
         return CollaboratorEntity.builder()
-                .collaboratorName(collaborator.getCollaboratorName())
+                .collaboratorName(collaboratorDto.getCollaboratorName())
                 .build();
     }
 
-    public Collaborator toDomain() {
-        return Collaborator.builder()
+    public CollaboratorDto toDomain() {
+        return CollaboratorDto.builder()
                 .id(this.getId())
                 .collaboratorName(this.getCollaboratorName())
                 .build();

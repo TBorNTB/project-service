@@ -11,7 +11,7 @@ public interface CollaboratorJpaRepository extends JpaRepository<ProjectEntity, 
             SELECT EXISTS (
                 SELECT 1
                 FROM project_user pu
-                JOIN document d ON pu.project_id = d.project_id
+                JOIN documentDto d ON pu.project_id = d.project_id
                 WHERE d.yorkie_document_id = :yorkieDocId
                   AND pu.username = :username
             )

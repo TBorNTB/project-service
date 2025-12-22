@@ -5,18 +5,30 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Collaborator {
+public class CollaboratorDto {
     private Long id;
     private String collaboratorName;
 
-    public static Collaborator from(String collaboratorName) {
-        return Collaborator.builder()
+    public static CollaboratorDto from(String collaboratorName) {
+        return CollaboratorDto.builder()
                 .id(null)
                 .collaboratorName(collaboratorName)
                 .build();
+    }
+
+    public static List<CollaboratorDto> toDtoList(List<CollaboratorEntity> collaboratorEntities) {
+        return collaboratorEntities.stream()
+                .map(it->{
+                    return CollaboratorDto.builder()
+                            .id(it.getId())
+                            .collaboratorName(it.getCollaboratorName())
+                            .build();
+                }).toList();
     }
 }
