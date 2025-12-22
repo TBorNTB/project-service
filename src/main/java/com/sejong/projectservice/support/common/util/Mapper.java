@@ -2,14 +2,14 @@ package com.sejong.projectservice.support.common.util;
 
 import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
-import com.sejong.projectservice.domains.category.repository.CategoryJpaRepository;
+import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
 import com.sejong.projectservice.domains.document.domain.Document;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
-import com.sejong.projectservice.domains.techstack.repository.TechStackJpaRepository;
+import com.sejong.projectservice.domains.techstack.repository.TechStackRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Mapper {
 
-    private final CategoryJpaRepository categoryJpaRepository;
-    private final TechStackJpaRepository techStackJpaRepository;
+    private final CategoryRepository categoryRepository;
+    private final TechStackRepository techStackRepository;
 
     // project 생성 시에 특화된 메서드
     public void map(ProjectDto projectDto, ProjectEntity projectEntity) {
@@ -36,13 +36,13 @@ public class Mapper {
                 .map(Document::from).forEach(projectEntity::addDocument);
 
         projectDto.getCategories().stream()
-                .map(c -> categoryJpaRepository.findByName(c.getName())
-                        .orElseGet(() -> categoryJpaRepository.save(CategoryEntity.of(c.getName()))))
+                .map(c -> categoryRepository.findByName(c.getName())
+                        .orElseGet(() -> categoryRepository.save(CategoryEntity.of(c.getName()))))
                 .forEach(projectEntity::addCategory);
 
         projectDto.getTechStackDtos().stream()
-                .map(t -> techStackJpaRepository.findByName(t.getName())
-                        .orElseGet(() -> techStackJpaRepository.save(TechStackEntity.of(t.getName()))))
+                .map(t -> techStackRepository.findByName(t.getName())
+                        .orElseGet(() -> techStackRepository.save(TechStackEntity.of(t.getName()))))
                 .forEach(projectEntity::addTechStack);
     }
 
@@ -57,13 +57,13 @@ public class Mapper {
                 .toList();
 
         request.getCategories().stream()
-                .map(categoryName -> categoryJpaRepository.findByName(categoryName)
-                        .orElseGet(() -> categoryJpaRepository.save(CategoryEntity.of(categoryName))))
+                .map(categoryName -> categoryRepository.findByName(categoryName)
+                        .orElseGet(() -> categoryRepository.save(CategoryEntity.of(categoryName))))
                 .forEach(projectEntity::addCategory);
 
         request.getTechStacks().stream()
-                .map(techStackName -> techStackJpaRepository.findByName(techStackName)
-                        .orElseGet(() -> techStackJpaRepository.save(TechStackEntity.of(techStackName))))
+                .map(techStackName -> techStackRepository.findByName(techStackName)
+                        .orElseGet(() -> techStackRepository.save(TechStackEntity.of(techStackName))))
                 .forEach(projectEntity::addTechStack);
     }
 
@@ -80,8 +80,8 @@ public class Mapper {
         projectEntity.getProjectCategories().clear();
 
         projectDto.getCategories().stream()
-                .map(c -> categoryJpaRepository.findByName(c.getName())
-                        .orElseGet(() -> categoryJpaRepository.save(CategoryEntity.of(c.getName()))))
+                .map(c -> categoryRepository.findByName(c.getName())
+                        .orElseGet(() -> categoryRepository.save(CategoryEntity.of(c.getName()))))
                 .forEach(projectEntity::addCategory);
 
     }

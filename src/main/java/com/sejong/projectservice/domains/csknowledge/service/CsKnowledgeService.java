@@ -2,7 +2,7 @@ package com.sejong.projectservice.domains.csknowledge.service;
 
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
-import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeJpaRepository;
+import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeRepository;
 import com.sejong.projectservice.domains.csknowledge.util.CsKnowledgeAssembler;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
@@ -41,14 +41,14 @@ public class CsKnowledgeService {
 
     private final CsKnowledgeEventPublisher csKnowledgeEventPublisher;
     private final UserExternalService userExternalService;
-    private final CsKnowledgeJpaRepository csKnowledgeJpaRepository;
+    private final CsKnowledgeRepository csKnowledgeRepository;
 
     @Transactional
     public CsKnowledgeResDto createCsKnowledge(CsKnowledgeReqDto csKnowledgeReqDto, String username) {
         userExternalService.validateExistence(username);
         CsKnowledgeDto csKnowledgeDto = CsKnowledgeAssembler.toCsKnowledge(csKnowledgeReqDto, username);
         CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledgeDto);
-        CsKnowledgeEntity savedEntity = csKnowledgeJpaRepository.save(entity);
+        CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(entity);
         CsKnowledgeDto domain = savedEntity.toDomain();
 
         CsKnowledgeResDto response = resolveUsername(domain);
@@ -58,7 +58,7 @@ public class CsKnowledgeService {
 
     @Transactional
     public CsKnowledgeResDto updateCsKnowledge(Long csKnowledgeId, CsKnowledgeReqDto csKnowledgeReqDto, String username) {
-        CsKnowledgeEntity entity = csKnowledgeJpaRepository.findById(csKnowledgeId)
+        CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
 
         entity.validateOwnerPermission(username);
@@ -76,29 +76,29 @@ public class CsKnowledgeService {
 
     @Transactional
     public void deleteCsKnowledge(Long csKnowledgeId, String username, String userRole) {
-        CsKnowledgeEntity entity = csKnowledgeJpaRepository.findById(csKnowledgeId)
+        CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
         entity.validateOwnerPermission(username, userRole);
-        csKnowledgeJpaRepository.deleteById(entity.getId());
+        csKnowledgeRepository.deleteById(entity.getId());
         csKnowledgeEventPublisher.publishDeleted(csKnowledgeId);
     }
 
     public CsKnowledgeResDto findById(Long csKnowledgeId) {
-        CsKnowledgeEntity entity = csKnowledgeJpaRepository.findById(csKnowledgeId)
+        CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
         return resolveUsername(entity.toDomain());
     }
 
     @Transactional(readOnly = true)
     public Boolean exists(Long csKnowledgeId) {
-        return csKnowledgeJpaRepository.existsById(csKnowledgeId);
+        return csKnowledgeRepository.existsById(csKnowledgeId);
     }
 
     @Transactional(readOnly = true)
     public PostLikeCheckResponse checkCS(Long csKnowledgeId) {
-        boolean exists = csKnowledgeJpaRepository.existsById(csKnowledgeId);
+        boolean exists = csKnowledgeRepository.existsById(csKnowledgeId);
         if (exists) {
-            CsKnowledgeEntity entity = csKnowledgeJpaRepository.findById(csKnowledgeId)
+            CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
                     .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
             return PostLikeCheckResponse.hasOfCS(entity.toDomain(), true);
         }
@@ -107,7 +107,7 @@ public class CsKnowledgeService {
     }
 
     public List<CsKnowledgeResDto> findAllByTechCategory(TechCategory techCategory) {
-        List<CsKnowledgeDto> csKnowledgeDtos = csKnowledgeJpaRepository
+        List<CsKnowledgeDto> csKnowledgeDtos = csKnowledgeRepository
                 .findAllByTechCategory(techCategory).stream()
                 .map(CsKnowledgeEntity::toDomain)
                 .toList();
@@ -116,7 +116,7 @@ public class CsKnowledgeService {
 
     public Optional<CsKnowledgeResDto> findUnsentKnowledge(TechCategory categoryName, String email) {
 
-        Optional<CsKnowledgeEntity> randomUnsent = csKnowledgeJpaRepository.findRandomUnsent(categoryName.name(), email);
+        Optional<CsKnowledgeEntity> randomUnsent = csKnowledgeRepository.findRandomUnsent(categoryName.name(), email);
         Optional<CsKnowledgeDto> csKnowledge = randomUnsent.map(CsKnowledgeEntity::toDomain);
         return csKnowledge
                 .map(this::resolveUsername);
@@ -132,7 +132,7 @@ public class CsKnowledgeService {
                 pageRequest.getSortBy()
         );
 
-        Page<CsKnowledgeEntity> page = csKnowledgeJpaRepository.findAll(pageable);
+        Page<CsKnowledgeEntity> page = csKnowledgeRepository.findAll(pageable);
 
         List<CsKnowledgeDto> knowledges = page.stream()
                 .map(CsKnowledgeEntity::toDomain)
@@ -155,9 +155,9 @@ public class CsKnowledgeService {
 
         List<CsKnowledgeEntity> entities;
         if (pageRequest.getCursor() == null) {
-            entities = csKnowledgeJpaRepository.findAll(pageable).getContent();
+            entities = csKnowledgeRepository.findAll(pageable).getContent();
         } else {
-            entities = csKnowledgeJpaRepository.findByIdGreaterThan(pageRequest.getCursor().getProjectId(), pageable);
+            entities = csKnowledgeRepository.findByIdGreaterThan(pageRequest.getCursor().getProjectId(), pageable);
         }
 
         boolean hasNext = entities.size() > pageRequest.getSize();
@@ -198,6 +198,6 @@ public class CsKnowledgeService {
 
     @Transactional(readOnly = true)
     public Long getCsCount() {
-        return csKnowledgeJpaRepository.getCsCount();
+        return csKnowledgeRepository.getCsCount();
     }
 }

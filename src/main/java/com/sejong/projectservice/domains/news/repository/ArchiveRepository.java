@@ -10,7 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
-public interface ArchiveJpaRepository extends JpaRepository<NewsEntity, Long> {
+public interface ArchiveRepository extends JpaRepository<NewsEntity, Long> {
     boolean existsById(Long archiveId);
 
     Page<NewsEntity> findAll(Pageable pageable);

@@ -6,7 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface DocumentJpaRepository extends JpaRepository<Document, Long> {
+public interface DocumentRepository extends JpaRepository<Document, Long> {
     Optional<Document> findDocumentEntityById(Long id);
 
     @Query("SELECT d FROM Document d WHERE d.id = :documentId AND d.projectEntity.id = :projectId")

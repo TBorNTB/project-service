@@ -3,7 +3,7 @@ package com.sejong.projectservice.domains.news.service;
 
 import com.sejong.projectservice.domains.news.domain.ContentEmbeddable;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
-import com.sejong.projectservice.domains.news.repository.ArchiveJpaRepository;
+import com.sejong.projectservice.domains.news.repository.ArchiveRepository;
 import com.sejong.projectservice.domains.news.util.NewsAssembler;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.news.dto.NewsResDto;
@@ -41,7 +41,7 @@ import java.util.Map;
 @Slf4j
 public class NewsService {
 
-    private final ArchiveJpaRepository archiveJpaRepository;
+    private final ArchiveRepository archiveRepository;
     private final UserExternalService userExternalService;
     private final NewsEventPublisher newsEventPublisher;
 
@@ -54,7 +54,7 @@ public class NewsService {
 
         NewsDto newsDto = NewsAssembler.toNews(newsReqDto);
         NewsEntity entity = NewsMapper.toEntity(newsDto);
-        NewsEntity savedNewsEntity = archiveJpaRepository.save(entity);
+        NewsEntity savedNewsEntity = archiveRepository.save(entity);
         NewsDto domain = NewsMapper.toDomain(savedNewsEntity);
         newsEventPublisher.publishCreated(domain);
 
@@ -63,7 +63,7 @@ public class NewsService {
 
     @Transactional
     public NewsResDto updateNews(Long newsId, NewsReqDto newsReqDto, String writerId) {
-        NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
+        NewsEntity newsEntity = archiveRepository.findById(newsId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
         newsEntity.validateOwner(writerId);
 
@@ -81,16 +81,16 @@ public class NewsService {
 
     @Transactional
     public void deleteNews(Long newsId, String writerId) {
-        NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
+        NewsEntity newsEntity = archiveRepository.findById(newsId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
         newsEntity.validateOwner(writerId);
 
-        archiveJpaRepository.deleteById(newsEntity.getId());
+        archiveRepository.deleteById(newsEntity.getId());
         newsEventPublisher.publishDeleted(newsId);
     }
 
     public NewsResDto findById(Long newsId) {
-        NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
+        NewsEntity newsEntity = archiveRepository.findById(newsId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
         return resolveUsernames(NewsMapper.toDomain(newsEntity));
@@ -105,7 +105,7 @@ public class NewsService {
                 Sort.Direction.valueOf(pageRequest.getDirection().name()),
                 pageRequest.getSortBy());
 
-        Page<NewsEntity> archiveEntities = archiveJpaRepository.findAll(pageable);
+        Page<NewsEntity> archiveEntities = archiveRepository.findAll(pageable);
 
         List<NewsDto> archives = archiveEntities.stream()
                 .map(NewsMapper::toDomain)
@@ -153,9 +153,9 @@ public class NewsService {
 
     @Transactional(readOnly = true)
     public PostLikeCheckResponse checkNews(Long newsId) {
-        boolean exists = archiveJpaRepository.existsById(newsId);
+        boolean exists = archiveRepository.existsById(newsId);
         if (exists) {
-            NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
+            NewsEntity newsEntity = archiveRepository.findById(newsId)
                     .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
             return PostLikeCheckResponse.hasOfNews(NewsMapper.toDomain(newsEntity), true);
         }
@@ -174,7 +174,7 @@ public class NewsService {
 
     @Transactional(readOnly = true)
     public Long getNewsCount() {
-        Long count = archiveJpaRepository.getNewsCount();
+        Long count = archiveRepository.getNewsCount();
         return count;
     }
 
@@ -184,13 +184,13 @@ public class NewsService {
         if (request.getCursor() == null) {
             // 첫 페이지
             return isDesc ?
-                    archiveJpaRepository.findFirstPageDesc(pageable) :
-                    archiveJpaRepository.findFirstPageAsc(pageable);
+                    archiveRepository.findFirstPageDesc(pageable) :
+                    archiveRepository.findFirstPageAsc(pageable);
         } else {
             // 커서 기반 페이지
             return isDesc ?
-                    archiveJpaRepository.findByCursorDesc(request.getCursor().getProjectId(), pageable) :
-                    archiveJpaRepository.findByCursorAsc(request.getCursor().getProjectId(), pageable);
+                    archiveRepository.findByCursorDesc(request.getCursor().getProjectId(), pageable) :
+                    archiveRepository.findByCursorAsc(request.getCursor().getProjectId(), pageable);
         }
     }
 }

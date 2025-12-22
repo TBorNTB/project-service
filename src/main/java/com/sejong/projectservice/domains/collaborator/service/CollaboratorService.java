@@ -3,7 +3,7 @@ package com.sejong.projectservice.domains.collaborator.service;
 import com.sejong.projectservice.client.UserExternalService;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
-import com.sejong.projectservice.domains.project.repository.ProjectJpaRepository;
+import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 
 import java.util.List;
 
@@ -16,13 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class CollaboratorService {
 
     private final UserExternalService userExternalService;
-    private final ProjectJpaRepository projectJpaRepository;
+    private final ProjectRepository projectRepository;
 
     @Transactional
     public List<CollaboratorDto> updateProject(String username, Long projectId, List<String> collaboratorNames) {
         userExternalService.validateExistence(username, collaboratorNames);
 
-        ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
+        ProjectEntity projectEntity = projectRepository.findById(projectId)
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         projectEntity.validateUserPermission(username);
         projectEntity.updateCollaborator(collaboratorNames);

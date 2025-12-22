@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface CsKnowledgeJpaRepository extends JpaRepository<CsKnowledgeEntity, Long> {
+public interface CsKnowledgeRepository extends JpaRepository<CsKnowledgeEntity, Long> {
 
     List<CsKnowledgeEntity> findAllByTechCategory(TechCategory techCategory);
 

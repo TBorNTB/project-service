@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.techstack.service;
 
 import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
-import com.sejong.projectservice.domains.techstack.repository.TechStackJpaRepository;
+import com.sejong.projectservice.domains.techstack.repository.TechStackRepository;
 import com.sejong.projectservice.support.common.error.code.ErrorCode;
 import com.sejong.projectservice.support.common.error.exception.ApiException;
 import com.sejong.projectservice.domains.techstack.dto.TechStackCreateReq;
@@ -14,13 +14,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class TechStackService {
 
-    private final TechStackJpaRepository techStackJpaRepository;
+    private final TechStackRepository techStackRepository;
 
     @Transactional
     public TechStackRes createTechStack(TechStackCreateReq techstackCreateReq, String userRole) {
         validateAdminRole(userRole);
         TechStackEntity techStack = TechStackEntity.from(techstackCreateReq);
-        TechStackEntity savedTechStack = techStackJpaRepository.save(techStack);
+        TechStackEntity savedTechStack = techStackRepository.save(techStack);
         return TechStackRes.from(savedTechStack);
     }
 
@@ -32,7 +32,7 @@ public class TechStackService {
 
     @Transactional(readOnly = true)
     public TechStackRes getTechStack(Long techStackId) {
-        TechStackEntity techStackEntity = techStackJpaRepository.findById(techStackId)
+        TechStackEntity techStackEntity = techStackRepository.findById(techStackId)
                 .orElseThrow(() -> new RuntimeException("TechStack not found"));
         return TechStackRes.from(techStackEntity);
     }
@@ -40,7 +40,7 @@ public class TechStackService {
     @Transactional
     public TechStackRes updateTechStack(Long techStackId, TechStackCreateReq request, String userRole) {
         validateAdminRole(userRole);
-        TechStackEntity techStackEntity = techStackJpaRepository.findById(techStackId)
+        TechStackEntity techStackEntity = techStackRepository.findById(techStackId)
                 .orElseThrow(() -> new RuntimeException("TechStack not found"));
         techStackEntity.update(request.getName());
         return TechStackRes.from(techStackEntity);
@@ -49,6 +49,6 @@ public class TechStackService {
     @Transactional
     public void deleteTechStack(Long techStackId, String userRole) {
         validateAdminRole(userRole);
-        techStackJpaRepository.deleteById(techStackId);
+        techStackRepository.deleteById(techStackId);
     }
 }

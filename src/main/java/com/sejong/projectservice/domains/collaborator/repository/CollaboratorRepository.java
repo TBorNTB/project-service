@@ -5,7 +5,7 @@ import feign.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface CollaboratorJpaRepository extends JpaRepository<ProjectEntity, Long> {
+public interface CollaboratorRepository extends JpaRepository<ProjectEntity, Long> {
 
     @Query(value = """
             SELECT EXISTS (

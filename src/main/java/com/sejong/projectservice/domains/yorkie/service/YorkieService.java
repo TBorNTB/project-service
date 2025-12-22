@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.yorkie.service;
 
-import com.sejong.projectservice.domains.collaborator.repository.CollaboratorJpaRepository;
+import com.sejong.projectservice.domains.collaborator.repository.CollaboratorRepository;
 import com.sejong.projectservice.support.common.util.JwtUtil;
 import com.sejong.projectservice.domains.yorkie.dto.request.CheckYorkieRequest;
 import com.sejong.projectservice.domains.yorkie.dto.response.CheckYorkieResponse;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class YorkieService {
 
     private final JwtUtil jwtUtil;
-    private final CollaboratorJpaRepository collaboratorRepository;
+    private final CollaboratorRepository collaboratorRepository;
 
     public ResponseEntity<CheckYorkieResponse> checkYorkie(CheckYorkieRequest checkYorkieRequest) {
         if (checkYorkieRequest.getMethod().equals(YorkieMethod.ActivateClient)

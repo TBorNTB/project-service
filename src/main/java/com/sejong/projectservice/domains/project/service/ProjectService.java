@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.project.service;
 
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
-import com.sejong.projectservice.domains.project.repository.ProjectJpaRepository;
+import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
 import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
@@ -33,7 +33,7 @@ public class ProjectService {
 
     private final UserExternalService userExternalService;
     private final ProjectEventPublisher projectEventPublisher;
-    private final ProjectJpaRepository projectJpaRepository;
+    private final ProjectRepository projectRepository;
     private final Mapper mapper;
 
     @Transactional
@@ -41,7 +41,7 @@ public class ProjectService {
         userExternalService.validateExistence(username, projectFormRequest.getCollaborators());
         Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(List.of(username));
         ProjectEntity projectEntity = ProjectEntity.of(projectFormRequest,username,userNameInfos.get(username));
-        ProjectEntity savedProject = projectJpaRepository.save(projectEntity);
+        ProjectEntity savedProject = projectRepository.save(projectEntity);
         mapper.connectJoins(savedProject,projectFormRequest);
 
         projectEventPublisher.publishCreated(savedProject);
@@ -50,24 +50,24 @@ public class ProjectService {
 
     @Transactional
     public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest, String username) {
-        ProjectEntity project = projectJpaRepository.findById(projectId)
+        ProjectEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
         project.validateUserPermission(username);
 
         project.update(projectUpdateRequest.getTitle(), projectUpdateRequest.getDescription(),
                 projectUpdateRequest.getProjectStatus(),
                 projectUpdateRequest.getThumbnailUrl());
-        ProjectEntity savedProject = projectJpaRepository.save(project);
+        ProjectEntity savedProject = projectRepository.save(project);
         projectEventPublisher.publishUpdated(savedProject);
         return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
     }
 
     @Transactional
     public ProjectDeleteResponse removeProject(String username, Long projectId, String userRole) {
-        ProjectEntity project = projectJpaRepository.findById(projectId)
+        ProjectEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
         project.validateOwner(username, userRole);
-        projectJpaRepository.deleteById(projectId);
+        projectRepository.deleteById(projectId);
         projectEventPublisher.publishDeleted(projectId.toString());
         return ProjectDeleteResponse.of(project.getTitle(), "삭제 완료");
     }
@@ -75,7 +75,7 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public ProjectPageResponse getAllProjects(Pageable pageable) {
 
-        Page<ProjectEntity> projectEntityPage = projectJpaRepository.findAll(pageable);
+        Page<ProjectEntity> projectEntityPage = projectRepository.findAll(pageable);
         List<String> usernames = ProjectUsernamesExtractor.extract(projectEntityPage.getContent());
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
@@ -84,7 +84,7 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public ProjectPageResponse search(String keyword, ProjectStatus status, Pageable pageable) {
-        Page<ProjectEntity> projectEntitiesPage = projectJpaRepository.searchWithFilters(keyword, status, pageable);
+        Page<ProjectEntity> projectEntitiesPage = projectRepository.searchWithFilters(keyword, status, pageable);
         List<String> usernames = ProjectUsernamesExtractor.extract(projectEntitiesPage.getContent());
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
@@ -93,7 +93,7 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public ProjectSpecifyInfo findOne(Long projectId) {
-        ProjectEntity projectEntity = projectJpaRepository.findById(projectId)
+        ProjectEntity projectEntity = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
 
         List<String> usernames = ProjectUsernamesExtractor.extract(projectEntity);
@@ -104,9 +104,9 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public PostLikeCheckResponse checkPost(Long postId) {
-        boolean exists = projectJpaRepository.existsById(postId);
+        boolean exists = projectRepository.existsById(postId);
         if (exists) {
-            ProjectEntity project  = projectJpaRepository.findById(postId)
+            ProjectEntity project  = projectRepository.findById(postId)
                     .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
             return PostLikeCheckResponse.hasOfProject(project, true);
         }
@@ -116,12 +116,12 @@ public class ProjectService {
 
     @Transactional(readOnly = true)
     public boolean exists(Long postId) {
-        return projectJpaRepository.existsById(postId);
+        return projectRepository.existsById(postId);
     }
 
     @Transactional(readOnly = true)
     public Long getProjectCount() {
-        Long count = projectJpaRepository.getProjectCount();
+        Long count = projectRepository.getProjectCount();
         return count;
     }
 }
