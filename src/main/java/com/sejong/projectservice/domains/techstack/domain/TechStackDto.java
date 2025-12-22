@@ -11,22 +11,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class TechStack {
+public class TechStackDto {
 
     private Long id;
     private String name;
 
-    public static TechStack of(String name) {
-        return TechStack.builder()
+    public static TechStackDto of(String name) {
+        return TechStackDto.builder()
                 .id(null)
                 .name(name)
                 .build();
     }
 
-    public static List<TechStack> from2(List<TechStackEntity> techStackEntities) {
+    public static List<TechStackDto> from2(List<TechStackEntity> techStackEntities) {
         return techStackEntities.stream()
                 .map(it->{
-                    return TechStack.builder()
+                    return TechStackDto.builder()
                             .id(it.getId())
                             .name(it.getName())
                             .build();
@@ -45,7 +45,7 @@ public class TechStack {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        TechStack that = (TechStack) o;
+        TechStackDto that = (TechStackDto) o;
         return Objects.equals(id, that.id);
     }
 

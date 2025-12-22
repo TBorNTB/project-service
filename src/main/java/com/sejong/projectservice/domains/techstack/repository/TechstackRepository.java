@@ -1,12 +1,12 @@
 package com.sejong.projectservice.domains.techstack.repository;
 
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 
 public interface TechstackRepository {
 
-    TechStack save(TechStack techStack);
+    TechStackDto save(TechStackDto techStackDto);
 
-    TechStack findById(Long techStackId);
+    TechStackDto findById(Long techStackId);
 
     void deleteById(Long techStackId);
 }

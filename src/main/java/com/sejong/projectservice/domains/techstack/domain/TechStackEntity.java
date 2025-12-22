@@ -1,6 +1,8 @@
 package com.sejong.projectservice.domains.techstack.domain;
 
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
+import com.sejong.projectservice.domains.techstack.dto.TechStackCreateReq;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,15 +44,32 @@ public class TechStackEntity {
                 .build();
     }
 
-    public static TechStackEntity from(TechStack techStack) {
+    public static TechStackEntity from(TechStackDto techStackDto) {
         return TechStackEntity.builder()
                 .id(null)
-                .name(techStack.getName())
+                .name(techStackDto.getName())
                 .build();
     }
 
-    public TechStack toDomain() {
-        return TechStack.builder()
+    public static TechStackEntity from(TechStackCreateReq techstackCreateReq) {
+        return TechStackEntity.builder()
+                .id(null)
+                .name(techstackCreateReq.getName())
+                .build();
+    }
+
+    public static TechStackEntity from2(String techStackname, ProjectEntity projectEntity) {
+        TechStackEntity techStackEntity = TechStackEntity.builder()
+                .id(null)
+                .name(techStackname)
+                .projectTechStacks(new ArrayList<>())
+                .build();
+        projectEntity.addTechStack(techStackEntity);
+        return techStackEntity;
+    }
+
+    public TechStackDto toDomain() {
+        return TechStackDto.builder()
                 .id(this.getId())
                 .name(this.getName())
                 .build();
@@ -60,7 +79,11 @@ public class TechStackEntity {
         this.projectTechStacks.add(ptse);
     }
 
-    public void update(TechStack techStack) {
-        this.name = techStack.getName();
+    public void update(String newName) {
+        this.name = newName;
+    }
+
+    public void update(TechStackDto techStackDto) {
+        this.name = techStackDto.getName();
     }
 }

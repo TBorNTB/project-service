@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.techstack.repository;
 
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -12,24 +12,24 @@ public class TechStackRepositoryImpl implements TechstackRepository {
     private final TechStackJpaRepository techStackJpaRepository;
 
     @Override
-    public TechStack save(TechStack techStack) {
+    public TechStackDto save(TechStackDto techStackDto) {
         TechStackEntity techStackEntity;
 
-        if (techStack.getId() == null) {
-            techStackEntity = TechStackEntity.from(techStack);
+        if (techStackDto.getId() == null) {
+            techStackEntity = TechStackEntity.from(techStackDto);
             TechStackEntity savedTechstackEntity = techStackJpaRepository.save(techStackEntity);
             return savedTechstackEntity.toDomain();
         } else {
-            techStackEntity = techStackJpaRepository.findById(techStack.getId())
+            techStackEntity = techStackJpaRepository.findById(techStackDto.getId())
                     .orElseThrow(() -> new RuntimeException("TechStack not found"));
-            techStackEntity.update(techStack);
+            techStackEntity.update(techStackDto);
             TechStackEntity savedTechstackEntity = techStackJpaRepository.save(techStackEntity);
             return savedTechstackEntity.toDomain();
         }
     }
 
     @Override
-    public TechStack findById(Long techStackId) {
+    public TechStackDto findById(Long techStackId) {
         TechStackEntity techStackEntity = techStackJpaRepository.findById(techStackId)
                 .orElseThrow(() -> new RuntimeException("TechStack not found"));
         return techStackEntity.toDomain();

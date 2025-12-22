@@ -1,6 +1,6 @@
 package com.sejong.projectservice.support.common.redis;
 
-import com.sejong.projectservice.domains.techstack.domain.TechStack;
+import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,8 +24,8 @@ public class TechStackRedisService {
         return Optional.of(Long.valueOf(value));
     }
 
-    public void cacheTechStack(String techStackName, TechStack techStack) {
-        redisTemplate.opsForValue().set(key(techStackName), String.valueOf(techStack));
+    public void cacheTechStack(String techStackName, TechStackDto techStackDto) {
+        redisTemplate.opsForValue().set(key(techStackName), String.valueOf(techStackDto));
     }
 
 }
