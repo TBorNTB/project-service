@@ -55,10 +55,10 @@ public class NewsService {
         NewsDto newsDto = NewsAssembler.toNews(newsReqDto);
         NewsEntity entity = NewsMapper.toEntity(newsDto);
         NewsEntity savedNewsEntity = archiveRepository.save(entity);
-        NewsDto domain = NewsMapper.toDomain(savedNewsEntity);
-        newsEventPublisher.publishCreated(domain);
+        NewsDto dto = NewsMapper.toDomain(savedNewsEntity);
+        newsEventPublisher.publishCreated(dto);
 
-        return resolveUsernames(domain);
+        return resolveUsernames(dto);
     }
 
     @Transactional
@@ -73,10 +73,10 @@ public class NewsService {
                 String.join(",", newsReqDto.getTags())
         );
 
-        NewsDto domain = NewsMapper.toDomain(newsEntity);
-        newsEventPublisher.publishUpdated(domain);
+        NewsDto dto = NewsMapper.toDomain(newsEntity);
+        newsEventPublisher.publishUpdated(dto);
 
-        return resolveUsernames(domain);
+        return resolveUsernames(dto);
     }
 
     @Transactional

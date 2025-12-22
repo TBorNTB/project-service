@@ -38,21 +38,4 @@ public class NewsDto {
                 .updatedAt(LocalDateTime.now())
                 .build();
     }
-
-    public void update(Content content, UserIds participantIds, List<String> tags) {
-        this.content = content;
-        this.participantIds = participantIds;
-        this.tags = tags;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void updateFileInfo(Filepath filepath) {
-        this.thumbnailPath = filepath;
-    }
-
-    public void validateOwner(UserId userId) {
-        if (!this.writerId.equals(userId)) {
-            throw new BaseException(ExceptionType.NOT_NEWS_OWNER);
-        }
-    }
 }
