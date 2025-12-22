@@ -36,7 +36,7 @@ public class CollaboratorEntity {
 
     private String collaboratorName;
 
-    public static CollaboratorEntity of(String name, ProjectEntity projectEntity){
+    public static CollaboratorEntity of(String name, ProjectEntity projectEntity) {
 
         CollaboratorEntity collaboratorEntity = CollaboratorEntity.builder()
                 .collaboratorName(name)
@@ -49,13 +49,6 @@ public class CollaboratorEntity {
     public static CollaboratorEntity from(CollaboratorDto collaboratorDto) {
         return CollaboratorEntity.builder()
                 .collaboratorName(collaboratorDto.getCollaboratorName())
-                .build();
-    }
-
-    public CollaboratorDto toDomain() {
-        return CollaboratorDto.builder()
-                .id(this.getId())
-                .collaboratorName(this.getCollaboratorName())
                 .build();
     }
 
