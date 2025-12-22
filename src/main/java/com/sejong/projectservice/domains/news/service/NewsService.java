@@ -1,29 +1,37 @@
 package com.sejong.projectservice.domains.news.service;
 
 
+import com.sejong.projectservice.domains.news.domain.ContentEmbeddable;
+import com.sejong.projectservice.domains.news.domain.NewsEntity;
+import com.sejong.projectservice.domains.news.repository.ArchiveJpaRepository;
 import com.sejong.projectservice.domains.news.util.NewsAssembler;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.news.dto.NewsResDto;
+import com.sejong.projectservice.domains.news.util.NewsMapper;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.client.UserExternalService;
 import com.sejong.projectservice.client.response.PostLikeCheckResponse;
 import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
 import com.sejong.projectservice.support.common.util.ExtractorUsername;
 import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
-import com.sejong.projectservice.domains.news.domain.News;
-import com.sejong.projectservice.domains.news.repository.NewsRepository;
-import com.sejong.projectservice.domains.user.UserId;
+import com.sejong.projectservice.domains.news.domain.NewsDto;
 import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.domains.news.kafka.NewsEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.Map;
 
@@ -33,7 +41,7 @@ import java.util.Map;
 @Slf4j
 public class NewsService {
 
-    private final NewsRepository newsRepository;
+    private final ArchiveJpaRepository archiveJpaRepository;
     private final UserExternalService userExternalService;
     private final NewsEventPublisher newsEventPublisher;
 
@@ -44,49 +52,66 @@ public class NewsService {
                 newsReqDto.getParticipantIds()
         );
 
-        News news = NewsAssembler.toNews(newsReqDto);
-        News savedNews = newsRepository.save(news);
+        NewsDto newsDto = NewsAssembler.toNews(newsReqDto);
+        NewsEntity entity = NewsMapper.toEntity(newsDto);
+        NewsEntity savedNews = archiveJpaRepository.save(entity);
+        NewsDto domain = NewsMapper.toDomain(savedNews);
+        newsEventPublisher.publishCreated(domain);
 
-        newsEventPublisher.publishCreated(savedNews);
-
-        return resolveUsernames(savedNews);
+        return resolveUsernames(domain);
     }
 
     @Transactional
     public NewsResDto updateNews(Long newsId, NewsReqDto newsReqDto, String writerId) {
-        News news = newsRepository.findBy(newsId);
-        news.validateOwner(UserId.of(writerId));
+        NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
+                .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
+        newsEntity.validateOwner(writerId);
 
-        news.update(
-                NewsAssembler.toContent(newsReqDto),
-                UserIds.of(newsReqDto.getParticipantIds()),
-                newsReqDto.getTags()
+        newsEntity.update(
+                ContentEmbeddable.of(NewsAssembler.toContent(newsReqDto)),
+                UserIds.of(newsReqDto.getParticipantIds()).toString(),
+                String.join(",", newsReqDto.getTags())
         );
 
-        News updatedNews = newsRepository.update(news);
-        newsEventPublisher.publishUpdated(updatedNews);
+        NewsDto domain = NewsMapper.toDomain(newsEntity);
+        newsEventPublisher.publishUpdated(domain);
 
-        return resolveUsernames(updatedNews);
+        return resolveUsernames(domain);
     }
 
     @Transactional
     public void deleteNews(Long newsId, String writerId) {
-        News news = newsRepository.findBy(newsId);
-        news.validateOwner(UserId.of(writerId));
+        NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
+                .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
+        newsEntity.validateOwner(writerId);
 
-        newsRepository.delete(news);
+        archiveJpaRepository.deleteById(newsEntity.getId());
         newsEventPublisher.publishDeleted(newsId);
     }
 
     public NewsResDto findById(Long newsId) {
-        News news = newsRepository.findBy(newsId);
-        return resolveUsernames(news);
+        NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
+                .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
+
+        return resolveUsernames(NewsMapper.toDomain(newsEntity));
     }
 
     @Transactional(readOnly = true)
     public OffsetPageResponse<List<NewsResDto>> getOffsetNews(OffsetPageReqDto offsetPageReqDto) {
         CustomPageRequest pageRequest = offsetPageReqDto.toPageRequest();
-        OffsetPageResponse<List<News>> newsPage = newsRepository.findAllWithOffset(pageRequest);
+
+        Pageable pageable = PageRequest.of(pageRequest.getPage(),
+                pageRequest.getSize(),
+                Sort.Direction.valueOf(pageRequest.getDirection().name()),
+                pageRequest.getSortBy());
+
+        Page<NewsEntity> archiveEntities = archiveJpaRepository.findAll(pageable);
+
+        List<NewsDto> archives = archiveEntities.stream()
+                .map(NewsMapper::toDomain)
+                .toList();
+
+        OffsetPageResponse<List<NewsDto>> newsPage = OffsetPageResponse.ok(archiveEntities.getNumber(), archiveEntities.getTotalPages(), archives);
 
         List<NewsResDto> dtoList = newsPage.getData().stream()
                 .map(this::resolveUsernames)
@@ -98,7 +123,26 @@ public class NewsService {
     @Transactional(readOnly = true)
     public CursorPageResponse<List<NewsResDto>> getCursorNews(CursorPageReqDto cursorPageReqDto) {
         CursorPageRequest pageRequest = cursorPageReqDto.toPageRequest();
-        CursorPageResponse<List<News>> newsPage = newsRepository.findAllWithCursor(pageRequest);
+
+        Pageable pageable = PageRequest.of(0, pageRequest.getSize() + 1);
+        List<NewsEntity> entities = getCursorBasedEntities(pageRequest, pageable);
+
+        // 실제 요청한 크기보다 많이 조회되면 다음 페이지가 존재
+        boolean hasNext = entities.size() > pageRequest.getSize();
+
+        // 실제 반환할 데이터는 요청한 크기만큼만
+        List<NewsEntity> resultEntities = hasNext ?
+                entities.subList(0, pageRequest.getSize()) : entities; // Todo: 아예 sql로 limit
+
+        List<NewsDto> newsDtos = resultEntities.stream()
+                .map(NewsMapper::toDomain)
+                .toList();
+
+        // 다음 커서 계산
+        Long nextCursor = hasNext && !newsDtos.isEmpty() ?
+                newsDtos.get(newsDtos.size() - 1).getId() : null;
+
+        CursorPageResponse<List<NewsDto>> newsPage = CursorPageResponse.ok(nextCursor, hasNext, newsDtos);
 
         List<NewsResDto> dtoList = newsPage.getContent().stream()
                 .map(this::resolveUsernames)
@@ -109,27 +153,44 @@ public class NewsService {
 
     @Transactional(readOnly = true)
     public PostLikeCheckResponse checkNews(Long newsId) {
-        boolean exists = newsRepository.existsNews(newsId);
+        boolean exists = archiveJpaRepository.existsById(newsId);
         if (exists) {
-            News news = newsRepository.findBy(newsId);
-            return PostLikeCheckResponse.hasOfNews(news, true);
+            NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
+                    .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
+            return PostLikeCheckResponse.hasOfNews(NewsMapper.toDomain(newsEntity), true);
         }
         return PostLikeCheckResponse.hasNotOf();
     }
 
-    private NewsResDto resolveUsernames(News news) {
-        List<String> usernames = ExtractorUsername.FromNewses(news);
+    private NewsResDto resolveUsernames(NewsDto newsDto) {
+        List<String> usernames = ExtractorUsername.FromNewses(newsDto);
         log.info("usernames.size() {}",usernames.size());
         for(int i=0;i<usernames.size();i++){
             log.info("username.get({}) : {}",i,usernames.get(i));
         }
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return NewsResDto.from(news, usernamesMap);
+        return NewsResDto.from(newsDto, usernamesMap);
     }
 
     @Transactional(readOnly = true)
     public Long getNewsCount() {
-        Long count = newsRepository.getNewsCount();
+        Long count = archiveJpaRepository.getNewsCount();
         return count;
+    }
+
+    private List<NewsEntity> getCursorBasedEntities(CursorPageRequest request, Pageable pageable) {
+        boolean isDesc = request.getDirection() == SortDirection.DESC;
+
+        if (request.getCursor() == null) {
+            // 첫 페이지
+            return isDesc ?
+                    archiveJpaRepository.findFirstPageDesc(pageable) :
+                    archiveJpaRepository.findFirstPageAsc(pageable);
+        } else {
+            // 커서 기반 페이지
+            return isDesc ?
+                    archiveJpaRepository.findByCursorDesc(request.getCursor().getProjectId(), pageable) :
+                    archiveJpaRepository.findByCursorAsc(request.getCursor().getProjectId(), pageable);
+        }
     }
 }

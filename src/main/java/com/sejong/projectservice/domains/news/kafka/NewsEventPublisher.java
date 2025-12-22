@@ -3,7 +3,7 @@ package com.sejong.projectservice.domains.news.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sejong.projectservice.domains.news.domain.News;
+import com.sejong.projectservice.domains.news.domain.NewsDto;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -19,12 +19,12 @@ public class NewsEventPublisher {
     private final ObjectMapper objectMapper;
     private final String NEWS_EVENTS = "news";
 
-    public void publishCreated(News news){
-        publish(news, CREATED);
+    public void publishCreated(NewsDto newsDto){
+        publish(newsDto, CREATED);
     }
 
-    public void publishUpdated(News news) {
-        publish(news, UPDATED);
+    public void publishUpdated(NewsDto newsDto) {
+        publish(newsDto, UPDATED);
     }
 
     public void publishDeleted(Long newsId) {
@@ -32,9 +32,9 @@ public class NewsEventPublisher {
         kafkaTemplate.send(NEWS_EVENTS, newsId.toString(),  toJsonString(event));
     }
 
-    private void publish(News news, Type type) {
-        NewsIndexEvent event = NewsIndexEvent.of(news, type, System.currentTimeMillis());
-        kafkaTemplate.send(NEWS_EVENTS, news.getId().toString(), toJsonString(event));
+    private void publish(NewsDto newsDto, Type type) {
+        NewsIndexEvent event = NewsIndexEvent.of(newsDto, type, System.currentTimeMillis());
+        kafkaTemplate.send(NEWS_EVENTS, newsDto.getId().toString(), toJsonString(event));
     }
 
     private String toJsonString(Object object) {

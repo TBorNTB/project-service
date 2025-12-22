@@ -4,25 +4,25 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
-import com.sejong.projectservice.domains.news.domain.News;
+import com.sejong.projectservice.domains.news.domain.NewsDto;
 
 import java.util.List;
 
 public interface NewsRepository {
 
-    News save(News news);
+    NewsDto save(NewsDto newsDto);
 
     boolean existsNews(Long newsId);
 
-    News findBy(Long newsId);
+    NewsDto findBy(Long newsId);
 
-    News update(News news);
+    NewsDto update(NewsDto newsDto);
 
-    void delete(News news);
+    void delete(NewsDto newsDto);
 
-    OffsetPageResponse<List<News>> findAllWithOffset(CustomPageRequest customPageRequest);
+    OffsetPageResponse<List<NewsDto>> findAllWithOffset(CustomPageRequest customPageRequest);
 
-    CursorPageResponse<List<News>> findAllWithCursor(CursorPageRequest cursorPageRequest);
+    CursorPageResponse<List<NewsDto>> findAllWithCursor(CursorPageRequest cursorPageRequest);
 
     Long getNewsCount();
 }

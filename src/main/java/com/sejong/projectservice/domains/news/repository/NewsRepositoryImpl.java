@@ -8,7 +8,7 @@ import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
-import com.sejong.projectservice.domains.news.domain.News;
+import com.sejong.projectservice.domains.news.domain.NewsDto;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.util.NewsMapper;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,8 @@ public class NewsRepositoryImpl implements NewsRepository {
     private final ArchiveJpaRepository archiveJpaRepository;
 
     @Override
-    public News save(News news) {
-        NewsEntity entity = NewsMapper.toEntity(news);
+    public NewsDto save(NewsDto newsDto) {
+        NewsEntity entity = NewsMapper.toEntity(newsDto);
         NewsEntity newsEntity = archiveJpaRepository.save(entity);
         return NewsMapper.toDomain(newsEntity);
     }
@@ -38,26 +38,26 @@ public class NewsRepositoryImpl implements NewsRepository {
     }
 
     @Override
-    public News findBy(Long newsId) {
+    public NewsDto findBy(Long newsId) {
         NewsEntity newsEntity = archiveJpaRepository.findById(newsId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
         return NewsMapper.toDomain(newsEntity);
     }
 
     @Override
-    public News update(News news) {
-        NewsEntity entity = NewsMapper.toEntity(news);
+    public NewsDto update(NewsDto newsDto) {
+        NewsEntity entity = NewsMapper.toEntity(newsDto);
         return NewsMapper.toDomain(archiveJpaRepository.save(entity));
     }
 
 
     @Override
-    public void delete(News news) {
-        archiveJpaRepository.deleteById(news.getId());
+    public void delete(NewsDto newsDto) {
+        archiveJpaRepository.deleteById(newsDto.getId());
     }
 
     @Override
-    public OffsetPageResponse<List<News>> findAllWithOffset(CustomPageRequest customPageRequest) {
+    public OffsetPageResponse<List<NewsDto>> findAllWithOffset(CustomPageRequest customPageRequest) {
         Pageable pageable = PageRequest.of(customPageRequest.getPage(),
                 customPageRequest.getSize(),
                 Sort.Direction.valueOf(customPageRequest.getDirection().name()),
@@ -65,7 +65,7 @@ public class NewsRepositoryImpl implements NewsRepository {
 
         Page<NewsEntity> archiveEntities = archiveJpaRepository.findAll(pageable);
 
-        List<News> archives = archiveEntities.stream()
+        List<NewsDto> archives = archiveEntities.stream()
                 .map(NewsMapper::toDomain)
                 .toList();
 
@@ -73,7 +73,7 @@ public class NewsRepositoryImpl implements NewsRepository {
     }
 
     @Override
-    public CursorPageResponse<List<News>> findAllWithCursor(CursorPageRequest cursorPageRequest) {
+    public CursorPageResponse<List<NewsDto>> findAllWithCursor(CursorPageRequest cursorPageRequest) {
         Pageable pageable = PageRequest.of(0, cursorPageRequest.getSize() + 1); // +1로 다음 페이지 존재 여부 확인
 
         List<NewsEntity> entities = getCursorBasedEntities(cursorPageRequest, pageable);
@@ -85,15 +85,15 @@ public class NewsRepositoryImpl implements NewsRepository {
         List<NewsEntity> resultEntities = hasNext ?
                 entities.subList(0, cursorPageRequest.getSize()) : entities; // Todo: 아예 sql로 limit
 
-        List<News> news = resultEntities.stream()
+        List<NewsDto> newsDtos = resultEntities.stream()
                 .map(NewsMapper::toDomain)
                 .toList();
 
         // 다음 커서 계산
-        Long nextCursor = hasNext && !news.isEmpty() ?
-                news.get(news.size() - 1).getId() : null;
+        Long nextCursor = hasNext && !newsDtos.isEmpty() ?
+                newsDtos.get(newsDtos.size() - 1).getId() : null;
 
-        return CursorPageResponse.ok(nextCursor, hasNext, news);
+        return CursorPageResponse.ok(nextCursor, hasNext, newsDtos);
     }
 
     @Override

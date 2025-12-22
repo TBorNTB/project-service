@@ -1,12 +1,18 @@
 package com.sejong.projectservice.domains.news.domain;
 
 
+import com.sejong.projectservice.domains.user.UserId;
+import com.sejong.projectservice.domains.user.UserIds;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.Filepath;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "news")
@@ -52,5 +58,22 @@ public class NewsEntity {
         this.tags = tags;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public void update(ContentEmbeddable content, String participantIds, String tags) {
+        this.content = content;
+        this.participantIds = participantIds;
+        this.tags = tags;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateFileInfo(Filepath filepath) {
+        this.thumbnailPath =  filepath.path();
+    }
+
+    public void validateOwner(String writerId) {
+        if (!this.writerId.equals(writerId)) {
+            throw new BaseException(ExceptionType.NOT_NEWS_OWNER);
+        }
     }
 }

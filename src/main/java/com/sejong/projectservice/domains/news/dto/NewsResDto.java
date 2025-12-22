@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.news.dto;
 
 import com.sejong.projectservice.client.response.UserNameInfo;
-import com.sejong.projectservice.domains.news.domain.News;
+import com.sejong.projectservice.domains.news.domain.NewsDto;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -22,7 +22,7 @@ public record NewsResDto(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public static NewsResDto from(News archive) {
+    public static NewsResDto from(NewsDto archive) {
         return new NewsResDto(
                 archive.getId(),
                 archive.getContent().getTitle(),
@@ -40,7 +40,7 @@ public record NewsResDto(
         );
     }
 
-    public static NewsResDto from(News archive, Map<String, UserNameInfo> usernamesMap) {
+    public static NewsResDto from(NewsDto archive, Map<String, UserNameInfo> usernamesMap) {
         return new NewsResDto(
                 archive.getId(),
                 archive.getContent().getTitle(),

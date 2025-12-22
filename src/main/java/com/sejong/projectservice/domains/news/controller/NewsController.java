@@ -44,8 +44,6 @@ public class NewsController {
     public ResponseEntity<NewsResDto> createNews(
             @RequestBody NewsReqDto newsReqDto,
             @Parameter(hidden = true) @RequestHeader("X-User-Id") String username) {
-        log.info("--------------------------------");
-        log.info("username : {}", username);
         newsReqDto.setWriterUsername(username);
         NewsResDto response = newsService.createNews(newsReqDto);
         return ResponseEntity.ok(response);

@@ -36,4 +36,13 @@ public class ContentEmbeddable {
     public static ContentEmbeddable of(Content content) {
         return new ContentEmbeddable(content.getTitle(), content.getSummary(), content.getContent(), content.getCategory());
     }
+
+    public Content toContent(){
+        return Content.builder()
+                .title(title)
+                .summary(summary)
+                .content(content)
+                .category(category)
+                .build();
+    }
 }

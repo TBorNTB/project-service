@@ -15,7 +15,7 @@ import java.util.List;
 @ToString
 @Builder
 @AllArgsConstructor
-public class News {
+public class NewsDto {
 
     private Long id;
     private Content content;
@@ -26,8 +26,8 @@ public class News {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static News create(Content content, UserId writerId, UserIds participantIds, List<String> tags) {
-        return News.builder()
+    public static NewsDto create(Content content, UserId writerId, UserIds participantIds, List<String> tags) {
+        return NewsDto.builder()
                 .id(null)
                 .content(content)
                 .thumbnailPath(null)
