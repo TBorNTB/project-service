@@ -2,26 +2,26 @@ package com.sejong.projectservice.support.common.util;
 
 
 
-import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledge;
-import com.sejong.projectservice.domains.news.domain.News;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
+import com.sejong.projectservice.domains.news.domain.NewsDto;
 
 import java.util.List;
 
 public class ExtractorUsername {
 
-    public static List<String> FromKnowledges(List<CsKnowledge> knowledges) {
+    public static List<String> FromKnowledges(List<CsKnowledgeDto> knowledges) {
         return knowledges.stream()
                 .map(knowledge -> knowledge.getWriterId().userId())
                 .toList();
     }
 
-    public static List<String> FromKnowledge(CsKnowledge knowledge) {
+    public static List<String> FromKnowledge(CsKnowledgeDto knowledge) {
         return List.of(knowledge.getWriterId().userId());
     }
 
-    public static List<String> FromNewses(News news) {
-        List<String> usernames = news.getParticipantIds().toList();
-        String username = news.getWriterId().userId();
+    public static List<String> FromNewses(NewsDto newsDto) {
+        List<String> usernames = newsDto.getParticipantIds().toList();
+        String username = newsDto.getWriterId().userId();
 
         usernames.add(username);
         return usernames;
