@@ -13,7 +13,7 @@ public class ProjectUsernamesExtractor {
         return projects.stream()
                 .flatMap(project -> Stream.concat(
                         Stream.of(project.getUsername()),
-                        project.getCollaborators().stream()
+                        project.getCollaboratorEntities().stream()
                                 .map(CollaboratorEntity::getCollaboratorName)
                 ))
                 .toList();
@@ -22,7 +22,7 @@ public class ProjectUsernamesExtractor {
     public static List<String> extract(ProjectEntity projectEntity) {
         List<String> usernames = new ArrayList<>();
         usernames.add(projectEntity.getUsername());
-        projectEntity.getCollaborators()
+        projectEntity.getCollaboratorEntities()
                 .forEach(it->usernames.add(it.getCollaboratorName()));
         return usernames;
     }

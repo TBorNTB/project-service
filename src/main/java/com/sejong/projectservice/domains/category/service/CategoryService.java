@@ -25,8 +25,8 @@ public class CategoryService {
     public CategoryResponse create(String userRole, String name) {
         validateAdminRole(userRole);
         CategoryEntity categoryEntity = CategoryEntity.of(name);
-        CategoryEntity savedCategory = categoryJpaRepository.save(categoryEntity);
-        return CategoryResponse.from(savedCategory);
+        CategoryEntity savedCategoryEntity = categoryJpaRepository.save(categoryEntity);
+        return CategoryResponse.from(savedCategoryEntity);
     }
 
     @Transactional
@@ -59,13 +59,13 @@ public class CategoryService {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         projectEntity.validateUserPermission(username);
 
-        List<CategoryEntity> categoryEntities1 = categoryNames.stream()
+        List<CategoryEntity> categoryEntityEntities1 = categoryNames.stream()
                 .map(CategoryEntity::of).toList();
 
-        categoryJpaRepository.saveAll(categoryEntities1);
-        projectEntity.updateCategory(categoryNames, categoryEntities1);
+        categoryJpaRepository.saveAll(categoryEntityEntities1);
+        projectEntity.updateCategory(categoryNames, categoryEntityEntities1);
 
-        return CategoryAllResponse.from(categoryEntities1);
+        return CategoryAllResponse.from(categoryEntityEntities1);
     }
 
     private void validateAdminRole(String userRole) {

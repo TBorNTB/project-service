@@ -4,7 +4,7 @@ import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.repository.CategoryJpaRepository;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
-import com.sejong.projectservice.domains.document.domain.DocumentEntity;
+import com.sejong.projectservice.domains.document.domain.Document;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
@@ -33,7 +33,7 @@ public class Mapper {
                 .map(SubGoalEntity::from).forEach(projectEntity::addSubGoal);
 
         projectDto.getDocumentDtos().stream()
-                .map(DocumentEntity::from).forEach(projectEntity::addDocument);
+                .map(Document::from).forEach(projectEntity::addDocument);
 
         projectDto.getCategories().stream()
                 .map(c -> categoryJpaRepository.findByName(c.getName())
@@ -48,7 +48,7 @@ public class Mapper {
 
     public void connectJoins(ProjectEntity projectEntity, ProjectFormRequest request) {
 
-        List<CollaboratorEntity> collaborators = request.getCollaborators().stream()
+        List<CollaboratorEntity> collaboratorEntities = request.getCollaborators().stream()
                 .map(collaboratorname -> CollaboratorEntity.of(collaboratorname, projectEntity))
                 .toList();
 
@@ -69,7 +69,7 @@ public class Mapper {
 
 
     public void updateCollaborator(ProjectDto projectDto, ProjectEntity projectEntity) {
-        projectEntity.getCollaborators().clear();
+        projectEntity.getCollaboratorEntities().clear();
 
         projectDto.getCollaboratorDtos().stream()
                 .map(CollaboratorEntity::from).forEach(projectEntity::addCollaborator);

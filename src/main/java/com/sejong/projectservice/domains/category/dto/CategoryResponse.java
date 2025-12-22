@@ -15,25 +15,25 @@ public class CategoryResponse {
     private String name;
     private String message;
 
-    public static CategoryResponse from(CategoryEntity category) {
+    public static CategoryResponse from(CategoryEntity categoryEntity) {
         return CategoryResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
+                .id(categoryEntity.getId())
+                .name(categoryEntity.getName())
                 .message("카테고리 생성 완료")
                 .build();
     }
 
-    public static CategoryResponse updateFrom(CategoryEntity category) {
+    public static CategoryResponse updateFrom(CategoryEntity categoryEntity) {
         return CategoryResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
+                .id(categoryEntity.getId())
+                .name(categoryEntity.getName())
                 .message("카테고리 수정 완료")
                 .build();
     }
-    public static CategoryResponse deleteFrom(CategoryEntity category) {
+    public static CategoryResponse deleteFrom(CategoryEntity categoryEntity) {
         return CategoryResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
+                .id(categoryEntity.getId())
+                .name(categoryEntity.getName())
                 .message("카테고리 삭제 완료")
                 .build();
     }

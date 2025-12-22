@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class DocumentEntity {
+public class Document {
 
     @Id
     @Column(name = "document_id")
@@ -54,8 +54,8 @@ public class DocumentEntity {
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
-    public static DocumentEntity from(DocumentDto documentDto) {
-        return DocumentEntity.builder()
+    public static Document from(DocumentDto documentDto) {
+        return Document.builder()
                 .id(documentDto.getId() != null ? documentDto.getId() : null)
                 .yorkieDocumentId(documentDto.getYorkieDocumentId())
                 .title(documentDto.getTitle())
@@ -68,8 +68,8 @@ public class DocumentEntity {
                 .build();
     }
 
-    public static DocumentEntity from(DocumentDto documentDto, ProjectEntity projectEntity) {
-        return DocumentEntity.builder()
+    public static Document from(DocumentDto documentDto, ProjectEntity projectEntity) {
+        return Document.builder()
                 .id(documentDto.getId() != null ? documentDto.getId() : null)
                 .yorkieDocumentId(documentDto.getYorkieDocumentId())
                 .title(documentDto.getTitle())
@@ -82,9 +82,9 @@ public class DocumentEntity {
                 .build();
     }
 
-    public static DocumentEntity of(DocumentCreateReq request, String yorkieDocumentId, ProjectEntity projectEntity) {
+    public static Document of(DocumentCreateReq request, String yorkieDocumentId, ProjectEntity projectEntity) {
 
-        DocumentEntity documentEntity = DocumentEntity.builder()
+        Document document = Document.builder()
                 .id(null)
                 .yorkieDocumentId(yorkieDocumentId)
                 .title(request.getTitle())
@@ -95,9 +95,9 @@ public class DocumentEntity {
                 .updatedAt(LocalDateTime.now())
                 .projectEntity(projectEntity)
                 .build();
-        projectEntity.addDocument(documentEntity);
+        projectEntity.addDocument(document);
 
-        return documentEntity;
+        return document;
     }
 
     public void update(DocumentDto documentDto) {

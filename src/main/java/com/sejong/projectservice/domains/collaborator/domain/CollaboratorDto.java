@@ -22,8 +22,8 @@ public class CollaboratorDto {
                 .build();
     }
 
-    public static List<CollaboratorDto> toDtoList(List<CollaboratorEntity> collaboratorEntities) {
-        return collaboratorEntities.stream()
+    public static List<CollaboratorDto> toDtoList(List<CollaboratorEntity> collaboratorEntityEntities) {
+        return collaboratorEntityEntities.stream()
                 .map(it->{
                     return CollaboratorDto.builder()
                             .id(it.getId())

@@ -1,8 +1,6 @@
 package com.sejong.projectservice.domains.news.domain;
 
 
-import com.sejong.projectservice.domains.user.UserId;
-import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.Filepath;
@@ -12,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "news")

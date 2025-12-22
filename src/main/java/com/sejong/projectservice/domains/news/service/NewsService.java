@@ -54,8 +54,8 @@ public class NewsService {
 
         NewsDto newsDto = NewsAssembler.toNews(newsReqDto);
         NewsEntity entity = NewsMapper.toEntity(newsDto);
-        NewsEntity savedNews = archiveJpaRepository.save(entity);
-        NewsDto domain = NewsMapper.toDomain(savedNews);
+        NewsEntity savedNewsEntity = archiveJpaRepository.save(entity);
+        NewsDto domain = NewsMapper.toDomain(savedNewsEntity);
         newsEventPublisher.publishCreated(domain);
 
         return resolveUsernames(domain);

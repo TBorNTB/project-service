@@ -1,9 +1,10 @@
 package com.sejong.projectservice.domains.yorkie.service;
 
+import com.sejong.projectservice.domains.collaborator.repository.CollaboratorJpaRepository;
 import com.sejong.projectservice.support.common.util.JwtUtil;
 import com.sejong.projectservice.domains.yorkie.dto.request.CheckYorkieRequest;
 import com.sejong.projectservice.domains.yorkie.dto.response.CheckYorkieResponse;
-import com.sejong.projectservice.domains.collaborator.repository.CollaboratorRepository;
+
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class YorkieService {
 
     private final JwtUtil jwtUtil;
-    private final CollaboratorRepository collaboratorRepository;
+    private final CollaboratorJpaRepository collaboratorRepository;
 
     public ResponseEntity<CheckYorkieResponse> checkYorkie(CheckYorkieRequest checkYorkieRequest) {
         if (checkYorkieRequest.getMethod().equals(YorkieMethod.ActivateClient)
@@ -44,7 +45,7 @@ public class YorkieService {
 
         String username = jwtUtil.getUserNameFromToken(token);
 
-        boolean belongTo = collaboratorRepository.existsByDocumentYorkieIdAndUsername(yorkieDocId, username);
+        boolean belongTo = collaboratorRepository.existsByYorkieDocIdAndUsername(yorkieDocId, username);
         if (!belongTo) {
             return ResponseEntity
                     .status(HttpStatus.FORBIDDEN)

@@ -90,7 +90,7 @@ public class ProjectEvent {
                 .distinct()
                 .toList();
 
-        List<String> collaboratorNames = project.getCollaborators().stream()
+        List<String> collaboratorNames = project.getCollaboratorEntities().stream()
                 .map(CollaboratorEntity::getCollaboratorName)
                 .distinct()
                 .toList();

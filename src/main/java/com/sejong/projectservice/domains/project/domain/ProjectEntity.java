@@ -10,7 +10,7 @@ import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
 import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
-import com.sejong.projectservice.domains.document.domain.DocumentEntity;
+import com.sejong.projectservice.domains.document.domain.Document;
 import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
 import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
@@ -65,13 +65,13 @@ public class ProjectEntity {
     private List<ProjectTechStackEntity> projectTechStacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<CollaboratorEntity> collaborators = new ArrayList<>();
+    private List<CollaboratorEntity> collaboratorEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<SubGoalEntity> subGoals = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<DocumentEntity> documents = new ArrayList<>();
+    private List<Document> documents = new ArrayList<>();
 
     public static ProjectEntity from(ProjectDto projectDto) {
         return ProjectEntity.builder()
@@ -84,7 +84,7 @@ public class ProjectEntity {
                 .updatedAt(projectDto.getUpdatedAt())
                 .projectCategories(new ArrayList<>())
                 .projectTechStacks(new ArrayList<>())
-                .collaborators(new ArrayList<>())
+                .collaboratorEntities(new ArrayList<>())
                 .subGoals(new ArrayList<>())
                 .documents(new ArrayList<>())
                 .build();
@@ -103,7 +103,7 @@ public class ProjectEntity {
                 .updatedAt(LocalDateTime.now())
                 .projectCategories(new ArrayList<>())
                 .projectTechStacks(new ArrayList<>())
-                .collaborators(new ArrayList<>())
+                .collaboratorEntities(new ArrayList<>())
                 .subGoals(new ArrayList<>())
                 .documents(new ArrayList<>())
                 .build();
@@ -123,7 +123,7 @@ public class ProjectEntity {
 
     public void addCollaborator(CollaboratorEntity collaboratorEntity) {
         collaboratorEntity.assignProjectEntity(this);
-        this.collaborators.add(collaboratorEntity);
+        this.collaboratorEntities.add(collaboratorEntity);
     }
 
     public void addSubGoal(SubGoalEntity subGoalEntity) {
@@ -131,13 +131,13 @@ public class ProjectEntity {
         this.subGoals.add(subGoalEntity);
     }
 
-    public void addDocument(DocumentEntity documentEntity) {
-        documentEntity.assignDocumentEntity(this);
-        this.documents.add(documentEntity);
+    public void addDocument(Document document) {
+        document.assignDocumentEntity(this);
+        this.documents.add(document);
     }
 
-    public void removeDocument(DocumentEntity documentEntity) {
-        documents.remove(documentEntity);
+    public void removeDocument(Document document) {
+        documents.remove(document);
     }
 
     public void update(ProjectDto projectDto) {
@@ -150,7 +150,7 @@ public class ProjectEntity {
 
     public ProjectDto toDomain() {
 
-        List<CollaboratorDto> collaboratorDtoList = new ArrayList<>(collaborators.stream()
+        List<CollaboratorDto> collaboratorDtoList = new ArrayList<>(collaboratorEntities.stream()
                 .map(CollaboratorEntity::toDomain)
                 .toList());
 
@@ -171,7 +171,7 @@ public class ProjectEntity {
                 .toList());
 
         List<DocumentDto> documentDtoList = new ArrayList<>(documents.stream()
-                .map(DocumentEntity::toDomain)
+                .map(Document::toDomain)
                 .toList());
 
         return ProjectDto.builder()
@@ -219,7 +219,7 @@ public class ProjectEntity {
 
 
     public boolean ensureCollaboratorExists(String userName) {
-        boolean exists = collaborators.stream()
+        boolean exists = collaboratorEntities.stream()
                 .anyMatch(collaborator -> collaborator.getCollaboratorName().equals(userName));
 
         return exists;
@@ -234,9 +234,9 @@ public class ProjectEntity {
         selectedSubGaol.check();
     }
 
-    public void updateCategory(List<String> categoryNames,  List<CategoryEntity> categoryEntities1) {
+    public void updateCategory(List<String> categoryNames,  List<CategoryEntity> categoryEntityEntities1) {
         this.projectCategories.clear(); // orphanRemoval로 기존 링크 전부 삭제
-        categoryEntities1.forEach(this::addCategory);
+        categoryEntityEntities1.forEach(this::addCategory);
     }
 
     public void updateCollaborator(List<String> collaboratorNames) {
@@ -247,7 +247,7 @@ public class ProjectEntity {
                 .distinct()
                 .toList();
 
-        this.collaborators.clear();
+        this.collaboratorEntities.clear();
 
         for (String name : uniqueNames) {
           CollaboratorEntity.of(name, this);

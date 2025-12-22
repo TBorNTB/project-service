@@ -26,6 +26,6 @@ public class CollaboratorService {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         projectEntity.validateUserPermission(username);
         projectEntity.updateCollaborator(collaboratorNames);
-        return CollaboratorDto.toDtoList(projectEntity.getCollaborators());
+        return CollaboratorDto.toDtoList(projectEntity.getCollaboratorEntities());
     }
 }

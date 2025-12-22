@@ -52,7 +52,7 @@ public class ProjectSpecifyInfo {
 
     public static ProjectSpecifyInfo from(ProjectEntity project, Map<String, UserNameInfo> usernames) {
 
-        List<CollaboratorResponse> collaboratorResponseList = project.getCollaborators().stream()
+        List<CollaboratorResponse> collaboratorResponseList = project.getCollaboratorEntities().stream()
                 .map(collaborator -> {
                     return CollaboratorResponse.of(collaborator.getId(), collaborator.getCollaboratorName(),
                             usernames.get(collaborator.getCollaboratorName()).nickname(),
@@ -60,7 +60,7 @@ public class ProjectSpecifyInfo {
                 }).toList();
 
 
-        List<CategoryEntity> categoryEntities = project.getProjectCategories().stream()
+        List<CategoryEntity> categoryEntityEntities = project.getProjectCategories().stream()
                 .map(ProjectCategoryEntity::getCategoryEntity).toList();
 
         List<TechStackEntity> techStackEntities = project.getProjectTechStacks().stream()
@@ -78,7 +78,7 @@ public class ProjectSpecifyInfo {
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
                 .thumbnailUrl(project.getThumbnailUrl())
-                .categories(CategoryDto.from2(categoryEntities))
+                .categories(CategoryDto.from2(categoryEntityEntities))
                 .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))
                 .techStackDtos(TechStackDto.from2(techStackEntities))
                 .collaborators(collaboratorResponseList)

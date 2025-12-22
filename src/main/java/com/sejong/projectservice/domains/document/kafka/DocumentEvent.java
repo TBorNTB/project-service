@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.document.kafka;
 
-import com.sejong.projectservice.domains.document.domain.DocumentEntity;
+import com.sejong.projectservice.domains.document.domain.Document;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,7 +28,7 @@ public class DocumentEvent {
     private String createdAt;
     private String updatedAt;
 
-    public static DocumentEvent from(DocumentEntity document){
+    public static DocumentEvent from(Document document){
         return DocumentEvent.builder()
                 .id(document.getId().toString())
                 .yorkieDocumentId(document.getYorkieDocumentId())
