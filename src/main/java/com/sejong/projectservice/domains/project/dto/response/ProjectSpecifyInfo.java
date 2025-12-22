@@ -82,7 +82,7 @@ public class ProjectSpecifyInfo {
                 .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))
                 .techStackDtos(TechStackDto.from2(techStackEntities))
                 .collaborators(collaboratorResponseList)
-                .documentDtos(DocumentDto.from2(project.getDocuments()))
+                .documentDtos(DocumentDto.from2(project.getDocumentEntities()))
                 .build();
     }
 }

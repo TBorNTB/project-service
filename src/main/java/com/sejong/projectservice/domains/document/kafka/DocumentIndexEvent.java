@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.document.kafka;
 
 
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,8 +18,8 @@ public class DocumentIndexEvent {
     private long occurredAt;
     private DocumentEvent documentEvent;
 
-    public static DocumentIndexEvent of(Document document, Type type, long occurredAt) {
-        DocumentEvent documentEvent = DocumentEvent.from(document);
+    public static DocumentIndexEvent of(DocumentEntity documentEntity, Type type, long occurredAt) {
+        DocumentEvent documentEvent = DocumentEvent.from(documentEntity);
         return DocumentIndexEvent.builder()
                 .aggregatedId(documentEvent.getId())
                 .type(type)

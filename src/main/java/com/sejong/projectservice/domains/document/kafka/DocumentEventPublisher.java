@@ -3,7 +3,7 @@ package com.sejong.projectservice.domains.document.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.project.kafka.enums.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -16,12 +16,12 @@ public class DocumentEventPublisher {
     private final ObjectMapper objectMapper;
     private final String DOCUMENT_EVENTS = "document";
 
-    public void publishCreated(Document document){
-        publish(document, Type.CREATED);
+    public void publishCreated(DocumentEntity documentEntity){
+        publish(documentEntity, Type.CREATED);
     }
 
-    public void publishUpdated(Document document) {
-        publish(document, Type.UPDATED);
+    public void publishUpdated(DocumentEntity documentEntity) {
+        publish(documentEntity, Type.UPDATED);
     }
 
     public void publishDeleted(String documentId) {
@@ -29,8 +29,8 @@ public class DocumentEventPublisher {
         kafkaTemplate.send(DOCUMENT_EVENTS, documentId,  toJsonString(event));
     }
 
-    private void publish(Document document, Type type) {
-        DocumentIndexEvent event = DocumentIndexEvent.of(document, type, System.currentTimeMillis());
+    private void publish(DocumentEntity documentEntity, Type type) {
+        DocumentIndexEvent event = DocumentIndexEvent.of(documentEntity, type, System.currentTimeMillis());
         kafkaTemplate.send(DOCUMENT_EVENTS, event.getAggregatedId(), toJsonString(event));
     }
 

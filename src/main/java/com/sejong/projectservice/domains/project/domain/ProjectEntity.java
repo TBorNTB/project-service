@@ -1,16 +1,11 @@
 package com.sejong.projectservice.domains.project.domain;
 
 import com.sejong.projectservice.client.response.UserNameInfo;
-import com.sejong.projectservice.domains.category.domain.CategoryDto;
-import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
-import com.sejong.projectservice.domains.document.domain.DocumentDto;
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.enums.ProjectStatus;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
-import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
-import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
-import com.sejong.projectservice.domains.document.domain.Document;
 import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
 import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
@@ -71,7 +66,7 @@ public class ProjectEntity {
     private List<SubGoalEntity> subGoals = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Document> documents = new ArrayList<>();
+    private List<DocumentEntity> documentEntities = new ArrayList<>();
 
     public static ProjectEntity from(ProjectDto projectDto) {
         return ProjectEntity.builder()
@@ -86,7 +81,7 @@ public class ProjectEntity {
                 .projectTechStacks(new ArrayList<>())
                 .collaboratorEntities(new ArrayList<>())
                 .subGoals(new ArrayList<>())
-                .documents(new ArrayList<>())
+                .documentEntities(new ArrayList<>())
                 .build();
     }
 
@@ -105,7 +100,7 @@ public class ProjectEntity {
                 .projectTechStacks(new ArrayList<>())
                 .collaboratorEntities(new ArrayList<>())
                 .subGoals(new ArrayList<>())
-                .documents(new ArrayList<>())
+                .documentEntities(new ArrayList<>())
                 .build();
     }
 
@@ -131,13 +126,13 @@ public class ProjectEntity {
         this.subGoals.add(subGoalEntity);
     }
 
-    public void addDocument(Document document) {
-        document.assignDocumentEntity(this);
-        this.documents.add(document);
+    public void addDocument(DocumentEntity documentEntity) {
+        documentEntity.assignDocumentEntity(this);
+        this.documentEntities.add(documentEntity);
     }
 
-    public void removeDocument(Document document) {
-        documents.remove(document);
+    public void removeDocument(DocumentEntity documentEntity) {
+        documentEntities.remove(documentEntity);
     }
 
     public void update(ProjectDto projectDto) {

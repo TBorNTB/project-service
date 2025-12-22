@@ -26,8 +26,8 @@ public class DocumentDto {
 
     private Long projectId;
 
-    public static List<DocumentDto> from2(List<Document> documents) {
-        return documents.stream()
+    public static List<DocumentDto> from2(List<DocumentEntity> documentEntities) {
+        return documentEntities.stream()
                 .map(it->{
                     return DocumentDto.builder()
                             .id(it.getId())

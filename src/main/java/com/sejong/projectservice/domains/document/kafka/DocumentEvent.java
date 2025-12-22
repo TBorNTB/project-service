@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.document.kafka;
 
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,16 +28,16 @@ public class DocumentEvent {
     private String createdAt;
     private String updatedAt;
 
-    public static DocumentEvent from(Document document){
+    public static DocumentEvent from(DocumentEntity documentEntity){
         return DocumentEvent.builder()
-                .id(document.getId().toString())
-                .yorkieDocumentId(document.getYorkieDocumentId())
-                .title(document.getTitle())
-                .description(document.getDescription())
-                .thumbnailUrl(document.getThumbnailUrl())
-                .content(document.getContent())
-                .createdAt(document.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
-                .updatedAt(document.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
+                .id(documentEntity.getId().toString())
+                .yorkieDocumentId(documentEntity.getYorkieDocumentId())
+                .title(documentEntity.getTitle())
+                .description(documentEntity.getDescription())
+                .thumbnailUrl(documentEntity.getThumbnailUrl())
+                .content(documentEntity.getContent())
+                .createdAt(documentEntity.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
+                .updatedAt(documentEntity.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .build();
     }
 }

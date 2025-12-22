@@ -12,7 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
 import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class Document {
+public class DocumentEntity {
 
     @Id
     @Column(name = "document_id")
@@ -54,8 +56,8 @@ public class Document {
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
-    public static Document from(DocumentDto documentDto) {
-        return Document.builder()
+    public static DocumentEntity from(DocumentDto documentDto) {
+        return DocumentEntity.builder()
                 .id(documentDto.getId() != null ? documentDto.getId() : null)
                 .yorkieDocumentId(documentDto.getYorkieDocumentId())
                 .title(documentDto.getTitle())
@@ -68,23 +70,9 @@ public class Document {
                 .build();
     }
 
-    public static Document from(DocumentDto documentDto, ProjectEntity projectEntity) {
-        return Document.builder()
-                .id(documentDto.getId() != null ? documentDto.getId() : null)
-                .yorkieDocumentId(documentDto.getYorkieDocumentId())
-                .title(documentDto.getTitle())
-                .description(documentDto.getDescription())
-                .thumbnailUrl(documentDto.getThumbnailUrl())
-                .content(documentDto.getContent())
-                .createdAt(documentDto.getCreatedAt())
-                .updatedAt(documentDto.getUpdatedAt())
-                .projectEntity(projectEntity)
-                .build();
-    }
+    public static DocumentEntity of(DocumentCreateReq request, String yorkieDocumentId, ProjectEntity projectEntity) {
 
-    public static Document of(DocumentCreateReq request, String yorkieDocumentId, ProjectEntity projectEntity) {
-
-        Document document = Document.builder()
+        DocumentEntity documentEntity = DocumentEntity.builder()
                 .id(null)
                 .yorkieDocumentId(yorkieDocumentId)
                 .title(request.getTitle())
@@ -95,9 +83,9 @@ public class Document {
                 .updatedAt(LocalDateTime.now())
                 .projectEntity(projectEntity)
                 .build();
-        projectEntity.addDocument(document);
+        projectEntity.addDocument(documentEntity);
 
-        return document;
+        return documentEntity;
     }
 
     public void update(DocumentDto documentDto) {
@@ -106,19 +94,6 @@ public class Document {
         this.thumbnailUrl = documentDto.getThumbnailUrl();
         this.content = documentDto.getContent();
         this.updatedAt = LocalDateTime.now();
-    }
-
-    public DocumentDto toDomain() {
-        return DocumentDto.builder()
-                .id(id)
-                .yorkieDocumentId(yorkieDocumentId)
-                .title(title)
-                .description(description)
-                .thumbnailUrl(thumbnailUrl)
-                .content(content)
-                .createdAt(createdAt)
-                .updatedAt(updatedAt)
-                .build();
     }
 
     public void assignDocumentEntity(ProjectEntity projectEntity) {

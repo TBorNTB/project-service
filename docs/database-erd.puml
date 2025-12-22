@@ -49,7 +49,7 @@ entity "sub_goals" {
   * deadline : TIMESTAMP
 }
 
-entity "documents" {
+entity "documentEntities" {
   * id : BIGINT
   --
   * project_id : BIGINT
@@ -76,7 +76,7 @@ entity "project_tech_stacks" {
 ' Relationships
 projectDtos ||--o{ collaboratorDtos : has
 projectDtos ||--o{ sub_goals : contains
-projectDtos ||--o{ documents : contains
+projectDtos ||--o{ documentEntities : contains
 projectDtos }o--o{ categories : belongs_to
 projectDtos }o--o{ tech_stacks : uses
 

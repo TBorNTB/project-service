@@ -4,7 +4,7 @@ import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
-import com.sejong.projectservice.domains.document.domain.Document;
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
@@ -33,7 +33,7 @@ public class Mapper {
                 .map(SubGoalEntity::from).forEach(projectEntity::addSubGoal);
 
         projectDto.getDocumentDtos().stream()
-                .map(Document::from).forEach(projectEntity::addDocument);
+                .map(DocumentEntity::from).forEach(projectEntity::addDocument);
 
         projectDto.getCategories().stream()
                 .map(c -> categoryRepository.findByName(c.getName())
