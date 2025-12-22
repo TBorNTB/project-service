@@ -2,9 +2,9 @@ package com.sejong.projectservice.domains.project.dto.response;
 
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.collaborator.dto.CollaboratorResponse;
-import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.domains.category.domain.CategoryDto;
-import com.sejong.projectservice.domains.enums.ProjectStatus;
+import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
 import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;

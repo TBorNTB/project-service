@@ -1,7 +1,7 @@
 package com.sejong.projectservice.domains.news.domain;
 
 
-import com.sejong.projectservice.domains.news.enums.NewsCategory;
+import com.sejong.projectservice.support.common.constants.NewsCategory;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.EnumType;

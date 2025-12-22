@@ -1,4 +1,4 @@
-package com.sejong.projectservice.client.response;
+package com.sejong.projectservice.support.common.internal.response;
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
 import com.sejong.projectservice.domains.news.domain.NewsDto;

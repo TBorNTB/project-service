@@ -8,7 +8,6 @@ import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
-import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;

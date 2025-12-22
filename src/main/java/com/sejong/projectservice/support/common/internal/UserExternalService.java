@@ -1,12 +1,13 @@
-package com.sejong.projectservice.client;
+package com.sejong.projectservice.support.common.internal;
 
 import static com.sejong.projectservice.support.common.error.code.ErrorCode.INVALID_USERS_NICKNAME;
 import static com.sejong.projectservice.support.common.exception.ExceptionType.EXTERNAL_SERVICE_ERROR;
 
+import com.sejong.projectservice.client.UserClient;
 import com.sejong.projectservice.support.common.error.code.ErrorCode;
 import com.sejong.projectservice.support.common.error.exception.ApiException;
 import com.sejong.projectservice.support.common.exception.BaseException;
-import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 
 import java.util.List;

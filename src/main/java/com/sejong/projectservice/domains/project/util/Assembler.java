@@ -5,7 +5,7 @@ import com.sejong.projectservice.domains.document.domain.DocumentDto;
 import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
-import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.domains.category.domain.CategoryDto;
 import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;

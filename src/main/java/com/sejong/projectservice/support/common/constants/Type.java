@@ -1,4 +1,4 @@
-package com.sejong.projectservice.support.common.kafka;
+package com.sejong.projectservice.support.common.constants;
 
 public enum Type {
     CREATED,

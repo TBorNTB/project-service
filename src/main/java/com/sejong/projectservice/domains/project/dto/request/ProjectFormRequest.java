@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.project.dto.request;
 
-import com.sejong.projectservice.domains.enums.ProjectStatus;
+import com.sejong.projectservice.support.common.constants.ProjectStatus;
 
 import java.util.List;
 import lombok.AllArgsConstructor;

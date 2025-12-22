@@ -3,7 +3,7 @@ package com.sejong.projectservice.domains.project.kafka;
 import com.sejong.projectservice.domains.category.domain.CategoryDto;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorDto;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
-import com.sejong.projectservice.domains.enums.ProjectStatus;
+import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.domains.project.domain.ProjectDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.techstack.domain.TechStackDto;

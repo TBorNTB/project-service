@@ -1,7 +1,6 @@
 package com.sejong.projectservice.domains.csknowledge.dto;
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeDto;
-import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 
 import java.time.LocalDateTime;
 

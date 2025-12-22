@@ -3,7 +3,7 @@ package com.sejong.projectservice.client;
 import java.util.List;
 import java.util.Map;
 
-import com.sejong.projectservice.client.response.UserNameInfo;
+import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

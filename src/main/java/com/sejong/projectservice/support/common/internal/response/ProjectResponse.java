@@ -1,4 +1,4 @@
-package com.sejong.projectservice.client.response;
+package com.sejong.projectservice.support.common.internal.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

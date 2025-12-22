@@ -3,7 +3,6 @@ package com.sejong.projectservice.domains.csknowledge.domain;
 
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
-import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 import com.sejong.projectservice.domains.user.UserId;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;

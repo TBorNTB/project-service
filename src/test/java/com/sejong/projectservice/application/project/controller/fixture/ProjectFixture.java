@@ -9,7 +9,7 @@ import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateReques
 import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
 import com.sejong.projectservice.domains.category.domain.CategoryDto;
-import com.sejong.projectservice.domains.enums.ProjectStatus;
+import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalDto;
 import com.sejong.projectservice.domains.techstack.domain.TechStackDto;
 import java.time.LocalDateTime;

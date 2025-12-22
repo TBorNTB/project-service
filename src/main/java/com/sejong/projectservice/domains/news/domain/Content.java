@@ -1,6 +1,6 @@
 package com.sejong.projectservice.domains.news.domain;
 
-import com.sejong.projectservice.domains.news.enums.NewsCategory;
+import com.sejong.projectservice.support.common.constants.NewsCategory;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

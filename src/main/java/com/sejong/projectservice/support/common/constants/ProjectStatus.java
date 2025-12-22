@@ -1,4 +1,4 @@
-package com.sejong.projectservice.domains.enums;
+package com.sejong.projectservice.support.common.constants;
 
 public enum ProjectStatus {
     IN_PROGRESS,

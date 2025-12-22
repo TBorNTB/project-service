@@ -1,6 +1,5 @@
 package com.sejong.projectservice.domains.csknowledge.dto;
 
-import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

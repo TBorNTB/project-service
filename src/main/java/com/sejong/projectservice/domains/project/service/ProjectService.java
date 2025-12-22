@@ -10,10 +10,10 @@ import com.sejong.projectservice.domains.project.dto.response.ProjectPageRespons
 import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.domains.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.domains.project.util.ProjectUsernamesExtractor;
-import com.sejong.projectservice.client.UserExternalService;
-import com.sejong.projectservice.client.response.PostLikeCheckResponse;
-import com.sejong.projectservice.client.response.UserNameInfo;
-import com.sejong.projectservice.domains.enums.ProjectStatus;
+import com.sejong.projectservice.support.common.internal.UserExternalService;
+import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
+import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.domains.project.kafka.ProjectEventPublisher;
 import java.util.List;
 import java.util.Map;

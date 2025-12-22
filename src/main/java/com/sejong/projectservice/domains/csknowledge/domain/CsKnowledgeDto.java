@@ -1,9 +1,6 @@
 package com.sejong.projectservice.domains.csknowledge.domain;
 
 
-import com.sejong.projectservice.support.common.exception.BaseException;
-import com.sejong.projectservice.support.common.exception.ExceptionType;
-import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 import com.sejong.projectservice.domains.user.UserId;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

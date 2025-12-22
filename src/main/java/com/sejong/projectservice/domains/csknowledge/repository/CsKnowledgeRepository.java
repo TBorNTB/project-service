@@ -2,7 +2,6 @@ package com.sejong.projectservice.domains.csknowledge.repository;
 
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
-import com.sejong.projectservice.domains.csknowledge.enums.TechCategory;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

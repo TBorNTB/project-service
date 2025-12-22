@@ -1,4 +1,4 @@
-package com.sejong.projectservice.domains.news.enums;
+package com.sejong.projectservice.support.common.constants;
 
 import java.util.Arrays;
 
