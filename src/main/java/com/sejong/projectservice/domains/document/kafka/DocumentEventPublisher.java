@@ -4,7 +4,7 @@ package com.sejong.projectservice.domains.document.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
-import com.sejong.projectservice.domains.project.kafka.enums.Type;
+import com.sejong.projectservice.support.common.constants.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;

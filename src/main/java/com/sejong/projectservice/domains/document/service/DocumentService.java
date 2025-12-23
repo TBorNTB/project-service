@@ -4,6 +4,9 @@ import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.domains.document.dto.DocumentInfoRes;
 import com.sejong.projectservice.domains.document.dto.DocumentUpdateReq;
+import com.sejong.projectservice.domains.document.kafka.dto.DocumentCreatedEventDto;
+import com.sejong.projectservice.domains.document.kafka.dto.DocumentDeletedEventDto;
+import com.sejong.projectservice.domains.document.kafka.dto.DocumentUpdatedEventDto;
 import com.sejong.projectservice.domains.document.repository.DocumentRepository;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
@@ -12,6 +15,7 @@ import java.util.UUID;
 
 import com.sejong.projectservice.domains.document.kafka.DocumentEventPublisher;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DocumentService {
 
-    private final DocumentEventPublisher documentEventPublisher;
     private final DocumentRepository documentRepository;
     private final ProjectRepository projectRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public DocumentInfoRes createDocument(Long projectId, DocumentCreateReq request, String username) {
@@ -31,7 +35,7 @@ public class DocumentService {
         DocumentEntity documentEntity = DocumentEntity.of(request, generateYorkieDocumentId(), projectEntity);
 
         DocumentEntity savedDocumentEntity = documentRepository.save(documentEntity);
-        documentEventPublisher.publishCreated(savedDocumentEntity);
+        applicationEventPublisher.publishEvent(DocumentCreatedEventDto.of(savedDocumentEntity.getId()));
         return DocumentInfoRes.from(savedDocumentEntity);
     }
 
@@ -57,7 +61,7 @@ public class DocumentService {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         projectEntity.validateUserPermission(username);
         documentEntity.update(request.getTitle(), request.getContent(), request.getDescription(), request.getThumbnailUrl());
-        documentEventPublisher.publishUpdated(documentEntity);
+        applicationEventPublisher.publishEvent(DocumentUpdatedEventDto.of(documentEntity.getId()));
         return DocumentInfoRes.from(documentEntity);
     }
 
@@ -69,6 +73,6 @@ public class DocumentService {
                 .orElseThrow(() -> new RuntimeException("Project not found"));
         projectEntity.validateUserPermission(username);
         documentRepository.deleteById(documentEntity.getId());
-        documentEventPublisher.publishDeleted(documentId.toString());
+        applicationEventPublisher.publishEvent(DocumentDeletedEventDto.of(documentEntity.getId()));
     }
 }

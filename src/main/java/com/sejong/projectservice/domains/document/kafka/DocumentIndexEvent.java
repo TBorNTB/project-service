@@ -2,7 +2,7 @@ package com.sejong.projectservice.domains.document.kafka;
 
 
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
-import com.sejong.projectservice.domains.project.kafka.enums.Type;
+import com.sejong.projectservice.support.common.constants.Type;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
