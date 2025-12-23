@@ -4,6 +4,9 @@ package com.sejong.projectservice.domains.csknowledge.service;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
+import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeCreatedEventDto;
+import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeDeletedEventDto;
+import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeUpdatedEventDto;
 import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeRepository;
 import com.sejong.projectservice.domains.csknowledge.util.CsKnowledgeAssembler;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
@@ -25,6 +28,7 @@ import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.domains.csknowledge.kafka.CsKnowledgeEventPublisher;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -42,10 +46,10 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class CsKnowledgeService {
 
-    private final CsKnowledgeEventPublisher csKnowledgeEventPublisher;
     private final UserExternalService userExternalService;
     private final CsKnowledgeRepository csKnowledgeRepository;
     private final CategoryRepository categoryRepository;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public CsKnowledgeResDto createCsKnowledge(CsKnowledgeReqDto csKnowledgeReqDto, String username) {
@@ -58,7 +62,7 @@ public class CsKnowledgeService {
         CsKnowledgeDto dto = savedEntity.toDto();
 
         CsKnowledgeResDto response = resolveUsername(dto);
-        csKnowledgeEventPublisher.publishCreated(dto);
+        applicationEventPublisher.publishEvent(CsKnowledgeCreatedEventDto.of(savedEntity.getId()));
         return response;
     }
 
@@ -75,7 +79,7 @@ public class CsKnowledgeService {
         CsKnowledgeDto dto = csKnowledgeEntity.toDto();
 
         CsKnowledgeResDto response = resolveUsername(dto);
-        csKnowledgeEventPublisher.publishUpdated(dto);
+        applicationEventPublisher.publishEvent(CsKnowledgeUpdatedEventDto.of(csKnowledgeEntity.getId()));
         return response;
     }
 
@@ -85,7 +89,7 @@ public class CsKnowledgeService {
                 .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
         csKnowledgeEntity.validateOwnerPermission(username, userRole);
         csKnowledgeRepository.deleteById(csKnowledgeEntity.getId());
-        csKnowledgeEventPublisher.publishDeleted(csKnowledgeId);
+        applicationEventPublisher.publishEvent(CsKnowledgeDeletedEventDto.of(csKnowledgeEntity.getId()));
     }
 
     public CsKnowledgeResDto findById(Long csKnowledgeId) {

@@ -4,13 +4,13 @@ package com.sejong.projectservice.domains.csknowledge.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
-import com.sejong.projectservice.domains.project.kafka.enums.Type;
+
+import com.sejong.projectservice.support.common.constants.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.sejong.projectservice.domains.project.kafka.enums.Type.CREATED;
-import static com.sejong.projectservice.domains.project.kafka.enums.Type.UPDATED;
+import static com.sejong.projectservice.support.common.constants.Type.*;
 
 
 @Service
@@ -29,7 +29,7 @@ public class CsKnowledgeEventPublisher {
     }
 
     public void publishDeleted(Long csKnowledgeId) {
-        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.deleteOf(csKnowledgeId.toString(), Type.DELETED, System.currentTimeMillis());
+        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.deleteOf(csKnowledgeId.toString(), DELETED, System.currentTimeMillis());
         kafkaTemplate.send(CS_KNOWLEDGE_EVENTS, csKnowledgeId.toString(),  toJsonString(event));
     }
 
