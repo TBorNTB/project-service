@@ -4,12 +4,12 @@ package com.sejong.projectservice.domains.news.kafka;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.news.dto.NewsDto;
-import com.sejong.projectservice.domains.project.kafka.enums.Type;
+import com.sejong.projectservice.support.common.constants.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import static com.sejong.projectservice.domains.project.kafka.enums.Type.*;
+import static com.sejong.projectservice.support.common.constants.Type.*;
 
 
 @Service

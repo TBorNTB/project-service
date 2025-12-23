@@ -3,6 +3,9 @@ package com.sejong.projectservice.domains.news.service;
 
 import com.sejong.projectservice.domains.news.domain.ContentEmbeddable;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
+import com.sejong.projectservice.domains.news.kafka.dto.NewsCreatedEventDto;
+import com.sejong.projectservice.domains.news.kafka.dto.NewsDeletedEventDto;
+import com.sejong.projectservice.domains.news.kafka.dto.NewsUpdatedEventDto;
 import com.sejong.projectservice.domains.news.repository.ArchiveRepository;
 import com.sejong.projectservice.domains.news.util.NewsAssembler;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
@@ -26,6 +29,7 @@ import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.domains.news.kafka.NewsEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +47,7 @@ public class NewsService {
 
     private final ArchiveRepository archiveRepository;
     private final UserExternalService userExternalService;
-    private final NewsEventPublisher newsEventPublisher;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public NewsResDto createNews(NewsReqDto newsReqDto) {
@@ -56,8 +60,7 @@ public class NewsService {
         NewsEntity entity = NewsMapper.toEntity(newsDto);
         NewsEntity savedNewsEntity = archiveRepository.save(entity);
         NewsDto dto = NewsMapper.toDomain(savedNewsEntity);
-        newsEventPublisher.publishCreated(dto);
-
+        applicationEventPublisher.publishEvent(NewsCreatedEventDto.of(savedNewsEntity.getId()));
         return resolveUsernames(dto);
     }
 
@@ -74,7 +77,7 @@ public class NewsService {
         );
 
         NewsDto dto = NewsMapper.toDomain(newsEntity);
-        newsEventPublisher.publishUpdated(dto);
+        applicationEventPublisher.publishEvent(NewsUpdatedEventDto.of(newsEntity.getId()));
 
         return resolveUsernames(dto);
     }
@@ -86,7 +89,7 @@ public class NewsService {
         newsEntity.validateOwner(writerId);
 
         archiveRepository.deleteById(newsEntity.getId());
-        newsEventPublisher.publishDeleted(newsId);
+        applicationEventPublisher.publishEvent(NewsDeletedEventDto.of(newsEntity.getId()));
     }
 
     public NewsResDto findById(Long newsId) {
