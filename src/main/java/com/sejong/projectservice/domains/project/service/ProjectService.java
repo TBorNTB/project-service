@@ -1,6 +1,9 @@
 package com.sejong.projectservice.domains.project.service;
 
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDto;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectUpdatedEventDto;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
@@ -22,6 +25,7 @@ import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.util.Mapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,6 +39,7 @@ public class ProjectService {
     private final ProjectEventPublisher projectEventPublisher;
     private final ProjectRepository projectRepository;
     private final Mapper mapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
@@ -43,8 +48,7 @@ public class ProjectService {
         ProjectEntity projectEntity = ProjectEntity.of(projectFormRequest,username,userNameInfos.get(username));
         ProjectEntity savedProject = projectRepository.save(projectEntity);
         mapper.connectJoins(savedProject,projectFormRequest);
-
-        projectEventPublisher.publishCreated(savedProject);
+        eventPublisher.publishEvent(ProjectCreatedEventDto.of(savedProject.getId()));
         return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
     }
 
@@ -58,7 +62,7 @@ public class ProjectService {
                 projectUpdateRequest.getProjectStatus(),
                 projectUpdateRequest.getThumbnailUrl());
         ProjectEntity savedProject = projectRepository.save(project);
-        projectEventPublisher.publishUpdated(savedProject);
+        eventPublisher.publishEvent(ProjectUpdatedEventDto.of(savedProject.getId()));
         return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
     }
 
@@ -68,7 +72,7 @@ public class ProjectService {
                 .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
         project.validateOwner(username, userRole);
         projectRepository.deleteById(projectId);
-        projectEventPublisher.publishDeleted(projectId.toString());
+        eventPublisher.publishEvent(ProjectDeletedEventDto.of(projectId));
         return ProjectDeleteResponse.of(project.getTitle(), "삭제 완료");
     }
 

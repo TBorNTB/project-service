@@ -1,4 +1,4 @@
-package com.sejong.projectservice.domains.project.kafka;
+package com.sejong.projectservice.domains.project.kafka.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProjectCreatedEvent {
+public class ProjectCreatedEventDto {
     private Long projectId;
 
-    public static ProjectCreatedEvent of(Long projectId) {
-        return new ProjectCreatedEvent(projectId);
+    public static ProjectCreatedEventDto of(Long projectId) {
+        return new ProjectCreatedEventDto(projectId);
     }
 }

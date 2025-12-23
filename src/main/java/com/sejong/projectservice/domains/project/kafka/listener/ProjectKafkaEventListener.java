@@ -1,11 +1,14 @@
-package com.sejong.projectservice.domains.project.kafka;
+package com.sejong.projectservice.domains.project.kafka.listener;
 
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.kafka.ProjectEventPublisher;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDto;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectUpdatedEventDto;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -17,8 +20,7 @@ public class ProjectKafkaEventListener {
     private final ProjectEventPublisher projectEventPublisher;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onCreated(ProjectCreatedEvent event){
-        log.info("[AFTER_COMMIT] projectId={}", event.getProjectId());
+    public void onCreated(ProjectCreatedEventDto event){
         ProjectEntity project = projectRepository.findById(event.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
@@ -26,7 +28,7 @@ public class ProjectKafkaEventListener {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onUpdated(ProjectUpdatedEvent event){
+    public void onUpdated(ProjectUpdatedEventDto event){
         ProjectEntity project = projectRepository.findById(event.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
@@ -34,7 +36,7 @@ public class ProjectKafkaEventListener {
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onDeleted(ProjectDeletedEvent event) {
+    public void onDeleted(ProjectDeletedEventDto event) {
         ProjectEntity project = projectRepository.findById(event.getProjectId())
                 .orElseThrow(() -> new RuntimeException("Project not found"));
 
