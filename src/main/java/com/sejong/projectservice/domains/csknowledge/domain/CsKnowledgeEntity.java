@@ -59,6 +59,18 @@ public class CsKnowledgeEntity {
                 .build();
     }
 
+    public static CsKnowledgeEntity from2(CsKnowledgeReqDto req,String username ,CategoryEntity categoryEntity, LocalDateTime time) {
+        return CsKnowledgeEntity.builder()
+                .id(null)
+                .title(req.title())
+                .writerId(username)
+                .content(req.content())
+                .categoryEntity(categoryEntity)
+                .createdAt(time)
+                .updatedAt(time)
+                .build();
+    }
+
     public static CsKnowledgeEntity from(CsKnowledgeDto knowledge, CategoryEntity categoryEntity) {
         return CsKnowledgeEntity.builder()
                 .id(knowledge.getId())

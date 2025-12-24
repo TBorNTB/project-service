@@ -1,5 +1,7 @@
 package com.sejong.projectservice.domains.csknowledge.dto;
 
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
+
 import java.time.LocalDateTime;
 
 public record CsKnowledgeResDto(
@@ -11,14 +13,15 @@ public record CsKnowledgeResDto(
         String category,
         LocalDateTime createdAt
 ) {
-    public static CsKnowledgeResDto from(CsKnowledgeDto csKnowledgeDto, String nickname) {
+
+    public static CsKnowledgeResDto from(CsKnowledgeEntity csKnowledgeDto, String nickname) {
         return new CsKnowledgeResDto(
                 csKnowledgeDto.getId(),
                 csKnowledgeDto.getTitle(),
                 csKnowledgeDto.getContent(),
-                csKnowledgeDto.getWriterId().userId(),
+                csKnowledgeDto.getWriterId(),
                 nickname,
-                csKnowledgeDto.getCategory(),
+                csKnowledgeDto.getCategoryEntity().getName(),
                 csKnowledgeDto.getCreatedAt()
         );
     }

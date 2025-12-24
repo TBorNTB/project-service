@@ -1,6 +1,7 @@
 package com.sejong.projectservice.domains.csknowledge.kafka;
 
 
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,14 +26,14 @@ public class CsKnowledgeEvent {
     private String category;
     private String createdAt;
 
-    public static CsKnowledgeEvent from(CsKnowledgeDto csKnowledgeDto) {
+    public static CsKnowledgeEvent from(CsKnowledgeEntity csKnowledgeEntity) {
         return CsKnowledgeEvent.builder()
-                .id(csKnowledgeDto.getId().toString())
-                .title(csKnowledgeDto.getTitle())
-                .writerId(csKnowledgeDto.getWriterId().userId())
-                .content(csKnowledgeDto.getContent())
-                .category(csKnowledgeDto.getCategory())
-                .createdAt(csKnowledgeDto.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
+                .id(csKnowledgeEntity.getId().toString())
+                .title(csKnowledgeEntity.getTitle())
+                .writerId(csKnowledgeEntity.getWriterId())
+                .content(csKnowledgeEntity.getContent())
+                .category(csKnowledgeEntity.getCategoryEntity().getName())
+                .createdAt(csKnowledgeEntity.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .build();
     }
 }

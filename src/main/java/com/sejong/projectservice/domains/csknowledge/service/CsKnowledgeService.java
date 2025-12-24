@@ -8,7 +8,6 @@ import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeCreate
 import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeDeletedEventDto;
 import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeUpdatedEventDto;
 import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeRepository;
-import com.sejong.projectservice.domains.csknowledge.util.CsKnowledgeAssembler;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
 import com.sejong.projectservice.support.common.exception.BaseException;
@@ -23,8 +22,6 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
-import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
-import com.sejong.projectservice.domains.csknowledge.kafka.CsKnowledgeEventPublisher;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -54,12 +51,10 @@ public class CsKnowledgeService {
         userExternalService.validateExistence(username);
         CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
                 .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
-        CsKnowledgeDto csKnowledgeDto = CsKnowledgeAssembler.toCsKnowledge(csKnowledgeReqDto, username);
-        CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledgeDto, categoryEntity);
-        CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(entity);
-        CsKnowledgeDto dto = savedEntity.toDto();
+        CsKnowledgeEntity csKnowledgeEntity = CsKnowledgeEntity.from2(csKnowledgeReqDto, username, categoryEntity, LocalDateTime.now());
+        CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(csKnowledgeEntity);
 
-        CsKnowledgeResDto response = resolveUsername(dto);
+        CsKnowledgeResDto response = resolveUsername(savedEntity);
         applicationEventPublisher.publishEvent(CsKnowledgeCreatedEventDto.of(savedEntity.getId()));
         return response;
     }
@@ -74,9 +69,7 @@ public class CsKnowledgeService {
         csKnowledgeEntity.validateOwnerPermission(username);
         csKnowledgeEntity.update(csKnowledgeReqDto,LocalDateTime.now(),username,categoryEntity);
 
-        CsKnowledgeDto dto = csKnowledgeEntity.toDto();
-
-        CsKnowledgeResDto response = resolveUsername(dto);
+        CsKnowledgeResDto response = resolveUsername(csKnowledgeEntity);
         applicationEventPublisher.publishEvent(CsKnowledgeUpdatedEventDto.of(csKnowledgeEntity.getId()));
         return response;
     }
@@ -93,7 +86,7 @@ public class CsKnowledgeService {
     public CsKnowledgeResDto findById(Long csKnowledgeId) {
         CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
-        return resolveUsername(csKnowledgeEntity.toDto());
+        return resolveUsername(csKnowledgeEntity);
     }
 
     @Transactional(readOnly = true)
@@ -107,25 +100,22 @@ public class CsKnowledgeService {
         if (exists) {
             CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                     .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
-            return PostLikeCheckResponse.hasOfCS(csKnowledgeEntity.toDto(), true);
+            return PostLikeCheckResponse.hasOfCS(csKnowledgeEntity, true);
         }
 
         return PostLikeCheckResponse.hasNotOf();
     }
 
     public List<CsKnowledgeResDto> findAllByTechCategory(String categoryName) {
-        List<CsKnowledgeDto> csKnowledgeDtos = csKnowledgeRepository
-                .findAllByCategoryEntity_Name(categoryName).stream()
-                .map(CsKnowledgeEntity::toDto)
-                .toList();
-        return resolveUsernames(csKnowledgeDtos);
+        List<CsKnowledgeEntity> csKnowledgeEntities = csKnowledgeRepository
+                .findAllByCategoryEntity_Name(categoryName);
+        return resolveUsernames(csKnowledgeEntities);
     }
 
     public Optional<CsKnowledgeResDto> findUnsentKnowledge(String categoryName, String email) {
 
         Optional<CsKnowledgeEntity> randomUnsent = csKnowledgeRepository.findRandomUnsent(categoryName, email);
-        Optional<CsKnowledgeDto> csKnowledgeDto = randomUnsent.map(CsKnowledgeEntity::toDto);
-        return csKnowledgeDto
+        return randomUnsent
                 .map(this::resolveUsername);
     }
 
@@ -141,17 +131,11 @@ public class CsKnowledgeService {
 
         Page<CsKnowledgeEntity> page = csKnowledgeRepository.findAll(pageable);
 
-        List<CsKnowledgeDto> csKnowledgeDtos = page.stream()
-                .map(CsKnowledgeEntity::toDto)
-                .toList();
-
-        OffsetPageResponse<List<CsKnowledgeDto>> csKnowledges = OffsetPageResponse.ok(page.getNumber(), page.getTotalPages(), csKnowledgeDtos);
-
-        List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(csKnowledges.getData());
+        List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(page.getContent());
 
         return OffsetPageResponse.ok(
-                csKnowledges.getPage(),
-                csKnowledges.getTotalPage(),
+                page.getNumber(),
+                page.getTotalPages(),
                 csKnowledgeResDtoList
         );
     }
@@ -169,16 +153,12 @@ public class CsKnowledgeService {
 
         boolean hasNext = csKnowledgeEntities.size() > pageRequest.getSize();
 
-        List<CsKnowledgeDto> knowledges = csKnowledgeEntities.stream()
-                .limit(pageRequest.getSize())
-                .map(CsKnowledgeEntity::toDto)
-                .toList();
 
-        Long nextCursor = hasNext && !knowledges.isEmpty()
-                ? knowledges.get(knowledges.size() - 1).getId()
+        Long nextCursor = hasNext && !csKnowledgeEntities.isEmpty()
+                ? csKnowledgeEntities.get(csKnowledgeEntities.size() - 1).getId()
                 : null;
 
-        CursorPageResponse<List<CsKnowledgeDto>> csKnowledges = CursorPageResponse.ok(nextCursor, hasNext, knowledges);
+        CursorPageResponse<List<CsKnowledgeEntity>> csKnowledges = CursorPageResponse.ok(nextCursor, hasNext, csKnowledgeEntities);
 
         List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(csKnowledges.getContent());
 
@@ -189,17 +169,17 @@ public class CsKnowledgeService {
         );
     }
 
-    private CsKnowledgeResDto resolveUsername(CsKnowledgeDto csKnowledgeDto) {
-        List<String> usernames = ExtractorUsername.FromKnowledge(csKnowledgeDto);
+    private CsKnowledgeResDto resolveUsername(CsKnowledgeEntity csKnowledgeEntity) {
+        List<String> usernames = ExtractorUsername.FromKnowledge(csKnowledgeEntity);
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return CsKnowledgeResDto.from(csKnowledgeDto, usernamesMap.get(csKnowledgeDto.getWriterId().userId()).nickname());
+        return CsKnowledgeResDto.from(csKnowledgeEntity, usernamesMap.get(csKnowledgeEntity.getWriterId()).nickname());
     }
 
-    private List<CsKnowledgeResDto> resolveUsernames(List<CsKnowledgeDto> csKnowledgeDtos) {
-        List<String> usernames = ExtractorUsername.FromKnowledges(csKnowledgeDtos);
+    private List<CsKnowledgeResDto> resolveUsernames(List<CsKnowledgeEntity> csKnowledgeEntities) {
+        List<String> usernames = ExtractorUsername.FromKnowledges(csKnowledgeEntities);
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return csKnowledgeDtos.stream()
-                .map(cs -> CsKnowledgeResDto.from(cs, usernamesMap.get(cs.getWriterId().userId()).nickname()))
+        return csKnowledgeEntities.stream()
+                .map(cs -> CsKnowledgeResDto.from(cs, usernamesMap.get(cs.getWriterId()).nickname()))
                 .toList();
     }
 

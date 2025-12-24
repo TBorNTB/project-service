@@ -1,5 +1,6 @@
 package com.sejong.projectservice.support.common.internal.response;
 
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.domains.news.dto.NewsDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
@@ -23,9 +24,9 @@ public class PostLikeCheckResponse {
                 .build();
     }
 
-    public static PostLikeCheckResponse hasOfCS(CsKnowledgeDto csKnowledgeDto, boolean isStored) {
+    public static PostLikeCheckResponse hasOfCS(CsKnowledgeEntity csKnowledgeEntity, boolean isStored) {
         return PostLikeCheckResponse.builder()
-                .ownerUsername(csKnowledgeDto.getWriterId().userId())
+                .ownerUsername(csKnowledgeEntity.getWriterId())
                 .isStored(isStored)
                 .build();
     }

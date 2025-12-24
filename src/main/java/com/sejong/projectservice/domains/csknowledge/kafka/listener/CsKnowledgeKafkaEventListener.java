@@ -25,7 +25,7 @@ public class CsKnowledgeKafkaEventListener {
         CsKnowledgeEntity entity = csKnowledgeRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
 
-        csKnowledgeEventPublisher.publishCreated(entity.toDto());
+        csKnowledgeEventPublisher.publishCreated(entity);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
@@ -33,7 +33,7 @@ public class CsKnowledgeKafkaEventListener {
         CsKnowledgeEntity entity = csKnowledgeRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
 
-        csKnowledgeEventPublisher.publishUpdated(entity.toDto());
+        csKnowledgeEventPublisher.publishUpdated(entity);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
