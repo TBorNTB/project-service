@@ -1,6 +1,7 @@
 package com.sejong.projectservice.domains.news.kafka;
 
 
+import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.dto.NewsDto;
 import com.sejong.projectservice.support.common.constants.Type;
 import lombok.AllArgsConstructor;
@@ -17,9 +18,9 @@ public class NewsIndexEvent {
     private Type type;
     private long occurredAt;
 
-    public static NewsIndexEvent of(NewsDto newsDto, Type type, long occurredAt) {
+    public static NewsIndexEvent of(NewsEntity newsEntity, Type type, long occurredAt) {
         return NewsIndexEvent.builder()
-                .newsEvent(NewsEvent.from(newsDto))
+                .newsEvent(NewsEvent.from(newsEntity))
                 .type(type)
                 .occurredAt(occurredAt)
                 .build();

@@ -24,25 +24,25 @@ public class NewsKafkaEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onCreated(ProjectCreatedEventDto event) {
-        NewsEntity news = archiveRepository.findById(event.getProjectId())
+        NewsEntity newsEntity = archiveRepository.findById(event.getProjectId())
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
-        newsEventPublisher.publishCreated(NewsMapper.toDomain(news));
+        newsEventPublisher.publishCreated(newsEntity);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onUpdated(ProjectUpdatedEventDto event) {
-        NewsEntity news = archiveRepository.findById(event.getProjectId())
+        NewsEntity newsEntity = archiveRepository.findById(event.getProjectId())
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
-        newsEventPublisher.publishUpdated(NewsMapper.toDomain(news));
+        newsEventPublisher.publishUpdated(newsEntity);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDeleted(ProjectDeletedEventDto event) {
-        NewsEntity news = archiveRepository.findById(event.getProjectId())
+        NewsEntity newsEntity = archiveRepository.findById(event.getProjectId())
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
-        newsEventPublisher.publishDeleted(news.getId());
+        newsEventPublisher.publishDeleted(newsEntity.getId());
     }
 }

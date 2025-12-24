@@ -2,6 +2,7 @@ package com.sejong.projectservice.support.common.internal.response;
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
+import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.dto.NewsDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import lombok.AllArgsConstructor;
@@ -17,9 +18,9 @@ public class PostLikeCheckResponse {
     private String ownerUsername;
     private boolean isStored;
 
-    public static PostLikeCheckResponse hasOfNews(NewsDto newsDto, boolean isStored) {
+    public static PostLikeCheckResponse hasOfNews(NewsEntity newsEntity, boolean isStored) {
         return PostLikeCheckResponse.builder()
-                .ownerUsername(newsDto.getWriterId().userId())
+                .ownerUsername(newsEntity.getWriterId())
                 .isStored(isStored)
                 .build();
     }

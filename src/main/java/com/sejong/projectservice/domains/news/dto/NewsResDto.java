@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.news.dto;
 
+import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 
 import java.time.LocalDateTime;
@@ -39,23 +40,23 @@ public record NewsResDto(
         );
     }
 
-    public static NewsResDto from(NewsDto archive, Map<String, UserNameInfo> usernamesMap) {
+    public static NewsResDto from(NewsEntity newsEntity, Map<String, UserNameInfo> usernamesMap) {
         return new NewsResDto(
-                archive.getId(),
-                archive.getContent().getTitle(),
-                archive.getContent().getSummary(),
-                archive.getContent().getContent(),
-                archive.getContent().getCategory().name(),
-                archive.getThumbnailPath() != null ? archive.getThumbnailPath().path() : null,
-                archive.getWriterId().userId(),
-                usernamesMap.get(archive.getWriterId().userId()).nickname(),
-                archive.getParticipantIds().toList(),
-                archive.getParticipantIds().toList().stream()
+                newsEntity.getId(),
+                newsEntity.toContentVo().getTitle(),
+                newsEntity.toContentVo().getSummary(),
+                newsEntity.toContentVo().getContent(),
+                newsEntity.toContentVo().getCategory().name(),
+                newsEntity.toFilepathVo().path() != null ? newsEntity.toFilepathVo().path() : null,
+                newsEntity.getWriterId(),
+                usernamesMap.get(newsEntity.getWriterId()).nickname(),
+                newsEntity.toParticipantIdsVo().toList(),
+                newsEntity.toParticipantIdsVo().toList().stream()
                         .map(userId -> usernamesMap.get(userId).nickname())
                         .toList(),
-                archive.getTags(),
-                archive.getCreatedAt(),
-                archive.getUpdatedAt()
+                newsEntity.toTagsList(),
+                newsEntity.getCreatedAt(),
+                newsEntity.getUpdatedAt()
         );
     }
 

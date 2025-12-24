@@ -24,9 +24,7 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
-import com.sejong.projectservice.domains.news.dto.NewsDto;
 import com.sejong.projectservice.domains.user.UserIds;
-import com.sejong.projectservice.domains.news.kafka.NewsEventPublisher;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
@@ -36,6 +34,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -56,12 +56,10 @@ public class NewsService {
                 newsReqDto.getParticipantIds()
         );
 
-        NewsDto newsDto = NewsAssembler.toNews(newsReqDto);
-        NewsEntity entity = NewsMapper.toEntity(newsDto);
-        NewsEntity savedNewsEntity = archiveRepository.save(entity);
-        NewsDto dto = NewsMapper.toDomain(savedNewsEntity);
+        NewsEntity newsEntity = NewsEntity.from(newsReqDto, LocalDateTime.now());
+        NewsEntity savedNewsEntity = archiveRepository.save(newsEntity);
         applicationEventPublisher.publishEvent(NewsCreatedEventDto.of(savedNewsEntity.getId()));
-        return resolveUsernames(dto);
+        return resolveUsernames(savedNewsEntity);
     }
 
     @Transactional
@@ -71,15 +69,14 @@ public class NewsService {
         newsEntity.validateOwner(writerId);
 
         newsEntity.update(
-                ContentEmbeddable.of(NewsAssembler.toContent(newsReqDto)),
+                newsReqDto,
                 UserIds.of(newsReqDto.getParticipantIds()).toString(),
                 String.join(",", newsReqDto.getTags())
         );
 
-        NewsDto dto = NewsMapper.toDomain(newsEntity);
         applicationEventPublisher.publishEvent(NewsUpdatedEventDto.of(newsEntity.getId()));
 
-        return resolveUsernames(dto);
+        return resolveUsernames(newsEntity);
     }
 
     @Transactional
@@ -96,7 +93,7 @@ public class NewsService {
         NewsEntity newsEntity = archiveRepository.findById(newsId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
-        return resolveUsernames(NewsMapper.toDomain(newsEntity));
+        return resolveUsernames(newsEntity);
     }
 
     @Transactional(readOnly = true)
@@ -110,17 +107,11 @@ public class NewsService {
 
         Page<NewsEntity> archiveEntities = archiveRepository.findAll(pageable);
 
-        List<NewsDto> archives = archiveEntities.stream()
-                .map(NewsMapper::toDomain)
-                .toList();
-
-        OffsetPageResponse<List<NewsDto>> newsPage = OffsetPageResponse.ok(archiveEntities.getNumber(), archiveEntities.getTotalPages(), archives);
-
-        List<NewsResDto> dtoList = newsPage.getData().stream()
+        List<NewsResDto> dtoList = archiveEntities.getContent().stream()
                 .map(this::resolveUsernames)
                 .toList();
 
-        return OffsetPageResponse.ok(newsPage.getPage(), newsPage.getTotalPage(), dtoList);
+        return OffsetPageResponse.ok(archiveEntities.getNumber(), archiveEntities.getTotalPages(), dtoList);
     }
 
     @Transactional(readOnly = true)
@@ -137,15 +128,12 @@ public class NewsService {
         List<NewsEntity> resultEntities = hasNext ?
                 entities.subList(0, pageRequest.getSize()) : entities; // Todo: 아예 sql로 limit
 
-        List<NewsDto> newsDtos = resultEntities.stream()
-                .map(NewsMapper::toDomain)
-                .toList();
 
         // 다음 커서 계산
-        Long nextCursor = hasNext && !newsDtos.isEmpty() ?
-                newsDtos.get(newsDtos.size() - 1).getId() : null;
+        Long nextCursor = hasNext && !resultEntities.isEmpty() ?
+                resultEntities.get(resultEntities.size() - 1).getId() : null;
 
-        CursorPageResponse<List<NewsDto>> newsPage = CursorPageResponse.ok(nextCursor, hasNext, newsDtos);
+        CursorPageResponse<List<NewsEntity>> newsPage = CursorPageResponse.ok(nextCursor, hasNext, resultEntities);
 
         List<NewsResDto> dtoList = newsPage.getContent().stream()
                 .map(this::resolveUsernames)
@@ -160,19 +148,15 @@ public class NewsService {
         if (exists) {
             NewsEntity newsEntity = archiveRepository.findById(newsId)
                     .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
-            return PostLikeCheckResponse.hasOfNews(NewsMapper.toDomain(newsEntity), true);
+            return PostLikeCheckResponse.hasOfNews(newsEntity, true);
         }
         return PostLikeCheckResponse.hasNotOf();
     }
 
-    private NewsResDto resolveUsernames(NewsDto newsDto) {
-        List<String> usernames = ExtractorUsername.FromNewses(newsDto);
-        log.info("usernames.size() {}",usernames.size());
-        for(int i=0;i<usernames.size();i++){
-            log.info("username.get({}) : {}",i,usernames.get(i));
-        }
+    private NewsResDto resolveUsernames(NewsEntity newsEntity) {
+        List<String> usernames = ExtractorUsername.FromNewses(newsEntity);
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return NewsResDto.from(newsDto, usernamesMap);
+        return NewsResDto.from(newsEntity, usernamesMap);
     }
 
     @Transactional(readOnly = true)
