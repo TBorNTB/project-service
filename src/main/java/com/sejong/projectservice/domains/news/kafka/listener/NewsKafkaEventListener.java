@@ -8,6 +8,8 @@ import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDto;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectUpdatedEventDto;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -21,17 +23,17 @@ public class NewsKafkaEventListener {
     private final NewsEventPublisher newsEventPublisher;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onCreated(ProjectCreatedEventDto event){
+    public void onCreated(ProjectCreatedEventDto event) {
         NewsEntity news = archiveRepository.findById(event.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
         newsEventPublisher.publishCreated(NewsMapper.toDomain(news));
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onUpdated(ProjectUpdatedEventDto event){
+    public void onUpdated(ProjectUpdatedEventDto event) {
         NewsEntity news = archiveRepository.findById(event.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
         newsEventPublisher.publishUpdated(NewsMapper.toDomain(news));
     }
@@ -39,7 +41,7 @@ public class NewsKafkaEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDeleted(ProjectDeletedEventDto event) {
         NewsEntity news = archiveRepository.findById(event.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
         newsEventPublisher.publishDeleted(news.getId());
     }

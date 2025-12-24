@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 
 import com.sejong.projectservice.support.common.constants.Type;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -43,7 +45,7 @@ public class CsKnowledgeEventPublisher {
             String message = objectMapper.writeValueAsString(object);
             return message;
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Json 직렬화 실패: " + e.getMessage(), e);
+            throw new BaseException(ExceptionType.JSON_PARSHING_ERROR);
         }
     }
 }

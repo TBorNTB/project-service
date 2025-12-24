@@ -1,6 +1,8 @@
 package com.sejong.projectservice.domains.project.domain;
 
 import com.sejong.projectservice.domains.project.dto.ProjectDto;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
@@ -11,8 +13,6 @@ import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
 import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
-import com.sejong.projectservice.support.common.error.code.ErrorCode;
-import com.sejong.projectservice.support.common.error.exception.ApiException;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -160,13 +160,13 @@ public class ProjectEntity {
 
         boolean exists = ensureCollaboratorExists(username);
         if (exists == false) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "해당 유저는 프로젝트 접근 권한이 없습니다.");
+            throw new BaseException(ExceptionType.FORBIDDEN);
         }
     }
 
     public void validateOwner(String username, String userRole) {
         if (!this.username.equals(username) && !userRole.equalsIgnoreCase("ADMIN")) {
-            throw new ApiException(ErrorCode.BAD_REQUEST, "해당 유저는 프로젝트 Owner가 아닙니다.");
+            throw new BaseException(ExceptionType.REQUIRED_ADMIN);
         }
     }
 
@@ -182,7 +182,7 @@ public class ProjectEntity {
         SubGoalEntity selectedSubGaol = subGoals.stream()
                 .filter(subGoal -> subGoal.getId().equals(subGoalId))
                 .findFirst()
-                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 subGoalId는 관련 프로젝트 내에 없습니다."));
+                .orElseThrow(() -> new BaseException(ExceptionType.SUBGOAL_NOT_FOUND));
 
         selectedSubGaol.check();
     }

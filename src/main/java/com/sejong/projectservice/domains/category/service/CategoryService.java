@@ -6,8 +6,8 @@ import com.sejong.projectservice.domains.category.dto.CategoryResponse;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
-import com.sejong.projectservice.support.common.error.code.ErrorCode;
-import com.sejong.projectservice.support.common.error.exception.ApiException;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +33,7 @@ public class CategoryService {
     public CategoryResponse update(String userRole, String prevName, String nextName) {
         validateAdminRole(userRole);
         CategoryEntity categoryEntity = categoryRepository.findByName(prevName)
-                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
         categoryEntity.updateName(nextName);
         return CategoryResponse.updateFrom(categoryEntity);
     }
@@ -42,7 +42,7 @@ public class CategoryService {
     public CategoryResponse remove(String userRole, String name) {
         validateAdminRole(userRole);
         CategoryEntity categoryEntity = categoryRepository.findByName(name)
-                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
         categoryRepository.deleteById(categoryEntity.getId());
         return CategoryResponse.deleteFrom(categoryEntity);
     }
@@ -56,7 +56,7 @@ public class CategoryService {
     @Transactional
     public CategoryAllResponse updateProject( String username,Long projectId, List<String> categoryNames) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
 
         List<CategoryEntity> categoryEntities = categoryNames.stream()
@@ -70,14 +70,14 @@ public class CategoryService {
 
     private void validateAdminRole(String userRole) {
         if(!userRole.equals("ADMIN")){
-            throw new ApiException(ErrorCode.BAD_REQUEST,"관리자만 가능합니다.");
+            throw new BaseException(ExceptionType.REQUIRED_ADMIN);
         }
     }
 
     @Transactional
     public CategoryResponse updateDescription(String userRole, Long categoryId,String description) {
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 이름은 카테고리 목록에 없습니다."));
+                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));;
         categoryEntity.updateDescription(description);
        return CategoryResponse.updateFrom(categoryEntity);
 

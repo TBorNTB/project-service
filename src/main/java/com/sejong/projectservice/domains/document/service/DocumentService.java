@@ -14,6 +14,8 @@ import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import java.util.UUID;
 
 import com.sejong.projectservice.domains.document.kafka.DocumentEventPublisher;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,7 @@ public class DocumentService {
     @Transactional
     public DocumentInfoRes createDocument(Long projectId, DocumentCreateReq request, String username) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         DocumentEntity documentEntity = DocumentEntity.of(request, generateYorkieDocumentId(), projectEntity);
 
@@ -49,16 +51,16 @@ public class DocumentService {
     @Transactional(readOnly = true)
     public DocumentInfoRes getDocument(Long documentId) {
         DocumentEntity documentEntity = documentRepository.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.DOCUMENT_NOT_FOUND));
         return DocumentInfoRes.from(documentEntity);
     }
 
     @Transactional
     public DocumentInfoRes updateDocument(Long documentId, DocumentUpdateReq request, String username) {
         DocumentEntity documentEntity = documentRepository.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.DOCUMENT_NOT_FOUND));
         ProjectEntity projectEntity = projectRepository.findById(documentEntity.getProjectEntity().getId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         documentEntity.update(request.getTitle(), request.getContent(), request.getDescription(), request.getThumbnailUrl());
         applicationEventPublisher.publishEvent(DocumentUpdatedEventDto.of(documentEntity.getId()));
@@ -68,9 +70,9 @@ public class DocumentService {
     @Transactional
     public void deleteDocument(Long documentId, String username) {
         DocumentEntity documentEntity = documentRepository.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.DOCUMENT_NOT_FOUND));
         ProjectEntity projectEntity = projectRepository.findById(documentEntity.getProjectEntity().getId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         documentRepository.deleteById(documentEntity.getId());
         applicationEventPublisher.publishEvent(DocumentDeletedEventDto.of(documentEntity.getId()));

@@ -11,8 +11,6 @@ import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeRepos
 import com.sejong.projectservice.domains.csknowledge.util.CsKnowledgeAssembler;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
-import com.sejong.projectservice.support.common.error.code.ErrorCode;
-import com.sejong.projectservice.support.common.error.exception.ApiException;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
@@ -55,7 +53,7 @@ public class CsKnowledgeService {
     public CsKnowledgeResDto createCsKnowledge(CsKnowledgeReqDto csKnowledgeReqDto, String username) {
         userExternalService.validateExistence(username);
         CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
-                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
         CsKnowledgeDto csKnowledgeDto = CsKnowledgeAssembler.toCsKnowledge(csKnowledgeReqDto, username);
         CsKnowledgeEntity entity = CsKnowledgeEntity.from(csKnowledgeDto, categoryEntity);
         CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(entity);
@@ -69,9 +67,9 @@ public class CsKnowledgeService {
     @Transactional
     public CsKnowledgeResDto updateCsKnowledge(Long csKnowledgeId, CsKnowledgeReqDto csKnowledgeReqDto, String username) {
         CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
-                .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
         CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
-                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST));
+                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
 
         csKnowledgeEntity.validateOwnerPermission(username);
         csKnowledgeEntity.update(csKnowledgeReqDto,LocalDateTime.now(),username,categoryEntity);
@@ -86,7 +84,7 @@ public class CsKnowledgeService {
     @Transactional
     public void deleteCsKnowledge(Long csKnowledgeId, String username, String userRole) {
         CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
-                .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
         csKnowledgeEntity.validateOwnerPermission(username, userRole);
         csKnowledgeRepository.deleteById(csKnowledgeEntity.getId());
         applicationEventPublisher.publishEvent(CsKnowledgeDeletedEventDto.of(csKnowledgeEntity.getId()));
@@ -94,7 +92,7 @@ public class CsKnowledgeService {
 
     public CsKnowledgeResDto findById(Long csKnowledgeId) {
         CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
-                .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
         return resolveUsername(csKnowledgeEntity.toDto());
     }
 
@@ -108,7 +106,7 @@ public class CsKnowledgeService {
         boolean exists = csKnowledgeRepository.existsById(csKnowledgeId);
         if (exists) {
             CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
-                    .orElseThrow(() -> new BaseException(ExceptionType.NOT_FOUND));
+                    .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
             return PostLikeCheckResponse.hasOfCS(csKnowledgeEntity.toDto(), true);
         }
 

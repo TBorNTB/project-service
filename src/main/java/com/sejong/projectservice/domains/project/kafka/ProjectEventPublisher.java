@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.support.common.constants.Type;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -42,7 +44,7 @@ public class ProjectEventPublisher {
             String message = objectMapper.writeValueAsString(object);
             return message;
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Json 직렬화 실패");
+            throw new BaseException(ExceptionType.JSON_PARSHING_ERROR);
         }
     }
 }

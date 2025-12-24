@@ -6,6 +6,8 @@ import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeCreate
 import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeDeletedEventDto;
 import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeUpdatedEventDto;
 import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeRepository;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -21,7 +23,7 @@ public class CsKnowledgeKafkaEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onCreated(CsKnowledgeCreatedEventDto event){
         CsKnowledgeEntity entity = csKnowledgeRepository.findById(event.getPostId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
 
         csKnowledgeEventPublisher.publishCreated(entity.toDto());
     }
@@ -29,7 +31,7 @@ public class CsKnowledgeKafkaEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onUpdated(CsKnowledgeUpdatedEventDto event){
         CsKnowledgeEntity entity = csKnowledgeRepository.findById(event.getPostId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
 
         csKnowledgeEventPublisher.publishUpdated(entity.toDto());
     }
@@ -37,7 +39,7 @@ public class CsKnowledgeKafkaEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDeleted(CsKnowledgeDeletedEventDto event) {
         CsKnowledgeEntity entity = csKnowledgeRepository.findById(event.getPostId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
 
         csKnowledgeEventPublisher.publishDeleted(entity.getId());
     }

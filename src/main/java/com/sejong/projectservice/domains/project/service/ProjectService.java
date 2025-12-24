@@ -36,7 +36,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class ProjectService {
 
     private final UserExternalService userExternalService;
-    private final ProjectEventPublisher projectEventPublisher;
     private final ProjectRepository projectRepository;
     private final Mapper mapper;
     private final ApplicationEventPublisher eventPublisher;
@@ -55,7 +54,7 @@ public class ProjectService {
     @Transactional
     public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest, String username) {
         ProjectEntity project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         project.validateUserPermission(username);
 
         project.update(projectUpdateRequest.getTitle(), projectUpdateRequest.getDescription(),
@@ -69,7 +68,7 @@ public class ProjectService {
     @Transactional
     public ProjectDeleteResponse removeProject(String username, Long projectId, String userRole) {
         ProjectEntity project = projectRepository.findById(projectId)
-                .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         project.validateOwner(username, userRole);
         projectRepository.deleteById(projectId);
         eventPublisher.publishEvent(ProjectDeletedEventDto.of(projectId));
@@ -98,7 +97,7 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public ProjectSpecifyInfo findOne(Long projectId) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
-                .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
 
         List<String> usernames = ProjectUsernamesExtractor.extract(projectEntity);
 
@@ -111,7 +110,7 @@ public class ProjectService {
         boolean exists = projectRepository.existsById(postId);
         if (exists) {
             ProjectEntity project  = projectRepository.findById(postId)
-                    .orElseThrow(() -> new BaseException(ExceptionType.BAD_REQUEST));
+                    .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
             return PostLikeCheckResponse.hasOfProject(project, true);
         }
 

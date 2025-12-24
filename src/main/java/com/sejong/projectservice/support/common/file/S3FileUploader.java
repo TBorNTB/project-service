@@ -1,6 +1,8 @@
 package com.sejong.projectservice.support.common.file;
 
 
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +74,7 @@ public class S3FileUploader implements FileUploader {
             log.info("S3 파일 삭제 완료: {}", key);
         } catch (Exception e) {
             log.error("S3 파일 삭제 실패: {}", filePath.path(), e);
-            throw new RuntimeException("파일 삭제 실패", e);
+            throw new BaseException(ExceptionType.FILE_REMOVE_FAIL);
         }
     }
 

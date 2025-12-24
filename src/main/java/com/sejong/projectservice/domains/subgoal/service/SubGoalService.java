@@ -8,8 +8,8 @@ import com.sejong.projectservice.domains.subgoal.dto.SubGoalCheckResponse;
 import com.sejong.projectservice.domains.subgoal.dto.SubGoalDeleteResponse;
 import com.sejong.projectservice.domains.subgoal.dto.SubGoalResponse;
 import com.sejong.projectservice.domains.subgoal.repository.SubGoalRepository;
-import com.sejong.projectservice.support.common.error.code.ErrorCode;
-import com.sejong.projectservice.support.common.error.exception.ApiException;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,10 +26,10 @@ public class SubGoalService {
     @Transactional
     public SubGoalCheckResponse updateCheck(String username, Long projectId , Long subGoalId) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         SubGoalEntity subGoalEntity = subGoalRepository.findById(subGoalId)
-                .orElseThrow(() -> new ApiException(ErrorCode.BAD_REQUEST, "해당 서브 목표는 존재하지 않습니다."));
+                .orElseThrow(() -> new BaseException(ExceptionType.SUBGOAL_NOT_FOUND));
         projectEntity.checkSubGoal(subGoalEntity.getId());
         return SubGoalCheckResponse.from(subGoalEntity);
     }
@@ -37,7 +37,7 @@ public class SubGoalService {
     @Transactional
     public SubGoalResponse create(String username, Long projectId, String content) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         SubGoalEntity subGoalEntity = SubGoalEntity.of(content, false, LocalDateTime.now(), LocalDateTime.now(), projectEntity);
 
@@ -48,7 +48,7 @@ public class SubGoalService {
     @Transactional
     public SubGoalDeleteResponse remove(String username, Long projectId, Long subGoalId) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         subGoalRepository.deleteById(subGoalId);
         return SubGoalDeleteResponse.of(subGoalId);

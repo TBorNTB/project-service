@@ -6,6 +6,8 @@ import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDt
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectUpdatedEventDto;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,7 +24,7 @@ public class ProjectKafkaEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onCreated(ProjectCreatedEventDto event){
         ProjectEntity project = projectRepository.findById(event.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
 
         projectEventPublisher.publishCreated(project);
     }
@@ -30,7 +32,7 @@ public class ProjectKafkaEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onUpdated(ProjectUpdatedEventDto event){
         ProjectEntity project = projectRepository.findById(event.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
 
         projectEventPublisher.publishUpdated(project);
     }
@@ -38,7 +40,7 @@ public class ProjectKafkaEventListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDeleted(ProjectDeletedEventDto event) {
         ProjectEntity project = projectRepository.findById(event.getProjectId())
-                .orElseThrow(() -> new RuntimeException("Project not found"));
+                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
 
         projectEventPublisher.publishDeleted(project.getId().toString());
     }
