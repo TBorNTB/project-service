@@ -1,32 +1,8 @@
 package com.sejong.projectservice.application.project.service;
 
-import static com.sejong.projectservice.application.project.controller.fixture.ProjectFixture.createProject;
-import static com.sejong.projectservice.application.project.controller.fixture.ProjectFixture.createProjectUpdateRequest;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
-import com.sejong.projectservice.application.project.dto.request.ProjectFormRequest;
-import com.sejong.projectservice.application.project.dto.request.ProjectUpdateRequest;
-import com.sejong.projectservice.application.project.dto.response.ProjectAddResponse;
-import com.sejong.projectservice.application.project.dto.response.ProjectPageResponse;
-import com.sejong.projectservice.application.project.dto.response.ProjectSpecifyInfo;
-import com.sejong.projectservice.application.project.dto.response.ProjectUpdateResponse;
-import com.sejong.projectservice.core.document.repository.DocumentRepository;
-import com.sejong.projectservice.core.enums.ProjectStatus;
-import com.sejong.projectservice.core.project.domain.Project;
-import com.sejong.projectservice.core.project.repository.ProjectRepository;
-import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 //
 //@ExtendWith(MockitoExtension.class)
 //class ProjectServiceTest {
