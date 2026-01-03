@@ -1,0 +1,52 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+
+  h2:
+    console:
+      enabled: true
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+
+  cloud:
+    aws:
+      region:
+        static: ap-northeast-2
+      credentials:
+        access-key: test-access-key
+        secret-key: test-secret-key
+      stack:
+        auto: false
+    discovery:
+      enabled: false
+
+  elasticsearch:
+    uris: http://localhost:9200
+
+eureka:
+  client:
+    enabled: false
+
+aws:
+  s3:
+    bucket: test-bucket
+    region: ap-northeast-2
+
+logging:
+  level:
+    org.springframework.web: INFO
+    org.hibernate: INFO
+
