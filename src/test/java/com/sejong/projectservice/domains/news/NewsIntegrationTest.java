@@ -40,7 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 @DisplayName("뉴스 통합 테스트")
-public class NewsIntegration2Test {
+public class NewsIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
