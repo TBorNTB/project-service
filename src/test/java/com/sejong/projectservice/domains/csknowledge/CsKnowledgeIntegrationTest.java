@@ -463,7 +463,7 @@ public class CsKnowledgeIntegrationTest {
             CsKnowledgeEntity csKnowledge = CsKnowledgeEntity.builder()
                     .title("CS 지식 제목 " + i)
                     .content("CS 지식 내용 " + i)
-                    .writerId("user-" + i)
+                    .writerId("tbntb-" + i)
                     .categoryEntity(savedCategory)
                     .createdAt(LocalDateTime.now())
                     .updatedAt(LocalDateTime.now())
