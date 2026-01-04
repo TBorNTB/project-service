@@ -2,9 +2,7 @@ package com.sejong.projectservice.domains.csknowledge.domain;
 
 
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
-import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
-import com.sejong.projectservice.domains.user.UserId;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import jakarta.persistence.*;
@@ -48,18 +46,7 @@ public class CsKnowledgeEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public CsKnowledgeDto toDto() {
-        return CsKnowledgeDto.builder()
-                .id(id)
-                .title(title)
-                .writerId(UserId.of(writerId))
-                .content(content)
-                .category(categoryEntity.getName())
-                .createdAt(createdAt)
-                .build();
-    }
-
-    public static CsKnowledgeEntity from2(CsKnowledgeReqDto req,String username ,CategoryEntity categoryEntity, LocalDateTime time) {
+    public static CsKnowledgeEntity from(CsKnowledgeReqDto req, String username , CategoryEntity categoryEntity, LocalDateTime time) {
         return CsKnowledgeEntity.builder()
                 .id(null)
                 .title(req.title())
@@ -68,18 +55,6 @@ public class CsKnowledgeEntity {
                 .categoryEntity(categoryEntity)
                 .createdAt(time)
                 .updatedAt(time)
-                .build();
-    }
-
-    public static CsKnowledgeEntity from(CsKnowledgeDto knowledge, CategoryEntity categoryEntity) {
-        return CsKnowledgeEntity.builder()
-                .id(knowledge.getId())
-                .title(knowledge.getTitle())
-                .writerId(knowledge.getWriterId().userId())
-                .content(knowledge.getContent())
-                .categoryEntity(categoryEntity)
-                .createdAt(knowledge.getCreatedAt())
-                .updatedAt(knowledge.getCreatedAt())
                 .build();
     }
 

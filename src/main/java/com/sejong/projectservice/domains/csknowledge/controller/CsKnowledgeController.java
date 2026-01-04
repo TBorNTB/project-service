@@ -78,7 +78,7 @@ public class CsKnowledgeController {
 
     @GetMapping("/category/{techCategory}")
     @Operation(summary = "카테고리별 CS 지식 조회")
-    public ResponseEntity<List<CsKnowledgeResDto>> getCsKnowledgeByCategory(@PathVariable String categoryName) {
+    public ResponseEntity<List<CsKnowledgeResDto>> getCsKnowledgeByCategory(@PathVariable("techCategory") String categoryName) {
         List<CsKnowledgeResDto> response = csKnowledgeService.findAllByTechCategory(categoryName);
         return ResponseEntity.ok(response);
     }

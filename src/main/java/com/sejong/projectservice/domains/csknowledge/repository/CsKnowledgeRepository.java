@@ -18,6 +18,22 @@ public interface CsKnowledgeRepository extends JpaRepository<CsKnowledgeEntity, 
 
     List<CsKnowledgeEntity> findByIdGreaterThan(Long id, Pageable pageable);
 
+    // ID 기준 DESC 커서 페이지네이션
+    @Query("SELECT c FROM CsKnowledgeEntity c WHERE c.id < :cursor ORDER BY c.id DESC")
+    List<CsKnowledgeEntity> findByCursorDesc(@Param("cursor") Long cursor, Pageable pageable);
+
+    // ID 기준 ASC 커서 페이지네이션
+    @Query("SELECT c FROM CsKnowledgeEntity c WHERE c.id > :cursor ORDER BY c.id ASC")
+    List<CsKnowledgeEntity> findByCursorAsc(@Param("cursor") Long cursor, Pageable pageable);
+
+    // 첫 페이지 조회 (커서 없음) - DESC
+    @Query("SELECT c FROM CsKnowledgeEntity c ORDER BY c.id DESC")
+    List<CsKnowledgeEntity> findFirstPageDesc(Pageable pageable);
+
+    // 첫 페이지 조회 (커서 없음) - ASC
+    @Query("SELECT c FROM CsKnowledgeEntity c ORDER BY c.id ASC")
+    List<CsKnowledgeEntity> findFirstPageAsc(Pageable pageable);
+
     @Query(value = """
     SELECT * FROM cs_knowledge k
     WHERE k.category_name = :categoryName

@@ -12,6 +12,7 @@ import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.pagination.Cursor;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
@@ -22,6 +23,7 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
+import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -51,7 +53,7 @@ public class CsKnowledgeService {
         userExternalService.validateExistence(username);
         CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
                 .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
-        CsKnowledgeEntity csKnowledgeEntity = CsKnowledgeEntity.from2(csKnowledgeReqDto, username, categoryEntity, LocalDateTime.now());
+        CsKnowledgeEntity csKnowledgeEntity = CsKnowledgeEntity.from(csKnowledgeReqDto, username, categoryEntity, LocalDateTime.now());
         CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(csKnowledgeEntity);
 
         CsKnowledgeResDto response = resolveUsername(savedEntity);
@@ -144,29 +146,42 @@ public class CsKnowledgeService {
         CursorPageRequest pageRequest = cursorPageReqDto.toPageRequest();
         Pageable pageable = PageRequest.of(0, pageRequest.getSize() + 1);
 
-        List<CsKnowledgeEntity> csKnowledgeEntities;
-        if (pageRequest.getCursor() == null) {
-            csKnowledgeEntities = csKnowledgeRepository.findAll(pageable).getContent();
-        } else {
-            csKnowledgeEntities = csKnowledgeRepository.findByIdGreaterThan(pageRequest.getCursor().getProjectId(), pageable);
-        }
+        List<CsKnowledgeEntity> csKnowledgeEntities = getCursorBasedEntities(pageRequest, pageable);
 
+        // 실제 요청한 크기보다 많이 조회되면 다음 페이지가 존재
         boolean hasNext = csKnowledgeEntities.size() > pageRequest.getSize();
 
+        // 실제 반환할 데이터는 요청한 크기만큼만
+        List<CsKnowledgeEntity> resultEntities = hasNext ?
+                csKnowledgeEntities.subList(0, pageRequest.getSize()) : csKnowledgeEntities;
 
-        Long nextCursor = hasNext && !csKnowledgeEntities.isEmpty()
-                ? csKnowledgeEntities.get(csKnowledgeEntities.size() - 1).getId()
+        Cursor nextCursor = hasNext && !resultEntities.isEmpty()
+                ? Cursor.of(resultEntities.get(resultEntities.size() - 1).getId())
                 : null;
 
-        CursorPageResponse<List<CsKnowledgeEntity>> csKnowledges = CursorPageResponse.ok(nextCursor, hasNext, csKnowledgeEntities);
-
-        List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(csKnowledges.getContent());
+        List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(resultEntities);
 
         return CursorPageResponse.ok(
-                csKnowledges.getNextCursor(),
-                csKnowledges.isHasNext(),
+                nextCursor,
+                hasNext,
                 csKnowledgeResDtoList
         );
+    }
+
+    private List<CsKnowledgeEntity> getCursorBasedEntities(CursorPageRequest request, Pageable pageable) {
+        boolean isDesc = request.getDirection() == SortDirection.DESC;
+
+        if (request.getCursor() == null) {
+            // 첫 페이지
+            return isDesc ?
+                    csKnowledgeRepository.findFirstPageDesc(pageable) :
+                    csKnowledgeRepository.findFirstPageAsc(pageable);
+        } else {
+            // 커서 기반 페이지
+            return isDesc ?
+                    csKnowledgeRepository.findByCursorDesc(request.getCursor().getProjectId(), pageable) :
+                    csKnowledgeRepository.findByCursorAsc(request.getCursor().getProjectId(), pageable);
+        }
     }
 
     private CsKnowledgeResDto resolveUsername(CsKnowledgeEntity csKnowledgeEntity) {
