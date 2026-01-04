@@ -98,6 +98,9 @@ public class NewsEntity {
     }
 
     public List<String> toTagsList(){
+        if (this.getTags() == null || this.getTags().isEmpty()) {
+            return List.of();
+        }
         return Arrays.stream(this.getTags().split(",")).toList();
     }
 

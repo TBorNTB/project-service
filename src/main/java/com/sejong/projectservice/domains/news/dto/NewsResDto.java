@@ -41,6 +41,7 @@ public record NewsResDto(
     }
 
     public static NewsResDto from(NewsEntity newsEntity, Map<String, UserNameInfo> usernamesMap) {
+        UserNameInfo writerInfo = usernamesMap.get(newsEntity.getWriterId());
         return new NewsResDto(
                 newsEntity.getId(),
                 newsEntity.toContentVo().getTitle(),
@@ -49,10 +50,13 @@ public record NewsResDto(
                 newsEntity.toContentVo().getCategory().name(),
                 newsEntity.toFilepathVo().path() != null ? newsEntity.toFilepathVo().path() : null,
                 newsEntity.getWriterId(),
-                usernamesMap.get(newsEntity.getWriterId()).nickname(),
+                writerInfo != null ? writerInfo.nickname() : null,
                 newsEntity.toParticipantIdsVo().toList(),
                 newsEntity.toParticipantIdsVo().toList().stream()
-                        .map(userId -> usernamesMap.get(userId).nickname())
+                        .map(userId -> {
+                            UserNameInfo userInfo = usernamesMap.get(userId);
+                            return userInfo != null ? userInfo.nickname() : null;
+                        })
                         .toList(),
                 newsEntity.toTagsList(),
                 newsEntity.getCreatedAt(),
