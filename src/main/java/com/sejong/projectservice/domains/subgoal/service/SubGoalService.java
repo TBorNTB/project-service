@@ -50,6 +50,9 @@ public class SubGoalService {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
+        SubGoalEntity subGoalEntity = subGoalRepository.findById(subGoalId)
+                .orElseThrow(() -> new BaseException(ExceptionType.SUBGOAL_NOT_FOUND));
+        projectEntity.removeSubGoal(subGoalEntity);
         subGoalRepository.deleteById(subGoalId);
         return SubGoalDeleteResponse.of(subGoalId);
     }

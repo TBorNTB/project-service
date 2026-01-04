@@ -136,6 +136,10 @@ public class ProjectEntity {
         documentEntities.remove(documentEntity);
     }
 
+    public void removeSubGoal(SubGoalEntity subGoalEntity) {
+        subGoals.remove(subGoalEntity);
+    }
+
     public void update(ProjectDto projectDto) {
         this.title = projectDto.getTitle();
         this.description = projectDto.getDescription();
