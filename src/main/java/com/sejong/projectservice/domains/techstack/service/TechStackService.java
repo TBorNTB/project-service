@@ -49,6 +49,8 @@ public class TechStackService {
     @Transactional
     public void deleteTechStack(Long techStackId, String userRole) {
         validateAdminRole(userRole);
-        techStackRepository.deleteById(techStackId);
+        TechStackEntity techStackEntity = techStackRepository.findById(techStackId)
+                .orElseThrow(() -> new BaseException(ExceptionType.TECHSTACK_NOT_FOUND));
+        techStackRepository.deleteById(techStackEntity.getId());
     }
 }
