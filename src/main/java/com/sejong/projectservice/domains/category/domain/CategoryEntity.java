@@ -1,6 +1,5 @@
 package com.sejong.projectservice.domains.category.domain;
 
-import com.sejong.projectservice.domains.category.dto.CategoryDto;
 import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,11 +47,12 @@ public class CategoryEntity {
                 .build();
     }
 
-    public static CategoryEntity from(CategoryDto categoryDto) {
+    public static CategoryEntity of(String name, String description) {
         return CategoryEntity.builder()
                 .id(null)
-                .name(categoryDto.getName())
-                .description(categoryDto.getDescription())
+                .name(name)
+                .description(description)
+                .projectCategories(new ArrayList<>())
                 .build();
     }
 

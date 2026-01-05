@@ -19,7 +19,7 @@ public class TechStackService {
     @Transactional
     public TechStackRes createTechStack(TechStackCreateReq techstackCreateReq, String userRole) {
         validateAdminRole(userRole);
-        TechStackEntity techStack = TechStackEntity.from(techstackCreateReq);
+        TechStackEntity techStack = TechStackEntity.of(techstackCreateReq.getName());
         TechStackEntity savedTechStack = techStackRepository.save(techStack);
         return TechStackRes.from(savedTechStack);
     }

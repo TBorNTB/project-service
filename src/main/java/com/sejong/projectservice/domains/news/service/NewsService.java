@@ -56,7 +56,16 @@ public class NewsService {
                 newsReqDto.getParticipantIds()
         );
 
-        NewsEntity newsEntity = NewsEntity.from(newsReqDto, LocalDateTime.now());
+        NewsEntity newsEntity = NewsEntity.of(
+                newsReqDto.getTitle(),
+                newsReqDto.getSummary(),
+                newsReqDto.getContent(),
+                newsReqDto.getCategory(),
+                newsReqDto.getWriterUsername(),
+                newsReqDto.getParticipantIds(),
+                newsReqDto.getTags(),
+                LocalDateTime.now()
+        );
         NewsEntity savedNewsEntity = archiveRepository.save(newsEntity);
         applicationEventPublisher.publishEvent(NewsCreatedEventDto.of(savedNewsEntity.getId()));
         return resolveUsernames(savedNewsEntity);
@@ -69,7 +78,10 @@ public class NewsService {
         newsEntity.validateOwner(writerId);
 
         newsEntity.update(
-                newsReqDto,
+                newsReqDto.getTitle(),
+                newsReqDto.getSummary(),
+                newsReqDto.getContent(),
+                newsReqDto.getCategory(),
                 UserIds.of(newsReqDto.getParticipantIds()).toString(),
                 String.join(",", newsReqDto.getTags())
         );

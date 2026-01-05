@@ -2,7 +2,6 @@ package com.sejong.projectservice.domains.csknowledge.domain;
 
 
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
-import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import jakarta.persistence.*;
@@ -46,22 +45,22 @@ public class CsKnowledgeEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static CsKnowledgeEntity from(CsKnowledgeReqDto req, String username , CategoryEntity categoryEntity, LocalDateTime time) {
+    public static CsKnowledgeEntity of(String title, String content, String username, CategoryEntity categoryEntity, LocalDateTime time) {
         return CsKnowledgeEntity.builder()
                 .id(null)
-                .title(req.title())
+                .title(title)
                 .writerId(username)
-                .content(req.content())
+                .content(content)
                 .categoryEntity(categoryEntity)
                 .createdAt(time)
                 .updatedAt(time)
                 .build();
     }
 
-    public void update(CsKnowledgeReqDto reqDto, LocalDateTime updatedAt, String username, CategoryEntity categoryEntity) {
-        this.title = reqDto.title();
+    public void update(String title, String content, String username, CategoryEntity categoryEntity, LocalDateTime updatedAt) {
+        this.title = title;
         this.writerId = username;
-        this.content = reqDto.content();
+        this.content = content;
         this.categoryEntity = categoryEntity;
         this.updatedAt = updatedAt;
     }

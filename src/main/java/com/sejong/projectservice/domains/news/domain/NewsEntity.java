@@ -1,8 +1,6 @@
 package com.sejong.projectservice.domains.news.domain;
 
 
-import com.sejong.projectservice.domains.news.dto.NewsReqDto;
-import com.sejong.projectservice.domains.news.dto.NewsResDto;
 import com.sejong.projectservice.domains.user.UserId;
 import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.support.common.constants.NewsCategory;
@@ -64,13 +62,12 @@ public class NewsEntity {
         this.updatedAt = updatedAt;
     }
 
-    public static NewsEntity from(NewsReqDto newsReqDto, LocalDateTime time) {
-        Content content = Content.of(newsReqDto.getTitle(), newsReqDto.getSummary(), newsReqDto.getContent(),
-                NewsCategory.of(newsReqDto.getCategory()));
-        UserId userId = UserId.of(newsReqDto.getWriterUsername());
-        UserIds userIds = UserIds.of(newsReqDto.getParticipantIds());
+    public static NewsEntity of(String title, String summary, String content, String category, String writerUsername, List<String> participantIds, List<String> tags, LocalDateTime time) {
+        Content contentVo = Content.of(title, summary, content, NewsCategory.of(category));
+        UserId userId = UserId.of(writerUsername);
+        UserIds userIds = UserIds.of(participantIds);
 
-        ContentEmbeddable contentEmbeddable = ContentEmbeddable.of(content);
+        ContentEmbeddable contentEmbeddable = ContentEmbeddable.of(contentVo);
 
         return NewsEntity.builder()
                 .id(null)
@@ -78,7 +75,7 @@ public class NewsEntity {
                 .thumbnailPath(null)
                 .writerId(userId.userId())
                 .participantIds(userIds.toString())
-                .tags(newsReqDto.getTags().toString())
+                .tags(String.join(",", tags))
                 .createdAt(time)
                 .updatedAt(time)
                 .build();
@@ -108,12 +105,9 @@ public class NewsEntity {
         return Filepath.of(thumbnailPath);
     }
 
-    public void update(NewsReqDto newsReqDto, String participantIds, String tags) {
-
-        Content content = Content.of(newsReqDto.getTitle(), newsReqDto.getSummary(), newsReqDto.getContent(),
-                NewsCategory.of(newsReqDto.getCategory()));
-
-        this.content = ContentEmbeddable.of(content);
+    public void update(String title, String summary, String content, String category, String participantIds, String tags) {
+        Content contentVo = Content.of(title, summary, content, NewsCategory.of(category));
+        this.content = ContentEmbeddable.of(contentVo);
         this.participantIds = participantIds;
         this.tags = tags;
         this.updatedAt = LocalDateTime.now();

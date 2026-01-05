@@ -1,6 +1,5 @@
 package com.sejong.projectservice.domains.project.domain;
 
-import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
@@ -69,23 +68,6 @@ public class ProjectEntity {
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<DocumentEntity> documentEntities = new ArrayList<>();
 
-    public static ProjectEntity from(ProjectDto projectDto) {
-        return ProjectEntity.builder()
-                .title(projectDto.getTitle())
-                .description(projectDto.getDescription())
-                .username(projectDto.getUsername())
-                .projectStatus(projectDto.getProjectStatus())
-                .thumbnailUrl(projectDto.getThumbnailUrl())
-                .createdAt(projectDto.getCreatedAt())
-                .updatedAt(projectDto.getUpdatedAt())
-                .projectCategories(new ArrayList<>())
-                .projectTechStacks(new ArrayList<>())
-                .collaboratorEntities(new ArrayList<>())
-                .subGoals(new ArrayList<>())
-                .documentEntities(new ArrayList<>())
-                .build();
-    }
-
     public static ProjectEntity of(ProjectFormRequest request, String username, UserNameInfo userNameInfo) {
         return ProjectEntity.builder()
                 .title(request.getTitle())
@@ -138,14 +120,6 @@ public class ProjectEntity {
 
     public void removeSubGoal(SubGoalEntity subGoalEntity) {
         subGoals.remove(subGoalEntity);
-    }
-
-    public void update(ProjectDto projectDto) {
-        this.title = projectDto.getTitle();
-        this.description = projectDto.getDescription();
-        this.projectStatus = projectDto.getProjectStatus();
-        this.thumbnailUrl = projectDto.getThumbnailUrl();
-        this.updatedAt = LocalDateTime.now();
     }
 
     public void update(String title, String description,

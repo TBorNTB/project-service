@@ -53,7 +53,13 @@ public class CsKnowledgeService {
         userExternalService.validateExistence(username);
         CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
                 .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
-        CsKnowledgeEntity csKnowledgeEntity = CsKnowledgeEntity.from(csKnowledgeReqDto, username, categoryEntity, LocalDateTime.now());
+        CsKnowledgeEntity csKnowledgeEntity = CsKnowledgeEntity.of(
+                csKnowledgeReqDto.title(),
+                csKnowledgeReqDto.content(),
+                username,
+                categoryEntity,
+                LocalDateTime.now()
+        );
         CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(csKnowledgeEntity);
 
         CsKnowledgeResDto response = resolveUsername(savedEntity);
@@ -69,7 +75,13 @@ public class CsKnowledgeService {
                 .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
 
         csKnowledgeEntity.validateOwnerPermission(username);
-        csKnowledgeEntity.update(csKnowledgeReqDto,LocalDateTime.now(),username,categoryEntity);
+        csKnowledgeEntity.update(
+                csKnowledgeReqDto.title(),
+                csKnowledgeReqDto.content(),
+                username,
+                categoryEntity,
+                LocalDateTime.now()
+        );
 
         CsKnowledgeResDto response = resolveUsername(csKnowledgeEntity);
         applicationEventPublisher.publishEvent(CsKnowledgeUpdatedEventDto.of(csKnowledgeEntity.getId()));

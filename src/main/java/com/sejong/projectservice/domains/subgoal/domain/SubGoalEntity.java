@@ -2,7 +2,6 @@ package com.sejong.projectservice.domains.subgoal.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
-import com.sejong.projectservice.domains.subgoal.dto.SubGoalDto;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -43,16 +42,6 @@ public class SubGoalEntity {
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
-    public static SubGoalEntity from(SubGoalDto subGoalDto) {
-        return SubGoalEntity.builder()
-                .id(null)
-                .content(subGoalDto.getContent())
-                .completed(subGoalDto.getCompleted())
-                .createdAt(subGoalDto.getCreatedAt())
-                .updatedAt(subGoalDto.getUpdatedAt())
-                .build();
-    }
-
     public static SubGoalEntity of(String content, boolean isCompleted, LocalDateTime createdAt, LocalDateTime updatedAt, ProjectEntity projectEntity) {
         SubGoalEntity subGoalEntity = SubGoalEntity.builder()
                 .id(null)
@@ -70,12 +59,11 @@ public class SubGoalEntity {
         this.projectEntity = projectEntity;
     }
 
-    public void update(SubGoalDto subGoalDto) {
-        this.id = subGoalDto.getId();
-        this.content = subGoalDto.getContent();
-        this.completed = subGoalDto.getCompleted();
-        this.createdAt = subGoalDto.getCreatedAt();
-        this.updatedAt = subGoalDto.getUpdatedAt();
+    public void update(String content, Boolean completed, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.content = content;
+        this.completed = completed;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
     }
 
     public void check(){

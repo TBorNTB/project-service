@@ -27,13 +27,16 @@ public class Mapper {
     public void map(ProjectDto projectDto, ProjectEntity projectEntity) {
 
         projectDto.getCollaboratorDtos().stream()
-                .map(CollaboratorEntity::from).forEach(projectEntity::addCollaborator);
+                .map(dto -> CollaboratorEntity.of(dto.getCollaboratorName(), projectEntity))
+                .forEach(collaborator -> {}); // 이미 addCollaborator가 of 메서드 내부에서 호출됨
 
         projectDto.getSubGoalDtos().stream()
-                .map(SubGoalEntity::from).forEach(projectEntity::addSubGoal);
+                .map(dto -> SubGoalEntity.of(dto.getContent(), dto.getCompleted(), dto.getCreatedAt(), dto.getUpdatedAt(), projectEntity))
+                .forEach(subGoal -> {}); // 이미 addSubGoal이 of 메서드 내부에서 호출됨
 
         projectDto.getDocumentDtos().stream()
-                .map(DocumentEntity::from).forEach(projectEntity::addDocument);
+                .map(dto -> DocumentEntity.of(dto.getTitle(), dto.getDescription(), dto.getThumbnailUrl(), dto.getContent(), dto.getYorkieDocumentId(), projectEntity))
+                .forEach(document -> {}); // 이미 addDocument가 of 메서드 내부에서 호출됨
 
         projectDto.getCategories().stream()
                 .map(c -> categoryRepository.findByName(c.getName())
@@ -72,7 +75,8 @@ public class Mapper {
         projectEntity.getCollaboratorEntities().clear();
 
         projectDto.getCollaboratorDtos().stream()
-                .map(CollaboratorEntity::from).forEach(projectEntity::addCollaborator);
+                .map(dto -> CollaboratorEntity.of(dto.getCollaboratorName(), projectEntity))
+                .forEach(collaborator -> {}); // 이미 addCollaborator가 of 메서드 내부에서 호출됨
 
     //변경감지하여 영속화 하는 작업
     }

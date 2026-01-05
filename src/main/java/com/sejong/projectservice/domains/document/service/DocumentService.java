@@ -34,7 +34,14 @@ public class DocumentService {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
-        DocumentEntity documentEntity = DocumentEntity.of(request, generateYorkieDocumentId(), projectEntity);
+        DocumentEntity documentEntity = DocumentEntity.of(
+                request.getTitle(),
+                request.getDescription(),
+                request.getThumbnailUrl(),
+                request.getContent(),
+                generateYorkieDocumentId(),
+                projectEntity
+        );
 
         DocumentEntity savedDocumentEntity = documentRepository.save(documentEntity);
         applicationEventPublisher.publishEvent(DocumentCreatedEventDto.of(savedDocumentEntity.getId()));
