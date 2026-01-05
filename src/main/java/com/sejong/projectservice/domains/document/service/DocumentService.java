@@ -11,8 +11,6 @@ import com.sejong.projectservice.domains.document.repository.DocumentRepository;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 
-import java.util.UUID;
-
 import com.sejong.projectservice.domains.document.kafka.DocumentEventPublisher;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
@@ -39,20 +37,12 @@ public class DocumentService {
                 request.getDescription(),
                 request.getThumbnailUrl(),
                 request.getContent(),
-                generateYorkieDocumentId(),
                 projectEntity
         );
 
         DocumentEntity savedDocumentEntity = documentRepository.save(documentEntity);
         applicationEventPublisher.publishEvent(DocumentCreatedEventDto.of(savedDocumentEntity.getId()));
         return DocumentInfoRes.from(savedDocumentEntity);
-    }
-
-    private String generateYorkieDocumentId() {
-        return UUID.randomUUID()
-                .toString()
-                .replace("-", "")
-                .substring(0, 7);
     }
 
     @Transactional(readOnly = true)

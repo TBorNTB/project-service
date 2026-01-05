@@ -14,7 +14,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DocumentInfoRes {
     private Long id;
-    private String yorkieDocumentId;
 
     private String title;
     private String content;
@@ -27,7 +26,6 @@ public class DocumentInfoRes {
     public static DocumentInfoRes from(DocumentEntity documentEntity) {
         return DocumentInfoRes.builder()
                 .id(documentEntity.getId())
-                .yorkieDocumentId(documentEntity.getYorkieDocumentId())
                 .title(documentEntity.getTitle())
                 .content(documentEntity.getContent())
                 .description(documentEntity.getDescription())

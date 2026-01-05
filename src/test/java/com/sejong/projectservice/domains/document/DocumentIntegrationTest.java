@@ -102,7 +102,6 @@ public class DocumentIntegrationTest {
                 .andExpect(jsonPath("$.description").value("문서 설명"))
                 .andExpect(jsonPath("$.content").value("문서 내용"))
                 .andExpect(jsonPath("$.thumbnailUrl").value("thumbnail-url"))
-                .andExpect(jsonPath("$.yorkieDocumentId").exists())
                 .andExpect(jsonPath("$.createdAt").exists())
                 .andExpect(jsonPath("$.updatedAt").exists());
     }
@@ -197,7 +196,6 @@ public class DocumentIntegrationTest {
                 .andExpect(jsonPath("$.description").value("문서 설명"))
                 .andExpect(jsonPath("$.content").value("문서 내용"))
                 .andExpect(jsonPath("$.thumbnailUrl").value("thumbnail-url"))
-                .andExpect(jsonPath("$.yorkieDocumentId").exists())
                 .andExpect(jsonPath("$.createdAt").exists())
                 .andExpect(jsonPath("$.updatedAt").exists());
     }
@@ -420,7 +418,6 @@ public class DocumentIntegrationTest {
 
     private DocumentEntity createDocument(ProjectEntity project, String title, String description, String content, String thumbnailUrl) {
         DocumentEntity document = DocumentEntity.builder()
-                .yorkieDocumentId("yorkie-" + System.currentTimeMillis())
                 .title(title)
                 .description(description)
                 .content(content)

@@ -15,7 +15,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class DocumentDto {
     private Long id;
-    private String yorkieDocumentId;
 
     private String title;
     private String content;
@@ -27,12 +26,11 @@ public class DocumentDto {
 
     private Long projectId;
 
-    public static List<DocumentDto> from2(List<DocumentEntity> documentEntities) {
+    public static List<DocumentDto> from(List<DocumentEntity> documentEntities) {
         return documentEntities.stream()
                 .map(it->{
                     return DocumentDto.builder()
                             .id(it.getId())
-                            .yorkieDocumentId(it.getYorkieDocumentId())
                             .title(it.getTitle())
                             .content(it.getContent())
                             .description(it.getDescription())

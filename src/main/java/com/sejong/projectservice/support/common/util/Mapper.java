@@ -35,7 +35,7 @@ public class Mapper {
                 .forEach(subGoal -> {}); // 이미 addSubGoal이 of 메서드 내부에서 호출됨
 
         projectDto.getDocumentDtos().stream()
-                .map(dto -> DocumentEntity.of(dto.getTitle(), dto.getDescription(), dto.getThumbnailUrl(), dto.getContent(), dto.getYorkieDocumentId(), projectEntity))
+                .map(dto -> DocumentEntity.of(dto.getTitle(), dto.getDescription(), dto.getThumbnailUrl(), dto.getContent(), projectEntity))
                 .forEach(document -> {}); // 이미 addDocument가 of 메서드 내부에서 호출됨
 
         projectDto.getCategories().stream()

@@ -18,7 +18,6 @@ public class DocumentEvent {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
     private String id;
-    private String yorkieDocumentId;
 
     private String title;
     private String content;
@@ -31,7 +30,6 @@ public class DocumentEvent {
     public static DocumentEvent from(DocumentEntity documentEntity){
         return DocumentEvent.builder()
                 .id(documentEntity.getId().toString())
-                .yorkieDocumentId(documentEntity.getYorkieDocumentId())
                 .title(documentEntity.getTitle())
                 .description(documentEntity.getDescription())
                 .thumbnailUrl(documentEntity.getThumbnailUrl())

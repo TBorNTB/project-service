@@ -16,10 +16,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Assembler {
-    public static DocumentDto toDocument(DocumentCreateReq request, String yorkieDocumentId, Long projectId) {
+    public static DocumentDto toDocument(DocumentCreateReq request, Long projectId) {
         return DocumentDto.builder()
                 .id(null)
-                .yorkieDocumentId(yorkieDocumentId)
                 .title(request.getTitle())
                 .content(request.getContent())
                 .description(request.getDescription())

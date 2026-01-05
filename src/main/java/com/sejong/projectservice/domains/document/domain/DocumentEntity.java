@@ -32,9 +32,6 @@ public class DocumentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "yorkie_document_id", nullable = false, unique = true)
-    private String yorkieDocumentId;
-
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -55,10 +52,9 @@ public class DocumentEntity {
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
-    public static DocumentEntity of(String title, String description, String thumbnailUrl, String content, String yorkieDocumentId, ProjectEntity projectEntity) {
+    public static DocumentEntity of(String title, String description, String thumbnailUrl, String content, ProjectEntity projectEntity) {
         DocumentEntity documentEntity = DocumentEntity.builder()
                 .id(null)
-                .yorkieDocumentId(yorkieDocumentId)
                 .title(title)
                 .description(description)
                 .thumbnailUrl(thumbnailUrl)
