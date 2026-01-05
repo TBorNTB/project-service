@@ -54,18 +54,23 @@ public class ProjectEntity {
     private String thumbnailUrl;
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<ProjectTechStackEntity> projectTechStacks = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<CollaboratorEntity> collaboratorEntities = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<SubGoalEntity> subGoals = new ArrayList<>();
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @Builder.Default
     private List<DocumentEntity> documentEntities = new ArrayList<>();
 
     public static ProjectEntity of(ProjectFormRequest request, String username, UserNameInfo userNameInfo) {

@@ -32,11 +32,13 @@ public class CategoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     private String description;
 
     @OneToMany(mappedBy = "categoryEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
 
     public static CategoryEntity of(String name) {
@@ -73,15 +75,15 @@ public class CategoryEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || !(o instanceof CategoryEntity)) {
             return false;
         }
         CategoryEntity that = (CategoryEntity) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(name);
     }
 }

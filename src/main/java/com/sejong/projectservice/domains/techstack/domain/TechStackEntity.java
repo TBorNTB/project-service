@@ -31,9 +31,11 @@ public class TechStackEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(unique = true)
     private String name;
 
     @OneToMany(mappedBy = "techStackEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<ProjectTechStackEntity> projectTechStacks = new ArrayList<>();
 
     public static TechStackEntity of(String name) {
@@ -57,15 +59,15 @@ public class TechStackEntity {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || !(o instanceof TechStackEntity)) {
             return false;
         }
         TechStackEntity that = (TechStackEntity) o;
-        return Objects.equals(id, that.id);
+        return Objects.equals(name, that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(name);
     }
 }
