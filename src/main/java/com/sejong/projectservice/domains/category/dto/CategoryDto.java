@@ -25,8 +25,8 @@ public class CategoryDto {
                 .build();
     }
 
-    public static List<CategoryDto> fromList(List<CategoryEntity> categoryEntityEntities) {
-        return categoryEntityEntities.stream()
+    public static List<CategoryDto> fromList(List<CategoryEntity> categoryEntities) {
+        return categoryEntities.stream()
                 .map(it -> {
                     return CategoryDto.builder()
                             .id(it.getId())
