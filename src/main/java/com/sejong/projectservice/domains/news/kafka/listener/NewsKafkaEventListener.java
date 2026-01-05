@@ -3,8 +3,6 @@ package com.sejong.projectservice.domains.news.kafka.listener;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.kafka.NewsEventPublisher;
 import com.sejong.projectservice.domains.news.repository.ArchiveRepository;
-import com.sejong.projectservice.domains.news.util.NewsMapper;
-import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDto;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectUpdatedEventDto;

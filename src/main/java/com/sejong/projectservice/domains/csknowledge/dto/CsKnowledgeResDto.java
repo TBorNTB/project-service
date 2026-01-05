@@ -14,15 +14,15 @@ public record CsKnowledgeResDto(
         LocalDateTime createdAt
 ) {
 
-    public static CsKnowledgeResDto from(CsKnowledgeEntity csKnowledgeDto, String nickname) {
+    public static CsKnowledgeResDto from(CsKnowledgeEntity csKnowledgeEntity, String nickname) {
         return new CsKnowledgeResDto(
-                csKnowledgeDto.getId(),
-                csKnowledgeDto.getTitle(),
-                csKnowledgeDto.getContent(),
-                csKnowledgeDto.getWriterId(),
+                csKnowledgeEntity.getId(),
+                csKnowledgeEntity.getTitle(),
+                csKnowledgeEntity.getContent(),
+                csKnowledgeEntity.getWriterId(),
                 nickname,
-                csKnowledgeDto.getCategoryEntity().getName(),
-                csKnowledgeDto.getCreatedAt()
+                csKnowledgeEntity.getCategoryEntity().getName(),
+                csKnowledgeEntity.getCreatedAt()
         );
     }
 }

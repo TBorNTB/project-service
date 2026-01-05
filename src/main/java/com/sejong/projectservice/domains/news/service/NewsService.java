@@ -1,16 +1,13 @@
 package com.sejong.projectservice.domains.news.service;
 
 
-import com.sejong.projectservice.domains.news.domain.ContentEmbeddable;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.kafka.dto.NewsCreatedEventDto;
 import com.sejong.projectservice.domains.news.kafka.dto.NewsDeletedEventDto;
 import com.sejong.projectservice.domains.news.kafka.dto.NewsUpdatedEventDto;
 import com.sejong.projectservice.domains.news.repository.ArchiveRepository;
-import com.sejong.projectservice.domains.news.util.NewsAssembler;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.news.dto.NewsResDto;
-import com.sejong.projectservice.domains.news.util.NewsMapper;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
