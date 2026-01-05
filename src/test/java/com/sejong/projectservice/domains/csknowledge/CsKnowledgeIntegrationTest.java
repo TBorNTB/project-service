@@ -480,15 +480,14 @@ public class CsKnowledgeIntegrationTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(10))
                 .andExpect(jsonPath("$.hasNext").value(true))
-                .andExpect(jsonPath("$.nextCursor").exists())
-                .andExpect(jsonPath("$.nextCursor.projectId").exists())
+                .andExpect(jsonPath("$.nextCursorId").exists())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        // JSON에서 nextCursor.projectId 추출
+        // JSON에서 nextCursorId 추출
         JsonNode jsonNode = objectMapper.readTree(firstPageResponse);
-        Long nextCursorId = jsonNode.get("nextCursor").get("projectId").asLong();
+        Long nextCursorId = jsonNode.get("nextCursorId").asLong();
 
         //when & then - 다음 페이지 조회
         mockMvc.perform(get("/cs-knowledge/cursor")
@@ -500,7 +499,7 @@ public class CsKnowledgeIntegrationTest {
                 .andExpect(jsonPath("$.content").isArray())
                 .andExpect(jsonPath("$.content.length()").value(5))
                 .andExpect(jsonPath("$.hasNext").value(false))
-                .andExpect(jsonPath("$.nextCursor").doesNotExist());
+                .andExpect(jsonPath("$.nextCursorId").doesNotExist());
     }
 
     @Test

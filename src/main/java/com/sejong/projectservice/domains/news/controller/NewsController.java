@@ -8,7 +8,7 @@ import com.sejong.projectservice.domains.news.dto.NewsResDto;
 import com.sejong.projectservice.domains.news.service.NewsService;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
-import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.support.common.pagination.CursorPageRes;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -72,11 +72,10 @@ public class NewsController {
 
     @GetMapping("/cursor")
     @Operation(summary = "뉴스 조회 (커서 기반 페이지네이션)")
-    public ResponseEntity<CursorPageResponse<List<NewsResDto>>> getCursorNews(
+    public CursorPageRes<List<NewsResDto>> getCursorNews(
             @ParameterObject @Valid CursorPageReqDto cursorPageReqDto) {
 
-        CursorPageResponse<List<NewsResDto>> cursorNews = newsService.getCursorNews(cursorPageReqDto);
-        return ResponseEntity.ok(cursorNews);
+        return newsService.getCursorNews(cursorPageReqDto);
     }
 
     @GetMapping("/{newsId}")

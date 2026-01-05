@@ -18,7 +18,7 @@ import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
 import com.sejong.projectservice.support.common.util.ExtractorUsername;
 import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
-import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.support.common.pagination.CursorPageRes;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.domains.user.UserIds;
@@ -124,31 +124,21 @@ public class NewsService {
     }
 
     @Transactional(readOnly = true)
-    public CursorPageResponse<List<NewsResDto>> getCursorNews(CursorPageReqDto cursorPageReqDto) {
+    public CursorPageRes<List<NewsResDto>> getCursorNews(CursorPageReqDto cursorPageReqDto) {
         CursorPageRequest pageRequest = cursorPageReqDto.toPageRequest();
 
         Pageable pageable = PageRequest.of(0, pageRequest.getSize() + 1);
         List<NewsEntity> entities = getCursorBasedEntities(pageRequest, pageable);
 
-        // 실제 요청한 크기보다 많이 조회되면 다음 페이지가 존재
-        boolean hasNext = entities.size() > pageRequest.getSize();
-
-        // 실제 반환할 데이터는 요청한 크기만큼만
-        List<NewsEntity> resultEntities = hasNext ?
-                entities.subList(0, pageRequest.getSize()) : entities; // Todo: 아예 sql로 limit
-
-
-        // 다음 커서 계산
-        Long nextCursor = hasNext && !resultEntities.isEmpty() ?
-                resultEntities.get(resultEntities.size() - 1).getId() : null;
-
-        CursorPageResponse<List<NewsEntity>> newsPage = CursorPageResponse.ok(nextCursor, hasNext, resultEntities);
-
-        List<NewsResDto> dtoList = newsPage.getContent().stream()
+        List<NewsResDto> dtoList = entities.stream()
                 .map(this::resolveUsernames)
                 .toList();
 
-        return CursorPageResponse.ok(newsPage.getNextCursor(), newsPage.isHasNext(), dtoList);
+        return CursorPageRes.from(
+                dtoList,
+                pageRequest.getSize(),
+                NewsResDto::id
+        );
     }
 
     @Transactional(readOnly = true)

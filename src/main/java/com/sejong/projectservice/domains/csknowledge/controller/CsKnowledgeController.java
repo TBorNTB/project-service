@@ -6,7 +6,7 @@ import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
 import com.sejong.projectservice.domains.csknowledge.service.CsKnowledgeService;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
-import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.support.common.pagination.CursorPageRes;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -104,9 +104,8 @@ public class CsKnowledgeController {
 
     @GetMapping("/cursor")
     @Operation(summary = "커서 페이지네이션으로 CS 지식 목록 조회")
-    public ResponseEntity<CursorPageResponse<List<CsKnowledgeResDto>>> getCursorCsKnowledge(
+    public CursorPageRes<List<CsKnowledgeResDto>> getCursorCsKnowledge(
             @ParameterObject @Valid CursorPageReqDto cursorPageReqDto) {
-        CursorPageResponse<List<CsKnowledgeResDto>> response = csKnowledgeService.getCursorCsKnowledge(cursorPageReqDto);
-        return ResponseEntity.ok(response);
+        return csKnowledgeService.getCursorCsKnowledge(cursorPageReqDto);
     }
 }

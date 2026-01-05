@@ -20,7 +20,7 @@ import com.sejong.projectservice.support.common.internal.response.PostLikeCheckR
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.support.common.util.ExtractorUsername;
 import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
-import com.sejong.projectservice.support.common.pagination.CursorPageResponse;
+import com.sejong.projectservice.support.common.pagination.CursorPageRes;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
@@ -154,29 +154,18 @@ public class CsKnowledgeService {
         );
     }
 
-    public CursorPageResponse<List<CsKnowledgeResDto>> getCursorCsKnowledge(CursorPageReqDto cursorPageReqDto) {
+    public CursorPageRes<List<CsKnowledgeResDto>> getCursorCsKnowledge(CursorPageReqDto cursorPageReqDto) {
         CursorPageRequest pageRequest = cursorPageReqDto.toPageRequest();
         Pageable pageable = PageRequest.of(0, pageRequest.getSize() + 1);
 
         List<CsKnowledgeEntity> csKnowledgeEntities = getCursorBasedEntities(pageRequest, pageable);
 
-        // 실제 요청한 크기보다 많이 조회되면 다음 페이지가 존재
-        boolean hasNext = csKnowledgeEntities.size() > pageRequest.getSize();
+        List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(csKnowledgeEntities);
 
-        // 실제 반환할 데이터는 요청한 크기만큼만
-        List<CsKnowledgeEntity> resultEntities = hasNext ?
-                csKnowledgeEntities.subList(0, pageRequest.getSize()) : csKnowledgeEntities;
-
-        Cursor nextCursor = hasNext && !resultEntities.isEmpty()
-                ? Cursor.of(resultEntities.get(resultEntities.size() - 1).getId())
-                : null;
-
-        List<CsKnowledgeResDto> csKnowledgeResDtoList = resolveUsernames(resultEntities);
-
-        return CursorPageResponse.ok(
-                nextCursor,
-                hasNext,
-                csKnowledgeResDtoList
+        return CursorPageRes.from(
+                csKnowledgeResDtoList,
+                pageRequest.getSize(),
+                CsKnowledgeResDto::id
         );
     }
 
