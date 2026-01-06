@@ -48,7 +48,7 @@ public class ProjectService {
         ProjectEntity savedProject = projectRepository.save(projectEntity);
         mapper.connectJoins(savedProject,projectFormRequest);
         eventPublisher.publishEvent(ProjectCreatedEventDto.of(savedProject.getId()));
-        return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료");
+        return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료", savedProject.getContent(), savedProject.getEndedAt());
     }
 
     @Transactional

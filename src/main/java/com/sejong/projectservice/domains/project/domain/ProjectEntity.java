@@ -39,6 +39,8 @@ public class ProjectEntity {
 
     private String title;
     private String description;
+    @Column(name = "content", columnDefinition = "TEXT")
+    private String content;
 
     private String username;
     private String nickname;
@@ -50,6 +52,7 @@ public class ProjectEntity {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime endedAt;
 
     private String thumbnailUrl;
 
@@ -82,8 +85,10 @@ public class ProjectEntity {
                 .nickname(userNameInfo.nickname())
                 .projectStatus(request.getProjectStatus())
                 .thumbnailUrl(request.getThumbnail())
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
+                .content(request.getContent())
+                .createdAt(request.getCreatedAt())
+                .updatedAt(request.getCreatedAt())
+                .endedAt(request.getEndedAt())
                 .projectCategories(new ArrayList<>())
                 .projectTechStacks(new ArrayList<>())
                 .collaboratorEntities(new ArrayList<>())

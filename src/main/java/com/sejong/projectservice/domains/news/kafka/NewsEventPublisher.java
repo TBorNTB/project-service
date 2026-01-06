@@ -9,6 +9,7 @@ import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +18,7 @@ import static com.sejong.projectservice.support.common.constants.Type.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class NewsEventPublisher {
     private final KafkaTemplate<String, String> kafkaTemplate;
     private final ObjectMapper objectMapper;
@@ -24,6 +26,7 @@ public class NewsEventPublisher {
 
     public void publishCreated(NewsEntity newsEntity){
         publish(newsEntity, CREATED);
+        log.info("news 발행");
     }
 
     public void publishUpdated(NewsEntity newsEntity) {

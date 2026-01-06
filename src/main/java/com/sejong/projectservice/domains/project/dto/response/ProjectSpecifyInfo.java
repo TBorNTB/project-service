@@ -40,9 +40,10 @@ public class ProjectSpecifyInfo {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime endedAt;
 
     private String thumbnailUrl;
-    private String contentJson;
+    private String content;
 
     private List<SubGoalDto> subGoalDtos = new ArrayList<>();
     private List<CategoryDto> categories = new ArrayList<>();
@@ -77,7 +78,9 @@ public class ProjectSpecifyInfo {
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
+                .endedAt(project.getEndedAt())
                 .thumbnailUrl(project.getThumbnailUrl())
+                .content(project.getContent())
                 .categories(CategoryDto.fromList(categoryEntityEntities))
                 .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))
                 .techStackDtos(TechStackDto.fromList(techStackEntities))

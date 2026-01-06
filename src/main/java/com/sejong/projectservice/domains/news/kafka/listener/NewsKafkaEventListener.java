@@ -2,6 +2,9 @@ package com.sejong.projectservice.domains.news.kafka.listener;
 
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.kafka.NewsEventPublisher;
+import com.sejong.projectservice.domains.news.kafka.dto.NewsCreatedEventDto;
+import com.sejong.projectservice.domains.news.kafka.dto.NewsDeletedEventDto;
+import com.sejong.projectservice.domains.news.kafka.dto.NewsUpdatedEventDto;
 import com.sejong.projectservice.domains.news.repository.ArchiveRepository;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDto;
 import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
@@ -21,24 +24,24 @@ public class NewsKafkaEventListener {
     private final NewsEventPublisher newsEventPublisher;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onCreated(ProjectCreatedEventDto event) {
-        NewsEntity newsEntity = archiveRepository.findById(event.getProjectId())
+    public void onCreated(NewsCreatedEventDto event) {
+        NewsEntity newsEntity = archiveRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
         newsEventPublisher.publishCreated(newsEntity);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onUpdated(ProjectUpdatedEventDto event) {
-        NewsEntity newsEntity = archiveRepository.findById(event.getProjectId())
+    public void onUpdated(NewsUpdatedEventDto event) {
+        NewsEntity newsEntity = archiveRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
         newsEventPublisher.publishUpdated(newsEntity);
     }
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    public void onDeleted(ProjectDeletedEventDto event) {
-        NewsEntity newsEntity = archiveRepository.findById(event.getProjectId())
+    public void onDeleted(NewsDeletedEventDto event) {
+        NewsEntity newsEntity = archiveRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
         newsEventPublisher.publishDeleted(newsEntity.getId());

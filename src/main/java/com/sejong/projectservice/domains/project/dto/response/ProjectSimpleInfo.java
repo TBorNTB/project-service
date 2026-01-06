@@ -37,6 +37,7 @@ public class ProjectSimpleInfo {
     private ProjectStatus projectStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime endedAt;
     private String thumbnailUrl;
 
     private List<SubGoalDto> subGoalDtos = new ArrayList<>();
@@ -73,6 +74,7 @@ public class ProjectSimpleInfo {
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
+                .endedAt(project.getEndedAt())
                 .thumbnailUrl(project.getThumbnailUrl())
                 .categories(CategoryDto.fromList(categoryEntityEntities))
                 .techStackDtos(TechStackDto.fromList(techStackEntities))

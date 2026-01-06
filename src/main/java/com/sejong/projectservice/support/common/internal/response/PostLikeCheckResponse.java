@@ -41,7 +41,7 @@ public class PostLikeCheckResponse {
     public static PostLikeCheckResponse hasOfProject(ProjectEntity project, boolean isStored) {
         return PostLikeCheckResponse.builder()
                 .ownerUsername(project.getUsername())
-                .isStored(false)
+                .isStored(isStored)
                 .build();
     }
 }

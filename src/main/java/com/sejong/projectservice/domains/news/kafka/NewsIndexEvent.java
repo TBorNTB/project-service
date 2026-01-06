@@ -14,12 +14,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class NewsIndexEvent {
+    private String aggregatedId;
     private NewsEvent newsEvent;
     private Type type;
     private long occurredAt;
 
     public static NewsIndexEvent of(NewsEntity newsEntity, Type type, long occurredAt) {
         return NewsIndexEvent.builder()
+                .aggregatedId(newsEntity.getId().toString())// 추후 outbox패턴 도입시 필요할 수 있어 이대로 유지 elastic 서비스는 동기화 했습니다. 필드명
                 .newsEvent(NewsEvent.from(newsEntity))
                 .type(type)
                 .occurredAt(occurredAt)
@@ -28,6 +30,7 @@ public class NewsIndexEvent {
 
     public static NewsIndexEvent deleteOf(String newsId, Type type, long occurredAt) {
         return NewsIndexEvent.builder()
+                .aggregatedId(newsId)
                 .newsEvent(null)
                 .type(type)
                 .occurredAt(occurredAt)
