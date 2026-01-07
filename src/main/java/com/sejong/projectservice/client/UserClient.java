@@ -1,8 +1,9 @@
 package com.sejong.projectservice.client;
 
-import com.sejong.projectservice.client.dto.UserNameInfo;
 import java.util.List;
 import java.util.Map;
+
+import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,4 +25,6 @@ public interface UserClient {
 
     @GetMapping("/un-info")
     ResponseEntity<Map<String, UserNameInfo>> getUserNameInfos(@RequestParam("usernames") List<String> usernames);
+
+
 }

@@ -23,7 +23,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     defer-datasource-initialization: true
     show-sql: true
     database-platform: org.hibernate.dialect.MySQL8Dialect
@@ -102,3 +102,8 @@ logging:
 app:
   kafka:
     topic: project-events
+
+aws:
+  s3:
+    bucket: ${S3_BUCKET}
+    region: ap-northeast-2
