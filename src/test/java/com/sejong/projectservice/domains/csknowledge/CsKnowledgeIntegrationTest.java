@@ -232,7 +232,7 @@ public class CsKnowledgeIntegrationTest {
 
     @Test
     @DisplayName("관리자가 CS 지식을 삭제할 수 있다.")
-    void 관리자가_CS_지식을_삭제할_수_있ㄷ() throws Exception {
+    void 관리자가_CS_지식을_삭제할_수_있다() throws Exception {
         //given
         CategoryEntity category = CategoryEntity.of("WEB-HACKING");
         CategoryEntity savedCategory = categoryRepository.save(category);
