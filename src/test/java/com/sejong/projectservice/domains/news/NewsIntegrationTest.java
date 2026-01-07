@@ -165,8 +165,8 @@ public class NewsIntegrationTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 사용자가 뉴스를 수정하려고 하면 에러가 발생한다.")
-    void 권한이_없는_사용자가_뉴스를_수정하려고_하면_에러가_발생한다() throws Exception{
+    @DisplayName("소유주가 아닌 사용자가 뉴스를 수정하려고 하면 에러가 발생한다.")
+    void 소유주가_아닌_사용자가_뉴스를_수정하려고_하면_에러가_발생한다() throws Exception{
         //given
         NewsEntity news = createNews("tbntb-1", "뉴스 제목", "뉴스 요약", "뉴스 내용", NewsCategory.MT);
         NewsEntity savedNews = archiveRepository.save(news);
@@ -208,8 +208,8 @@ public class NewsIntegrationTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 사용자가 뉴스를 삭제하려고 하면 에러가 발생한다.")
-    void 권한이_없는_사용자가_뉴스를_삭제하려고_하면_에러가_발생한다() throws Exception {
+    @DisplayName("소유주가 아닌 사용자가 뉴스를 삭제하려고 하면 에러가 발생한다.")
+    void 소유자가_아닌_사용자가_뉴스를_삭제하려고_하면_에러가_발생한다() throws Exception {
         //given
         NewsEntity news = createNews("tbntb-1", "뉴스 제목", "뉴스 요약", "뉴스 내용", NewsCategory.MT);
         NewsEntity savedNews = archiveRepository.save(news);

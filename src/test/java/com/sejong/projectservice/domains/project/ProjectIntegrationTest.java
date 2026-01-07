@@ -220,8 +220,8 @@ public class ProjectIntegrationTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 사용자가 프로젝트를 수정하려고 하면 에러가 발생한다.")
-    void 권한이_없는_사용자가_프로젝트를_수정하려고_하면_에러가_발생한다() throws Exception {
+    @DisplayName("소유자가 아닌 사용자가 프로젝트를 수정하려고 하면 에러가 발생한다.")
+    void 소유자가_아닌_사용자가_프로젝트를_수정하려고_하면_에러가_발생한다() throws Exception {
         //given
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
@@ -306,8 +306,8 @@ public class ProjectIntegrationTest {
     }
 
     @Test
-    @DisplayName("권한이 없는 사용자가 프로젝트를 삭제하려고 하면 에러가 발생한다.")
-    void 권한이_없는_사용자가_프로젝트를_삭제하려고_하면_에러가_발생한다() throws Exception {
+    @DisplayName("소유자가 아닌 사용자가 프로젝트를 삭제하려고 하면 에러가 발생한다.")
+    void 소유자가_아닌_사용자가_프로젝트를_삭제하려고_하면_에러가_발생한다() throws Exception {
         //given
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
