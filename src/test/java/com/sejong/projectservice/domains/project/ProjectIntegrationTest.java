@@ -274,7 +274,7 @@ public class ProjectIntegrationTest {
         //when & then
         mockMvc.perform(delete("/api/project/{projectId}", projectId)
                         .header("X-User-Id", "tbntb-1")
-                        .header("X-User-Role", "USER"))
+                        .header("X-User-Role", "GUEST"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("프로젝트 제목"))
                 .andExpect(jsonPath("$.message").value("삭제 완료"));
@@ -316,7 +316,7 @@ public class ProjectIntegrationTest {
         //when & then
         mockMvc.perform(delete("/api/project/{projectId}", projectId)
                         .header("X-User-Id", "tbntb-3")
-                        .header("X-User-Role", "USER"))
+                        .header("X-User-Role", "GUEST"))
                 .andExpect(status().isBadRequest());
     }
 
@@ -329,7 +329,7 @@ public class ProjectIntegrationTest {
         //when & then
         mockMvc.perform(delete("/api/project/{projectId}", nonExistentProjectId)
                         .header("X-User-Id", "tbntb-1")
-                        .header("X-User-Role", "USER"))
+                        .header("X-User-Role", "GUEST"))
                 .andExpect(status().isNotFound());
     }
 

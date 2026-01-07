@@ -65,7 +65,7 @@ public class TechStackIntegrationTest {
 
         //when && then
         mockMvc.perform(post("/api/tech-stack")
-                        .header("X-User-Role", "USER")
+                        .header("X-User-Role", "GUEST")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest());
@@ -131,7 +131,7 @@ public class TechStackIntegrationTest {
 
         //when && then
         mockMvc.perform(put("/api/tech-stack/{techStackId}", techStackId)
-                        .header("X-User-Role", "USER")
+                        .header("X-User-Role", "GUEST")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isBadRequest());
@@ -161,7 +161,7 @@ public class TechStackIntegrationTest {
 
         //when && then
         mockMvc.perform(delete("/api/tech-stack/{techStackId}", techStackId)
-                        .header("X-User-Role", "USER"))
+                        .header("X-User-Role", "GUEST"))
                 .andExpect(status().isBadRequest());
     }
 

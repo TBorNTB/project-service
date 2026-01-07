@@ -222,7 +222,7 @@ public class CsKnowledgeIntegrationTest {
         //when & then
         mockMvc.perform(delete("/cs-knowledge/{csKnowledgeId}", csKnowledgeId)
                         .header("X-User-Id", "tbntb-1")
-                        .header("X-User-Role", "USER"))
+                        .header("X-User-Role", "GUEST"))
                 .andExpect(status().isNoContent());
 
         // 삭제된 CS 지식이 조회되지 않는지 확인
@@ -266,7 +266,7 @@ public class CsKnowledgeIntegrationTest {
         //when && then
         mockMvc.perform(delete("/cs-knowledge/{csKnowledgeId}", csKnowledgeId)
                         .header("X-User-Id", "unauthorized-user")
-                        .header("X-User-Role", "USER"))
+                        .header("X-User-Role", "GUEST"))
                 .andExpect(status().isForbidden());
     }
 
@@ -279,7 +279,7 @@ public class CsKnowledgeIntegrationTest {
         //when & then
         mockMvc.perform(delete("/cs-knowledge/{csKnowledgeId}", nonExistentCsKnowledgeId)
                         .header("X-User-Id", "tbntb-1")
-                        .header("X-User-Role", "USER"))
+                        .header("X-User-Role", "GUEST"))
                 .andExpect(status().isNotFound());
     }
 

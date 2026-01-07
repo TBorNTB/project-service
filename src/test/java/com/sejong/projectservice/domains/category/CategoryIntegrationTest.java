@@ -74,7 +74,7 @@ public class CategoryIntegrationTest {
 
         //when && then
         mockMvc.perform(post("/api/category")
-                .header("X-User-Role", "USER")
+                .header("X-User-Role", "GUEST")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
