@@ -6,10 +6,8 @@ import com.sejong.projectservice.client.UserClient;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
-
 import java.util.List;
 import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -33,23 +31,6 @@ public class UserExternalService {
     private void validateExistenceFallback(String username, Throwable t) {
         if (t instanceof org.apache.kafka.common.errors.ApiException) {
             throw (org.apache.kafka.common.errors.ApiException) t;
-        }
-
-        throw new BaseException(EXTERNAL_SERVICE_ERROR);
-    }
-
-    @CircuitBreaker(name = "user-circuit-breaker", fallbackMethod = "validateExistenceFallback")
-    public void validateExistence(List<String> userNicknames) {
-        ResponseEntity<Boolean> response = userClient.existAll(userNicknames);
-        if (response.getBody() != Boolean.TRUE) {
-            throw new BaseException(EXTERNAL_SERVICE_ERROR);
-        }
-    }
-
-    private void validateExistenceFallback(List<String> userNames, Throwable t) {
-        log.info("fallback method is called. userNames: {}", userNames);
-        if (t instanceof BaseException) {
-            throw (BaseException) t;
         }
 
         throw new BaseException(EXTERNAL_SERVICE_ERROR);
