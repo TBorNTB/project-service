@@ -18,12 +18,12 @@ public class ProjectEventMeta {
     private ProjectEvent projectEvent;
 
     public static ProjectEventMeta of(ProjectEntity project, Type type, long occurredAt) {
-        ProjectEvent document = ProjectEvent.from(project);
+        ProjectEvent pe = ProjectEvent.from(project);
         return ProjectEventMeta.builder()
-                .aggregatedId(document.getId())
+                .aggregatedId(pe.getId())
                 .type(type)
                 .occurredAt(occurredAt)
-                .projectEvent(document)
+                .projectEvent(pe)
                 .build();
     }
 
