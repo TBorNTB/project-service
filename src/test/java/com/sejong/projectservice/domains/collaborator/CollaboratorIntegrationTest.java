@@ -1,11 +1,21 @@
 package com.sejong.projectservice.domains.collaborator;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doNothing;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,17 +28,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doNothing;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -58,28 +57,28 @@ public class CollaboratorIntegrationTest {
 
     @Test
     @DisplayName("프로젝트 소유주가 협력자를 추가할 수 있다.")
-    void 프로젝트_소유주가_협력자를_추가할_수_있다() throws Exception{
+    void 프로젝트_소유주가_협력자를_추가할_수_있다() throws Exception {
         //given
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
         Long projectId = savedProject.getId();
 
-        List<String> collaboratorNames = List.of("tbntb-2","tbntb-3");
+        List<String> collaboratorNames = List.of("tbntb-2", "tbntb-3");
 
         //when && then
-        mockMvc.perform(put("/api/collaborator/{projectId}",projectId)
-                .header("X-User-Id","tbntb-1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(collaboratorNames)))
+        mockMvc.perform(put("/api/collaborator/{projectId}", projectId)
+                        .header("X-User-Id", "tbntb-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(collaboratorNames)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-2","tbntb-3")));
+                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-2", "tbntb-3")));
     }
 
     @Test
     @DisplayName("프로젝트 소유주가 협력자를 수정할 수 있다.")
-    void 프로젝트_소유자가_협력자를_수정할_수_있다() throws Exception{
+    void 프로젝트_소유자가_협력자를_수정할_수_있다() throws Exception {
         //given
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         CollaboratorEntity collaborator1 = CollaboratorEntity.of("tbntb-2", project);
@@ -88,23 +87,22 @@ public class CollaboratorIntegrationTest {
         Long projectId = savedProject.getId();
 
         // 기존 협력자들을 새로운 협력자로 교체
-        List<String> newCollaboratorNames = List.of("tbntb-4","tbntb-5");
-
+        List<String> newCollaboratorNames = List.of("tbntb-4", "tbntb-5");
 
         //when && then
-        mockMvc.perform(put("/api/collaborator/{projectId}",projectId)
-                .header("X-User-Id","tbntb-1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(newCollaboratorNames)))
+        mockMvc.perform(put("/api/collaborator/{projectId}", projectId)
+                        .header("X-User-Id", "tbntb-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newCollaboratorNames)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-4","tbntb-5")));
+                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-4", "tbntb-5")));
     }
 
     @Test
     @DisplayName("프로젝트 협력자가 협력자를 수정할 수 있다.")
-    void 프로젝트_협력자가_협력자를_수정할_수_있다() throws Exception{
+    void 프로젝트_협력자가_협력자를_수정할_수_있다() throws Exception {
         //given
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         CollaboratorEntity collaborator = CollaboratorEntity.of("tbntb-2", project);
@@ -113,30 +111,29 @@ public class CollaboratorIntegrationTest {
 
         List<String> newCollaboratorNames = List.of("tbntb-2", "tbntb-3");
 
-
         //when && then
-        mockMvc.perform(put("/api/collaborator/{projectId}",projectId)
-                .header("X-User-Id","tbntb-2") //협력자
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(newCollaboratorNames)))
+        mockMvc.perform(put("/api/collaborator/{projectId}", projectId)
+                        .header("X-User-Id", "tbntb-2") //협력자
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(newCollaboratorNames)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-2","tbntb-3")));
+                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-2", "tbntb-3")));
     }
 
     @Test
     @DisplayName("존재하지 않는 프로젝트에 대해 협력자를 수정하려고 하면 에러가 발생한다.")
-    void 존재하지_않는_프로젝트에_대해_협력자를_수정하려고_하면_에러가_발생한다() throws Exception{
+    void 존재하지_않는_프로젝트에_대해_협력자를_수정하려고_하면_에러가_발생한다() throws Exception {
         //given
         Long nonExistentProjectId = 999L;
         List<String> collaboratorNames = List.of("tbntb-2", "tbntb-3");
 
         //when && then
-        mockMvc.perform(put("/api/collaborator/{projectId}",nonExistentProjectId)
-                .header("X-User-Id","tbntb-1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(collaboratorNames)))
+        mockMvc.perform(put("/api/collaborator/{projectId}", nonExistentProjectId)
+                        .header("X-User-Id", "tbntb-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(collaboratorNames)))
                 .andExpect(status().isNotFound());
     }
 
@@ -172,14 +169,14 @@ public class CollaboratorIntegrationTest {
 
         List<String> collaboratorNamesWithDuplicates = List.of("tbntb-2", "tbntb-3", "tbntb-2", "tbntb-3");
         //when && then
-        mockMvc.perform(put("/api/collaborator/{projectId}",projectId)
-                .header("X-User-Id","tbntb-1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(collaboratorNamesWithDuplicates)))
+        mockMvc.perform(put("/api/collaborator/{projectId}", projectId)
+                        .header("X-User-Id", "tbntb-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(collaboratorNamesWithDuplicates)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-2","tbntb-3")));
+                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-2", "tbntb-3")));
     }
 
     @Test
@@ -198,17 +195,15 @@ public class CollaboratorIntegrationTest {
         collaboratorNamesWithBlanks.add(null);
 
         //when && then
-        mockMvc.perform(put("/api/collaborator/{projectId}",projectId)
-                .header("X-User-Id","tbntb-1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(collaboratorNamesWithBlanks)))
+        mockMvc.perform(put("/api/collaborator/{projectId}", projectId)
+                        .header("X-User-Id", "tbntb-1")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(collaboratorNamesWithBlanks)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray())
                 .andExpect(jsonPath("$.length()").value(2))
-                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-2","tbntb-3")));
+                .andExpect(jsonPath("$[*].collaboratorName").value(Matchers.containsInAnyOrder("tbntb-2", "tbntb-3")));
     }
-
-
 
 
     private ProjectEntity createProject(String username, String title, String description) {
@@ -216,8 +211,6 @@ public class CollaboratorIntegrationTest {
                 .title(title)
                 .description(description)
                 .username(username)
-                .nickname("nickname")
-                .realname("realname")
                 .projectStatus(ProjectStatus.IN_PROGRESS)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

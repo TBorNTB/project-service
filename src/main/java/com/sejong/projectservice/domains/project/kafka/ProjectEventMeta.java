@@ -11,15 +11,15 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProjectIndexEvent {
+public class ProjectEventMeta {
     private String aggregatedId;
     private Type type;
     private long occurredAt;
     private ProjectEvent projectEvent;
 
-    public static ProjectIndexEvent of(ProjectEntity project, Type type, long occurredAt) {
-        ProjectEvent document = ProjectEvent.from2(project);
-        return ProjectIndexEvent.builder()
+    public static ProjectEventMeta of(ProjectEntity project, Type type, long occurredAt) {
+        ProjectEvent document = ProjectEvent.from(project);
+        return ProjectEventMeta.builder()
                 .aggregatedId(document.getId())
                 .type(type)
                 .occurredAt(occurredAt)
@@ -27,8 +27,8 @@ public class ProjectIndexEvent {
                 .build();
     }
 
-    public static ProjectIndexEvent deleteOf(String projectId, Type type, long occurredAt) {
-        return ProjectIndexEvent.builder()
+    public static ProjectEventMeta deleteOf(String projectId, Type type, long occurredAt) {
+        return ProjectEventMeta.builder()
                 .aggregatedId(projectId)
                 .type(type)
                 .occurredAt(occurredAt)

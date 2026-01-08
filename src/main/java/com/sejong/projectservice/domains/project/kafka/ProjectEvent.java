@@ -1,21 +1,20 @@
 package com.sejong.projectservice.domains.project.kafka;
 
 import com.sejong.projectservice.domains.category.dto.CategoryDto;
-import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
-import com.sejong.projectservice.support.common.constants.ProjectStatus;
-import com.sejong.projectservice.domains.project.dto.ProjectDto;
+import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -43,7 +42,7 @@ public class ProjectEvent {
 
     private List<String> collaborators = new ArrayList<>();
 
-    public static ProjectEvent from(ProjectDto projectDto){
+    public static ProjectEvent from(ProjectDto projectDto) {
 
         List<String> categoryNames = projectDto.getCategories().stream()
                 .map(CategoryDto::getName)
@@ -74,7 +73,7 @@ public class ProjectEvent {
                 .build();
     }
 
-    public static ProjectEvent from2(ProjectEntity project) {
+    public static ProjectEvent from(ProjectEntity project) {
 
         List<String> categoryNames = project.getProjectCategories().stream()
                 .map(it -> {

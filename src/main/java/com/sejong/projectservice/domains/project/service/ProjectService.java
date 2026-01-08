@@ -1,10 +1,6 @@
 package com.sejong.projectservice.domains.project.service;
 
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
-import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDto;
-import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
-import com.sejong.projectservice.domains.project.kafka.dto.ProjectUpdatedEventDto;
-import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
 import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
@@ -12,18 +8,20 @@ import com.sejong.projectservice.domains.project.dto.response.ProjectDeleteRespo
 import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.domains.project.dto.response.ProjectUpdateResponse;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDto;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
+import com.sejong.projectservice.domains.project.kafka.dto.ProjectUpdatedEventDto;
+import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.domains.project.util.ProjectUsernamesExtractor;
+import com.sejong.projectservice.support.common.constants.ProjectStatus;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
-import com.sejong.projectservice.support.common.constants.ProjectStatus;
-import com.sejong.projectservice.domains.project.kafka.ProjectEventPublisher;
+import com.sejong.projectservice.support.common.util.Mapper;
 import java.util.List;
 import java.util.Map;
-
-import com.sejong.projectservice.support.common.exception.BaseException;
-import com.sejong.projectservice.support.common.exception.ExceptionType;
-import com.sejong.projectservice.support.common.util.Mapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -43,12 +41,12 @@ public class ProjectService {
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
         userExternalService.validateExistence(username, projectFormRequest.getCollaborators());
-        Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(List.of(username));
-        ProjectEntity projectEntity = ProjectEntity.of(projectFormRequest,username,userNameInfos.get(username));
+        ProjectEntity projectEntity = ProjectEntity.of(projectFormRequest, username);
         ProjectEntity savedProject = projectRepository.save(projectEntity);
-        mapper.connectJoins(savedProject,projectFormRequest);
+        mapper.connectJoins(savedProject, projectFormRequest);
         eventPublisher.publishEvent(ProjectCreatedEventDto.of(savedProject.getId()));
-        return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료", savedProject.getContent(), savedProject.getEndedAt());
+        return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료", savedProject.getContent(),
+                savedProject.getEndedAt());
     }
 
     @Transactional
@@ -109,7 +107,7 @@ public class ProjectService {
     public PostLikeCheckResponse checkPost(Long postId) {
         boolean exists = projectRepository.existsById(postId);
         if (exists) {
-            ProjectEntity project  = projectRepository.findById(postId)
+            ProjectEntity project = projectRepository.findById(postId)
                     .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
             return PostLikeCheckResponse.hasOfProject(project, true);
         }
