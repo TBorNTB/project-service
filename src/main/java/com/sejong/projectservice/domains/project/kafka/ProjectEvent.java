@@ -40,6 +40,7 @@ public class ProjectEvent {
 
     private List<String> projectTechStacks = new ArrayList<>();
 
+    private String username;
     private List<String> collaborators = new ArrayList<>();
 
     public static ProjectEvent from(ProjectDto projectDto) {
@@ -104,6 +105,7 @@ public class ProjectEvent {
                 .updatedAt(project.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .projectCategories(categoryNames)
                 .projectTechStacks(techStackNames)
+                .username(project.getUsername())
                 .collaborators(collaboratorNames)
                 .build();
     }
