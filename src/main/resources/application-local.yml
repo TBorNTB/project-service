@@ -8,15 +8,6 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
-  elasticsearch:
-    uris: http://localhost:9200
-    connection-timeout: 5s
-    socket-timeout: 30s
-  data:
-    elasticsearch:
-      repositories:
-        enabled: true
-
   sql:
     init:
       mode: always
@@ -70,7 +61,7 @@ springdoc:
     path: /swagger-ui.html
 
 server:
-  port: 0
+  port: 8080
 
 eureka:
   client:
@@ -107,3 +98,14 @@ aws:
   s3:
     bucket: ${S3_BUCKET}
     region: ap-northeast-2
+
+management:
+  server:
+    port: 18083  #이거는 매트릭을 수집하기 위한 고정 포트다.
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
