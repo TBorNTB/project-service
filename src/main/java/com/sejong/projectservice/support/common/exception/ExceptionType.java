@@ -24,7 +24,7 @@ public enum ExceptionType implements ExceptionTypeIfs {
     NOT_FOUND(404, "리소스를 찾을 수 없습니다"),
     NEWS_NOT_FOUND(404, "뉴스를 찾을 수 없습니다"),
     USER_NOT_FOUND(404, "사용자를 찾을 수 없습니다"),
-    CATEGORY_NOT_FOUND(404, "카데고리를 찾을 수 없습니다"),
+    CATEGORY_NOT_FOUND(404, "카테고리를 찾을 수 없습니다"),
     PROJECT_NOT_FOUND(404, "프로젝트를 찾을 수 없습니다"),
     CS_KNOWLEDGE_NOT_FOUND(404, "CS게시물을 찾을 수 없습니다"),
     DOCUMENT_NOT_FOUND(404, "document를 찾을 수 없습니다"),
