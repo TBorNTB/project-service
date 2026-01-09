@@ -1,24 +1,31 @@
 package com.sejong.projectservice.domains.project.domain;
 
-import com.sejong.projectservice.support.common.exception.BaseException;
-import com.sejong.projectservice.support.common.exception.ExceptionType;
-import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
-import com.sejong.projectservice.domains.document.domain.DocumentEntity;
-import com.sejong.projectservice.support.common.constants.ProjectStatus;
-import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
+import com.sejong.projectservice.domains.document.domain.DocumentEntity;
+import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.entity.ProjectCategoryEntity;
 import com.sejong.projectservice.domains.project.projecttechstack.entity.ProjectTechStackEntity;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
-import jakarta.persistence.*;
-
+import com.sejong.projectservice.support.common.constants.ProjectStatus;
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,8 +50,6 @@ public class ProjectEntity {
     private String content;
 
     private String username;
-    private String nickname;
-    private String realname;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(50)")
@@ -76,13 +81,11 @@ public class ProjectEntity {
     @Builder.Default
     private List<DocumentEntity> documentEntities = new ArrayList<>();
 
-    public static ProjectEntity of(ProjectFormRequest request, String username, UserNameInfo userNameInfo) {
+    public static ProjectEntity of(ProjectFormRequest request, String username) {
         return ProjectEntity.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .username(username)
-                .realname(userNameInfo.realName())
-                .nickname(userNameInfo.nickname())
                 .projectStatus(request.getProjectStatus())
                 .thumbnailUrl(request.getThumbnail())
                 .content(request.getContent())
@@ -175,7 +178,7 @@ public class ProjectEntity {
         selectedSubGaol.check();
     }
 
-    public void updateCategory(List<String> categoryNames,  List<CategoryEntity> categoryEntityEntities1) {
+    public void updateCategory(List<String> categoryNames, List<CategoryEntity> categoryEntityEntities1) {
         this.projectCategories.clear(); // orphanRemoval로 기존 링크 전부 삭제
         categoryEntityEntities1.forEach(this::addCategory);
     }
@@ -191,7 +194,7 @@ public class ProjectEntity {
         this.collaboratorEntities.clear();
 
         for (String name : uniqueNames) {
-          CollaboratorEntity.of(name, this);
+            CollaboratorEntity.of(name, this);
         }
     }
 }

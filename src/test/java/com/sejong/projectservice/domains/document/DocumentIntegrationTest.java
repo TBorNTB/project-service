@@ -1,5 +1,16 @@
 package com.sejong.projectservice.domains.document;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
@@ -11,6 +22,11 @@ import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,20 +38,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -403,8 +405,6 @@ public class DocumentIntegrationTest {
                 .title(title)
                 .description(description)
                 .username(username)
-                .nickname("nickname-" + username)
-                .realname("realname-" + username)
                 .projectStatus(ProjectStatus.IN_PROGRESS)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -416,7 +416,8 @@ public class DocumentIntegrationTest {
                 .build();
     }
 
-    private DocumentEntity createDocument(ProjectEntity project, String title, String description, String content, String thumbnailUrl) {
+    private DocumentEntity createDocument(ProjectEntity project, String title, String description, String content,
+                                          String thumbnailUrl) {
         DocumentEntity document = DocumentEntity.builder()
                 .title(title)
                 .description(description)

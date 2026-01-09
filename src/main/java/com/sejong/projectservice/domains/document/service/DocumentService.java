@@ -10,10 +10,9 @@ import com.sejong.projectservice.domains.document.kafka.dto.DocumentUpdatedEvent
 import com.sejong.projectservice.domains.document.repository.DocumentRepository;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
-
-import com.sejong.projectservice.domains.document.kafka.DocumentEventPublisher;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.internal.UserExternalService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -23,12 +22,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DocumentService {
 
+    private final UserExternalService userExternalService;
     private final DocumentRepository documentRepository;
     private final ProjectRepository projectRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     public DocumentInfoRes createDocument(Long projectId, DocumentCreateReq request, String username) {
+        userExternalService.validateExistence(username);
         ProjectEntity projectEntity = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
@@ -59,7 +60,8 @@ public class DocumentService {
         ProjectEntity projectEntity = projectRepository.findById(documentEntity.getProjectEntity().getId())
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
-        documentEntity.update(request.getTitle(), request.getContent(), request.getDescription(), request.getThumbnailUrl());
+        documentEntity.update(request.getTitle(), request.getContent(), request.getDescription(),
+                request.getThumbnailUrl());
         applicationEventPublisher.publishEvent(DocumentUpdatedEventDto.of(documentEntity.getId()));
         return DocumentInfoRes.from(documentEntity);
     }
