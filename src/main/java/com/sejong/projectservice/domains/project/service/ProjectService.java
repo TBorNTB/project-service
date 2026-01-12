@@ -59,7 +59,7 @@ public class ProjectService {
                 projectUpdateRequest.getThumbnailUrl());
         ProjectEntity savedProject = projectRepository.save(project);
         eventPublisher.publishEvent(ProjectUpdatedEventDto.of(savedProject.getId()));
-        return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
+        return ProjectUpdateResponse.from(savedProject.getId(), savedProject.getTitle(), "수정 완료");
     }
 
     @Transactional
