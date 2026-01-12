@@ -48,7 +48,7 @@ public class ProjectService {
         ProjectEntity savedProject = projectRepository.save(projectEntity);
         mapper.connectJoins(savedProject,projectFormRequest);
         eventPublisher.publishEvent(ProjectCreatedEventDto.of(savedProject.getId()));
-        return ProjectAddResponse.from(savedProject.getTitle(), "저장 완료", savedProject.getContent(), savedProject.getEndedAt());
+        return ProjectAddResponse.from(savedProject.getId(),savedProject.getTitle(), "저장 완료", savedProject.getContent(), savedProject.getEndedAt());
     }
 
     @Transactional
@@ -62,7 +62,7 @@ public class ProjectService {
                 projectUpdateRequest.getThumbnailUrl());
         ProjectEntity savedProject = projectRepository.save(project);
         eventPublisher.publishEvent(ProjectUpdatedEventDto.of(savedProject.getId()));
-        return ProjectUpdateResponse.from(savedProject.getTitle(), "수정 완료");
+        return ProjectUpdateResponse.from(savedProject.getId(),savedProject.getTitle(), "수정 완료");
     }
 
     @Transactional

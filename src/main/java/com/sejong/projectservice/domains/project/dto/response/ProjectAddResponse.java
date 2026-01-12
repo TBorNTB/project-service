@@ -12,13 +12,15 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 public class ProjectAddResponse {
+    private Long id;
     private String title;
     private String message;
     private String content;
     private LocalDateTime endedAt;
 
-    public static ProjectAddResponse from(String title, String message, String content, LocalDateTime endedAt){
+    public static ProjectAddResponse from(Long id, String title, String message, String content, LocalDateTime endedAt){
         return ProjectAddResponse.builder()
+                .id(id)
                 .title(title)
                 .message(message)
                 .content(content)
