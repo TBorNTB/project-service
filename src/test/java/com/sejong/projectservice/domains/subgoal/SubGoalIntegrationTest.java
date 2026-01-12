@@ -1,5 +1,12 @@
 package com.sejong.projectservice.domains.subgoal;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
@@ -8,6 +15,8 @@ import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import com.sejong.projectservice.domains.subgoal.dto.SubGoalRequest;
 import com.sejong.projectservice.domains.subgoal.repository.SubGoalRepository;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -19,13 +28,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -107,8 +109,10 @@ public class SubGoalIntegrationTest {
         ProjectEntity savedProject = projectRepository.save(project);
         Long projectId = savedProject.getId();
 
-        SubGoalEntity subGoal1 = SubGoalEntity.of("서브 목표 1", false, LocalDateTime.now(), LocalDateTime.now(), savedProject);
-        SubGoalEntity subGoal2 = SubGoalEntity.of("서브 목표 2", true, LocalDateTime.now(), LocalDateTime.now(), savedProject);
+        SubGoalEntity subGoal1 = SubGoalEntity.of("서브 목표 1", false, LocalDateTime.now(), LocalDateTime.now(),
+                savedProject);
+        SubGoalEntity subGoal2 = SubGoalEntity.of("서브 목표 2", true, LocalDateTime.now(), LocalDateTime.now(),
+                savedProject);
         subGoalRepository.save(subGoal1);
         subGoalRepository.save(subGoal2);
 
@@ -128,7 +132,8 @@ public class SubGoalIntegrationTest {
         ProjectEntity savedProject = projectRepository.save(project);
         Long projectId = savedProject.getId();
 
-        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(), savedProject);
+        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(),
+                savedProject);
         SubGoalEntity savedSubGoal = subGoalRepository.save(subGoal);
         Long subGoalId = savedSubGoal.getId();
 
@@ -160,14 +165,15 @@ public class SubGoalIntegrationTest {
         ProjectEntity savedProject = projectRepository.save(project);
         Long projectId = savedProject.getId();
 
-        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(), savedProject);
+        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(),
+                savedProject);
         SubGoalEntity savedSubGoal = subGoalRepository.save(subGoal);
         Long subGoalId = savedSubGoal.getId();
 
         //when && then
-        mockMvc.perform(put("/api/subgoal/check/{projectId}",projectId)
-                .header("X-User-Id","tbntb-2")
-                .param("subGoalId",String.valueOf(subGoalId)))
+        mockMvc.perform(put("/api/subgoal/check/{projectId}", projectId)
+                        .header("X-User-Id", "tbntb-2")
+                        .param("subGoalId", String.valueOf(subGoalId)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.isCheck").value(true))
                 .andExpect(jsonPath("$.content").value("서브 목표"))
@@ -182,7 +188,8 @@ public class SubGoalIntegrationTest {
         ProjectEntity savedProject = projectRepository.save(project);
         Long projectId = savedProject.getId();
 
-        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(), savedProject);
+        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(),
+                savedProject);
         SubGoalEntity savedSubGoal = subGoalRepository.save(subGoal);
         Long subGoalId = savedSubGoal.getId();
 
@@ -209,7 +216,8 @@ public class SubGoalIntegrationTest {
         ProjectEntity savedProject = projectRepository.save(project);
         Long projectId = savedProject.getId();
 
-        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(), savedProject);
+        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(),
+                savedProject);
         SubGoalEntity savedSubGoal = subGoalRepository.save(subGoal);
         Long subGoalId = savedSubGoal.getId();
 
@@ -258,9 +266,9 @@ public class SubGoalIntegrationTest {
 
         //when && then
         mockMvc.perform(post("/api/subgoal/{projectId}", projectId)
-                .header("X-User-Id", "unauthorized-user")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .header("X-User-Id", "unauthorized-user")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isForbidden());
     }
 
@@ -301,7 +309,8 @@ public class SubGoalIntegrationTest {
         ProjectEntity savedProject = projectRepository.save(project);
         Long projectId = savedProject.getId();
 
-        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(), savedProject);
+        SubGoalEntity subGoal = SubGoalEntity.of("서브 목표", false, LocalDateTime.now(), LocalDateTime.now(),
+                savedProject);
         SubGoalEntity savedSubGoal = subGoalRepository.save(subGoal);
         Long subGoalId = savedSubGoal.getId();
 
@@ -344,8 +353,6 @@ public class SubGoalIntegrationTest {
                 .title(title)
                 .description(description)
                 .username(username)
-                .nickname("nickname")
-                .realname("realname")
                 .projectStatus(ProjectStatus.IN_PROGRESS)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())

@@ -1,5 +1,18 @@
 package com.sejong.projectservice.domains.project;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
@@ -14,6 +27,11 @@ import com.sejong.projectservice.domains.techstack.repository.TechStackRepositor
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,22 +43,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -111,7 +113,7 @@ public class ProjectIntegrationTest {
 
     @Test
     @DisplayName("프로젝트를 조회할 수 있다.")
-    void 프로젝트를_조회할_수_있다() throws Exception{
+    void 프로젝트를_조회할_수_있다() throws Exception {
         //given
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
@@ -128,7 +130,7 @@ public class ProjectIntegrationTest {
 
     @Test
     @DisplayName("존재하지 않는 프로젝트를 조회하려고 하면 에러가 발생한다.")
-    void 존재하지_않는_프로젝트를_조회하려고_하면_에러가_발생한다() throws Exception{
+    void 존재하지_않는_프로젝트를_조회하려고_하면_에러가_발생한다() throws Exception {
         //given
         Long nonExistentProjectId = 999L;
 
@@ -499,8 +501,6 @@ public class ProjectIntegrationTest {
                 .title(title)
                 .description(description)
                 .username(username)
-                .nickname("nickname-" + username)
-                .realname("realname-" + username)
                 .projectStatus(ProjectStatus.IN_PROGRESS)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -517,8 +517,6 @@ public class ProjectIntegrationTest {
                 .title(title)
                 .description("프로젝트 설명")
                 .username(username)
-                .nickname("nickname-" + username)
-                .realname("realname-" + username)
                 .projectStatus(status)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
