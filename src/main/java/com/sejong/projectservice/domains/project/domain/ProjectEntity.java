@@ -41,7 +41,7 @@ public class ProjectEntity {
 
     @Id
     @Column(name = "project_id")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
