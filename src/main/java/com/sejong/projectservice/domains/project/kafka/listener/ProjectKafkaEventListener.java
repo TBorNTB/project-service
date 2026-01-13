@@ -39,10 +39,7 @@ public class ProjectKafkaEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDeleted(ProjectDeletedEventDto event) {
-        ProjectEntity project = projectRepository.findById(event.getProjectId())
-                .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
-
-        projectEventPublisher.publishDeleted(project.getId().toString());
+        projectEventPublisher.publishDeleted(event.getProjectId().toString());
     }
 
 }

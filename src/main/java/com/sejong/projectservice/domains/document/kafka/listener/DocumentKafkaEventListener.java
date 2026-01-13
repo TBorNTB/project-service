@@ -40,9 +40,6 @@ public class DocumentKafkaEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDeleted(ProjectDeletedEventDto event) {
-        DocumentEntity entity = documentRepository.findById(event.getProjectId())
-                .orElseThrow(() -> new BaseException(ExceptionType.DOCUMENT_NOT_FOUND));
-
-        documentEventPublisher.publishDeleted(entity.getId().toString());
+        documentEventPublisher.publishDeleted(event.getProjectId().toString());
     }
 }

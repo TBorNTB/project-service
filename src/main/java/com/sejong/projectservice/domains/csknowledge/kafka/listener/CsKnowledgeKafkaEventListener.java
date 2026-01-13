@@ -38,9 +38,6 @@ public class CsKnowledgeKafkaEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDeleted(CsKnowledgeDeletedEventDto event) {
-        CsKnowledgeEntity entity = csKnowledgeRepository.findById(event.getPostId())
-                .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
-
-        csKnowledgeEventPublisher.publishDeleted(entity.getId());
+        csKnowledgeEventPublisher.publishDeleted(event.getPostId());
     }
 }
