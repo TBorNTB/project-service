@@ -41,9 +41,7 @@ public class NewsKafkaEventListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     public void onDeleted(NewsDeletedEventDto event) {
-        NewsEntity newsEntity = archiveRepository.findById(event.getPostId())
-                .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
-        newsEventPublisher.publishDeleted(newsEntity.getId());
+        newsEventPublisher.publishDeleted(event.getPostId());
     }
 }
