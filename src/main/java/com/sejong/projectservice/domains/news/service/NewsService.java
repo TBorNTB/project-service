@@ -171,6 +171,11 @@ public class NewsService {
         return archiveRepository.getNewsCountByDate(startDateTime, endDateTime);
     }
 
+    @Transactional(readOnly = true)
+    public List<Long> getNewsIdsByUsername(String username) {
+        return archiveRepository.findNewsIdsByUsername(username);
+    }
+
     private List<NewsEntity> getCursorBasedEntities(CursorPageRequest request, Pageable pageable) {
         boolean isDesc = request.getDirection() == SortDirection.DESC;
 

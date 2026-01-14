@@ -146,4 +146,9 @@ public class ProjectService {
 
         return DateCountResponse.of(csCount, newsCount, projectCount);
     }
+
+    @Transactional(readOnly = true)
+    public List<Long> getProjectIdsByUsername(String username) {
+        return projectRepository.findProjectIdsByUsername(username);
+    }
 }

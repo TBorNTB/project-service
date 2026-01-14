@@ -33,4 +33,10 @@ public class InternalController {
         Long count = projectService.getProjectCount();
         return ResponseEntity.ok(count);
     }
+
+    @GetMapping("/user/{username}")
+    public ResponseEntity<java.util.List<Long>> getProjectIdsByUsername(@PathVariable String username) {
+        java.util.List<Long> projectIds = projectService.getProjectIdsByUsername(username);
+        return ResponseEntity.ok(projectIds);
+    }
 }

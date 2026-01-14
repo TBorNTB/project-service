@@ -46,4 +46,18 @@ public class NewsInternalController {
         Long count = csKnowledgeService.getCsCount();
         return ResponseEntity.ok(count);
     }
+
+    @GetMapping("/news/user/{username}")
+    @Operation(summary = "사용자가 작성한 뉴스 ID 목록 조회")
+    public ResponseEntity<java.util.List<Long>> getUserNewsIds(@PathVariable("username") String username) {
+        java.util.List<Long> newsIds = newsService.getNewsIdsByUsername(username);
+        return ResponseEntity.ok(newsIds);
+    }
+
+    @GetMapping("/cs/user/{username}")
+    @Operation(summary = "사용자가 작성한 CS 지식 글 ID 목록 조회")
+    public ResponseEntity<java.util.List<Long>> getUserCsKnowledgeIds(@PathVariable("username") String username) {
+        java.util.List<Long> csKnowledgeIds = csKnowledgeService.getCsKnowledgeIdsByUsername(username);
+        return ResponseEntity.ok(csKnowledgeIds);
+    }
 }

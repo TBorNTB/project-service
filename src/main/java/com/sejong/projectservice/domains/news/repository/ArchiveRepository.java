@@ -39,4 +39,7 @@ public interface ArchiveRepository extends JpaRepository<NewsEntity, Long> {
             "WHERE ne.createdAt >= :startDate AND ne.createdAt < :endDate")
     Long getNewsCountByDate(@Param("startDate") LocalDateTime startDate, 
                             @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT ne.id FROM NewsEntity ne WHERE ne.writerId = :username")
+    List<Long> findNewsIdsByUsername(@Param("username") String username);
 }

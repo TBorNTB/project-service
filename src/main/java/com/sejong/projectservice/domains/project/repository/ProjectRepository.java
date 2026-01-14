@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
 
@@ -28,4 +29,7 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
             "WHERE pe.createdAt >= :startDate AND pe.createdAt < :endDate")
     Long getProjectCountByDate(@Param("startDate") LocalDateTime startDate,
                                 @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT pe.id FROM ProjectEntity pe WHERE pe.username = :username")
+    List<Long> findProjectIdsByUsername(@Param("username") String username);
 }

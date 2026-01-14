@@ -56,4 +56,7 @@ public interface CsKnowledgeRepository extends JpaRepository<CsKnowledgeEntity, 
             "WHERE cse.createdAt >= :startDate AND cse.createdAt < :endDate")
     Long getCsCountByDate(@Param("startDate") LocalDateTime startDate,
                           @Param("endDate") LocalDateTime endDate);
+
+    @Query("SELECT cse.id FROM CsKnowledgeEntity cse WHERE cse.writerId = :username")
+    List<Long> findCsKnowledgeIdsByUsername(@Param("username") String username);
 }

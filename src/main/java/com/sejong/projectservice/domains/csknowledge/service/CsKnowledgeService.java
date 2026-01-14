@@ -210,4 +210,9 @@ public class CsKnowledgeService {
         LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
         return csKnowledgeRepository.getCsCountByDate(startDateTime, endDateTime);
     }
+
+    @Transactional(readOnly = true)
+    public List<Long> getCsKnowledgeIdsByUsername(String username) {
+        return csKnowledgeRepository.findCsKnowledgeIdsByUsername(username);
+    }
 }
