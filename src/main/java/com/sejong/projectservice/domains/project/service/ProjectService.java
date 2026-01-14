@@ -1,8 +1,10 @@
 package com.sejong.projectservice.domains.project.service;
 
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.project.dto.request.DateCountRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
+import com.sejong.projectservice.domains.project.dto.response.DateCountResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectDeleteResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
@@ -19,7 +21,11 @@ import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import com.sejong.projectservice.domains.csknowledge.service.CsKnowledgeService;
+import com.sejong.projectservice.domains.news.service.NewsService;
 import com.sejong.projectservice.support.common.util.Mapper;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +43,8 @@ public class ProjectService {
     private final ProjectRepository projectRepository;
     private final Mapper mapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final NewsService newsService;
+    private final CsKnowledgeService csKnowledgeService;
 
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
@@ -123,5 +131,19 @@ public class ProjectService {
     public Long getProjectCount() {
         Long count = projectRepository.getProjectCount();
         return count;
+    }
+
+    @Transactional(readOnly = true)
+    public DateCountResponse getCountsByDate(DateCountRequest request) {
+        LocalDate startDate = request.getStartDate();
+        LocalDate endDate = request.getEndDate();
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+
+        Long csCount = csKnowledgeService.getCsCountByDate(startDate, endDate);
+        Long newsCount = newsService.getNewsCountByDate(startDate, endDate);
+        Long projectCount = projectRepository.getProjectCountByDate(startDateTime, endDateTime);
+
+        return DateCountResponse.of(csCount, newsCount, projectCount);
     }
 }

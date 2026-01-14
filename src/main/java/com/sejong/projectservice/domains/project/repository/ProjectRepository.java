@@ -8,6 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
 
     @Query("SELECT p FROM ProjectEntity p " +
@@ -20,4 +23,9 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
 
     @Query("select count(pe) from ProjectEntity pe")
     Long getProjectCount();
+
+    @Query("SELECT count(pe) FROM ProjectEntity pe " +
+            "WHERE pe.createdAt >= :startDate AND pe.createdAt < :endDate")
+    Long getProjectCountByDate(@Param("startDate") LocalDateTime startDate,
+                                @Param("endDate") LocalDateTime endDate);
 }

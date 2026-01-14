@@ -203,4 +203,11 @@ public class CsKnowledgeService {
     public Long getCsCount() {
         return csKnowledgeRepository.getCsCount();
     }
+
+    @Transactional(readOnly = true)
+    public Long getCsCountByDate(java.time.LocalDate startDate, java.time.LocalDate endDate) {
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+        return csKnowledgeRepository.getCsCountByDate(startDateTime, endDateTime);
+    }
 }

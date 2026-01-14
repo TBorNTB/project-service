@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,4 +51,9 @@ public interface CsKnowledgeRepository extends JpaRepository<CsKnowledgeEntity, 
 
     @Query("SELECT count(cse) FROM CsKnowledgeEntity cse")
     Long getCsCount();
+
+    @Query("SELECT count(cse) FROM CsKnowledgeEntity cse " +
+            "WHERE cse.createdAt >= :startDate AND cse.createdAt < :endDate")
+    Long getCsCountByDate(@Param("startDate") LocalDateTime startDate,
+                          @Param("endDate") LocalDateTime endDate);
 }

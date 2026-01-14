@@ -22,6 +22,7 @@ import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
 import com.sejong.projectservice.support.common.util.ExtractorUsername;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -161,6 +162,13 @@ public class NewsService {
     public Long getNewsCount() {
         Long count = archiveRepository.getNewsCount();
         return count;
+    }
+
+    @Transactional(readOnly = true)
+    public Long getNewsCountByDate(LocalDate startDate, LocalDate endDate) {
+        LocalDateTime startDateTime = startDate.atStartOfDay();
+        LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
+        return archiveRepository.getNewsCountByDate(startDateTime, endDateTime);
     }
 
     private List<NewsEntity> getCursorBasedEntities(CursorPageRequest request, Pageable pageable) {

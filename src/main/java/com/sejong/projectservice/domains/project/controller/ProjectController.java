@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.project.controller;
 
+import com.sejong.projectservice.domains.project.dto.request.DateCountRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
 import com.sejong.projectservice.domains.project.dto.response.*;
@@ -8,11 +9,13 @@ import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -113,6 +116,21 @@ public class ProjectController {
             @PathVariable Long projectId
     ) {
         ProjectDeleteResponse response = projectService.removeProject(username, projectId, userRole);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(response);
+    }
+
+    @GetMapping("/counts")
+    @Operation(summary = "특정 기간의 cs, news, project 수 조회")
+    public ResponseEntity<DateCountResponse> getCountsByDate(
+            @RequestParam(name = "startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(name = "endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        DateCountRequest request = DateCountRequest.builder()
+                .startDate(startDate)
+                .endDate(endDate)
+                .build();
+        DateCountResponse response = projectService.getCountsByDate(request);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
     }

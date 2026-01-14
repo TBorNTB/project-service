@@ -8,6 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface ArchiveRepository extends JpaRepository<NewsEntity, Long> {
@@ -32,4 +34,9 @@ public interface ArchiveRepository extends JpaRepository<NewsEntity, Long> {
 
     @Query("SELECT count(ne) FROM NewsEntity ne")
     Long getNewsCount();
+
+    @Query("SELECT count(ne) FROM NewsEntity ne " +
+            "WHERE ne.createdAt >= :startDate AND ne.createdAt < :endDate")
+    Long getNewsCountByDate(@Param("startDate") LocalDateTime startDate, 
+                            @Param("endDate") LocalDateTime endDate);
 }
