@@ -15,4 +15,6 @@ public class CategoryUpdateRequest {
     private String prevName;
     @NotBlank
     private String nextName;
+
+    private String description;
 }

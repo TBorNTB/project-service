@@ -22,19 +22,21 @@ public class CategoryService {
     private final ProjectRepository projectRepository;
 
     @Transactional
-    public CategoryResponse create(String userRole, String name) {
+    public CategoryResponse create(String userRole, String name, String description) {
+
         validateAdminRole(userRole);
-        CategoryEntity categoryEntity = CategoryEntity.of(name);
+        CategoryEntity categoryEntity = CategoryEntity.of(name, description);
         CategoryEntity savedCategoryEntity = categoryRepository.save(categoryEntity);
         return CategoryResponse.from(savedCategoryEntity);
     }
 
     @Transactional
-    public CategoryResponse update(String userRole, String prevName, String nextName) {
+    public CategoryResponse update(String userRole, String prevName, String nextName, String description) {
         validateAdminRole(userRole);
         CategoryEntity categoryEntity = categoryRepository.findByName(prevName)
                 .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
         categoryEntity.updateName(nextName);
+        categoryEntity.updateDescription(description);
         return CategoryResponse.updateFrom(categoryEntity);
     }
 

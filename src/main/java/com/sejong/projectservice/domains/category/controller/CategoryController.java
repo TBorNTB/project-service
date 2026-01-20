@@ -26,7 +26,7 @@ public class CategoryController {
             @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryAddRequest categoryAddRequest
     ) {
-        CategoryResponse response = categoryService.create(userRole, categoryAddRequest.getName());
+        CategoryResponse response = categoryService.create(userRole, categoryAddRequest.getName(),categoryAddRequest.getDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -49,7 +49,7 @@ public class CategoryController {
             @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryUpdateRequest categoryUpdateRequest
     ) {
-        CategoryResponse response = categoryService.update(userRole, categoryUpdateRequest.getPrevName(),categoryUpdateRequest.getNextName());
+        CategoryResponse response = categoryService.update(userRole, categoryUpdateRequest.getPrevName(),categoryUpdateRequest.getNextName(), categoryUpdateRequest.getDescription());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
