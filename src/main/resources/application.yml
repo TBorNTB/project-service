@@ -125,15 +125,6 @@ app:
     base-backoff-ms: 1000
     max-backoff-ms: 60000
 
-  outbox:
-    enabled: true
-    poll-interval-ms: 2000
-    batch-size: 50
-    max-attempts: 10
-    base-backoff-ms: 1000
-    max-backoff-ms: 60000
-    processing-timeout-ms: 300000
-
 aws:
   s3:
     bucket: ${S3_BUCKET}

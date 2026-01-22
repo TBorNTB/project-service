@@ -21,10 +21,6 @@ spring:
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
 
-app:
-  outbox:
-    enabled: false
-
   cloud:
     aws:
       region:
@@ -34,11 +30,16 @@ app:
         secret-key: test-secret-key
       stack:
         auto: false
+
     discovery:
       enabled: false
 
   elasticsearch:
     uris: http://localhost:9200
+
+app:
+  outbox:
+    enabled: false
 
 eureka:
   client:
@@ -53,15 +54,4 @@ logging:
   level:
     org.springframework.web: INFO
     org.hibernate: INFO
-
-app:
-  outbox:
-    enabled: true
-    batch-size: 20
-    poll-interval-ms: 1000
-    send-timeout-ms: 1000
-    processing-timeout-ms: 30000
-    max-attempts: 10
-    base-backoff-ms: 200
-    max-backoff-ms: 5000
 
