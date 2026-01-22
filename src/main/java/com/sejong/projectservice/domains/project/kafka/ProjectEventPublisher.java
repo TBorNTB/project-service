@@ -6,9 +6,9 @@ import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class ProjectEventPublisher {
     
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final OutboxService outboxService;
     private final ObjectMapper objectMapper;
     private final String PROJECT_EVENTS = "project";
 
@@ -30,13 +30,13 @@ public class ProjectEventPublisher {
 
     public void publishDeleted(String projectId) {
         ProjectEventMeta event = ProjectEventMeta.deleteOf(projectId, Type.DELETED, System.currentTimeMillis());
-        kafkaTemplate.send(PROJECT_EVENTS, projectId, toJsonString(event));
+        outboxService.enqueue("project", projectId, "ProjectDeleted", PROJECT_EVENTS, projectId, toJsonString(event));
     }
 
     private void publish(ProjectEntity project, Type type) {
         ProjectEventMeta event = ProjectEventMeta.of(project, type, System.currentTimeMillis());
 
-        kafkaTemplate.send(PROJECT_EVENTS, event.getAggregatedId(), toJsonString(event));
+        outboxService.enqueue("project", event.getAggregatedId(), "Project" + type.name(), PROJECT_EVENTS, event.getAggregatedId(), toJsonString(event));
         log.info("발행완료");
     }
 

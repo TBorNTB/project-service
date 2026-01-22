@@ -21,7 +21,7 @@ public class ProjectKafkaEventListener {
     private final ProjectRepository projectRepository;
     private final ProjectEventPublisher projectEventPublisher;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onCreated(ProjectCreatedEventDto event){
         ProjectEntity project = projectRepository.findById(event.getProjectId())
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
@@ -29,7 +29,7 @@ public class ProjectKafkaEventListener {
         projectEventPublisher.publishCreated(project);
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onUpdated(ProjectUpdatedEventDto event){
         ProjectEntity project = projectRepository.findById(event.getProjectId())
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
@@ -37,7 +37,7 @@ public class ProjectKafkaEventListener {
         projectEventPublisher.publishUpdated(project);
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onDeleted(ProjectDeletedEventDto event) {
         projectEventPublisher.publishDeleted(event.getProjectId().toString());
     }
