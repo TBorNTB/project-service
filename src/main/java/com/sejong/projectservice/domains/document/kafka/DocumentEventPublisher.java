@@ -7,14 +7,14 @@ import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class DocumentEventPublisher {
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final OutboxService outboxService;
     private final ObjectMapper objectMapper;
     private final String DOCUMENT_EVENTS = "document";
 
@@ -28,12 +28,12 @@ public class DocumentEventPublisher {
 
     public void publishDeleted(String documentId) {
         DocumentIndexEvent event = DocumentIndexEvent.deleteOf(documentId, Type.DELETED, System.currentTimeMillis());
-        kafkaTemplate.send(DOCUMENT_EVENTS, documentId,  toJsonString(event));
+        outboxService.enqueue("document", documentId, "DocumentDeleted", DOCUMENT_EVENTS, documentId, toJsonString(event));
     }
 
     private void publish(DocumentEntity documentEntity, Type type) {
         DocumentIndexEvent event = DocumentIndexEvent.of(documentEntity, type, System.currentTimeMillis());
-        kafkaTemplate.send(DOCUMENT_EVENTS, event.getAggregatedId(), toJsonString(event));
+        outboxService.enqueue("document", event.getAggregatedId(), "Document" + type.name(), DOCUMENT_EVENTS, event.getAggregatedId(), toJsonString(event));
     }
 
     private String toJsonString(Object object) {
