@@ -115,6 +115,25 @@ app:
   kafka:
     topic: project-events
 
+  outbox:
+    enabled: true
+    batch-size: 20
+    poll-interval-ms: 3000
+    send-timeout-ms: 3000
+    processing-timeout-ms: 120000
+    max-attempts: 100
+    base-backoff-ms: 1000
+    max-backoff-ms: 60000
+
+  outbox:
+    enabled: true
+    poll-interval-ms: 2000
+    batch-size: 50
+    max-attempts: 10
+    base-backoff-ms: 1000
+    max-backoff-ms: 60000
+    processing-timeout-ms: 300000
+
 aws:
   s3:
     bucket: ${S3_BUCKET}
