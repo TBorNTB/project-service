@@ -20,7 +20,7 @@ public class CsKnowledgeKafkaEventListener {
     private final CsKnowledgeEventPublisher csKnowledgeEventPublisher;
 
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onCreated(CsKnowledgeCreatedEventDto event){
         CsKnowledgeEntity entity = csKnowledgeRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
@@ -28,7 +28,7 @@ public class CsKnowledgeKafkaEventListener {
         csKnowledgeEventPublisher.publishCreated(entity);
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onUpdated(CsKnowledgeUpdatedEventDto event){
         CsKnowledgeEntity entity = csKnowledgeRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
@@ -36,7 +36,7 @@ public class CsKnowledgeKafkaEventListener {
         csKnowledgeEventPublisher.publishUpdated(entity);
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onDeleted(CsKnowledgeDeletedEventDto event) {
         csKnowledgeEventPublisher.publishDeleted(event.getPostId());
     }

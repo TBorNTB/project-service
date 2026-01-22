@@ -23,7 +23,7 @@ public class NewsKafkaEventListener {
     private final ArchiveRepository archiveRepository;
     private final NewsEventPublisher newsEventPublisher;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onCreated(NewsCreatedEventDto event) {
         NewsEntity newsEntity = archiveRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
@@ -31,7 +31,7 @@ public class NewsKafkaEventListener {
         newsEventPublisher.publishCreated(newsEntity);
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onUpdated(NewsUpdatedEventDto event) {
         NewsEntity newsEntity = archiveRepository.findById(event.getPostId())
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
@@ -39,7 +39,7 @@ public class NewsKafkaEventListener {
         newsEventPublisher.publishUpdated(newsEntity);
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void onDeleted(NewsDeletedEventDto event) {
 
         newsEventPublisher.publishDeleted(event.getPostId());
