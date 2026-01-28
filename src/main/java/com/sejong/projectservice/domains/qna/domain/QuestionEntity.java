@@ -13,6 +13,9 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 @Table(name = "question")
@@ -102,8 +105,44 @@ public class QuestionEntity {
     }
 
     private void replaceCategories(List<CategoryEntity> categories) {
-        this.questionCategories.clear();
-        categories.forEach(this::addCategory);
+        if (categories == null) {
+            return;
+        }
+
+        Set<Long> desiredCategoryIds = new LinkedHashSet<>();
+        for (CategoryEntity category : categories) {
+            if (category != null && category.getId() != null) {
+                desiredCategoryIds.add(category.getId());
+            }
+        }
+
+        this.questionCategories.removeIf(link -> {
+            if (link == null || link.getCategoryEntity() == null) {
+                return true;
+            }
+            Long categoryId = link.getCategoryEntity().getId();
+            return categoryId == null || !desiredCategoryIds.contains(categoryId);
+        });
+
+        Set<Long> existingCategoryIds = new LinkedHashSet<>();
+        for (QuestionCategoryEntity link : this.questionCategories) {
+            if (link != null && link.getCategoryEntity() != null && link.getCategoryEntity().getId() != null) {
+                existingCategoryIds.add(link.getCategoryEntity().getId());
+            }
+        }
+
+        for (CategoryEntity category : categories) {
+            if (category == null) {
+                continue;
+            }
+            Long categoryId = category.getId();
+            if (categoryId == null) {
+                continue;
+            }
+            if (existingCategoryIds.add(categoryId)) {
+                addCategory(category);
+            }
+        }
     }
 
     public void assignQuestionAnswer(QuestionAnswerEntity questionAnswerEntity) {

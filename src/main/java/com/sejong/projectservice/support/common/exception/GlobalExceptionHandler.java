@@ -4,6 +4,7 @@ import feign.FeignException;
 import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -70,9 +71,30 @@ public class GlobalExceptionHandler {
                 .body(new ExceptionResponse(message));
     }
 
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ExceptionResponse> handleDataIntegrityViolationException(
+            HttpServletRequest request,
+            DataIntegrityViolationException e
+    ) {
+        String rawMessage = null;
+        if (e.getMostSpecificCause() != null) {
+            rawMessage = e.getMostSpecificCause().getMessage();
+        }
+
+        String message = "데이터 무결성 위반으로 요청을 처리할 수 없습니다.";
+        if (rawMessage != null && rawMessage.contains("uk_question_category")) {
+            message = "카테고리가 중복되어 저장할 수 없습니다.";
+        }
+
+        log.error("DB 무결성 위반. URI: {}, 메시지: {}", request.getRequestURI(), rawMessage, e);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ExceptionResponse(message));
+    }
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleAllUncaughtException(HttpServletRequest request, Exception ex) {
+    public ResponseEntity<ExceptionResponse> handleAllUncaughtException(HttpServletRequest request, Exception ex) {
         log.error("예상치 못한 오류 발생. URI: {}, 메시지: {}", request.getRequestURI(), ex.getMessage(), ex);
-        return new ResponseEntity<>("Internal Server Error: " + ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ExceptionResponse("Internal Server Error"));
     }
 }

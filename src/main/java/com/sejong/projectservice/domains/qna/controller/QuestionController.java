@@ -2,13 +2,14 @@ package com.sejong.projectservice.domains.qna.controller;
 
 import com.sejong.projectservice.domains.qna.dto.request.QuestionCreateRequest;
 import com.sejong.projectservice.domains.qna.dto.request.QuestionUpdateRequest;
+import com.sejong.projectservice.domains.qna.dto.response.QuestionListResponse;
 import com.sejong.projectservice.domains.qna.dto.response.QuestionResponse;
+import com.sejong.projectservice.domains.qna.enums.QuestionListStatusFilter;
 import com.sejong.projectservice.domains.qna.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
@@ -80,5 +81,16 @@ public class QuestionController {
             @ParameterObject @Valid OffsetPageReqDto offsetPageReqDto
     ) {
         return ResponseEntity.ok(questionService.getOffsetQuestions(offsetPageReqDto));
+    }
+
+    @Operation(summary = "질문글 목록 검색/필터 조회 (상태/기술태그/키워드)")
+    @GetMapping("/offset/search")
+    public ResponseEntity<OffsetPageResponse<List<QuestionListResponse>>> searchOffsetQuestions(
+        @ParameterObject @Valid OffsetPageReqDto offsetPageReqDto,
+        @RequestParam(name = "status", required = false, defaultValue = "ALL") QuestionListStatusFilter status,
+        @RequestParam(name = "categoryNames", required = false) List<String> categoryNames,
+        @RequestParam(name = "keyword", required = false) String keyword
+    ) {
+        return ResponseEntity.ok(questionService.searchOffsetQuestions(offsetPageReqDto, status, categoryNames, keyword));
     }
 }

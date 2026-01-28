@@ -74,6 +74,15 @@ public class QuestionAnswerService {
                 .orElseThrow(() -> new BaseException(ExceptionType.QUESTION_ANSWER_NOT_FOUND));
         entity.validateOwnerPermission(username);
 
+        if (entity.getAccepted()) {
+            QuestionEntity questionEntity = entity.getQuestionEntity();
+            boolean hasOtherAcceptedAnswers = questionAnswerRepository
+                    .existsByQuestionEntityIdAndAcceptedTrueAndIdNot(questionEntity.getId(), entity.getId());
+            if (!hasOtherAcceptedAnswers) {
+                questionEntity.markNotAccepted();
+            }
+        }
+
         questionAnswerRepository.deleteById(entity.getId());
     }
 
@@ -108,7 +117,6 @@ public class QuestionAnswerService {
 
         QuestionAnswerEntity selectedAnswer = questionAnswerRepository.findById(answerId)
                 .orElseThrow(() -> new BaseException(ExceptionType.QUESTION_ANSWER_NOT_FOUND));
-
         QuestionEntity questionEntity = selectedAnswer.getQuestionEntity();
         questionEntity.validateOwnerPermission(username);
 

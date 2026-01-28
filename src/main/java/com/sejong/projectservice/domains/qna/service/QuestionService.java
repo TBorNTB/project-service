@@ -3,8 +3,12 @@ package com.sejong.projectservice.domains.qna.service;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.qna.domain.QuestionEntity;
+import com.sejong.projectservice.domains.qna.dto.response.QuestionListResponse;
 import com.sejong.projectservice.domains.qna.dto.response.QuestionResponse;
+import com.sejong.projectservice.domains.qna.enums.QuestionListStatusFilter;
+import com.sejong.projectservice.domains.qna.repository.QuestionAnswerRepository;
 import com.sejong.projectservice.domains.qna.repository.QuestionRepository;
+import com.sejong.projectservice.domains.qna.repository.spec.QuestionSpecifications;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
@@ -21,6 +25,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
@@ -28,6 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class QuestionService {
     private final QuestionRepository questionRepository;
+    private final QuestionAnswerRepository questionAnswerRepository;
     private final UserExternalService userExternalService;
     private final CategoryRepository categoryRepository;
 
@@ -108,11 +114,63 @@ public class QuestionService {
         return OffsetPageResponse.ok(page.getNumber(), page.getTotalPages(), responses);
         }
 
+    @Transactional(readOnly = true)
+    public OffsetPageResponse<List<QuestionListResponse>> searchOffsetQuestions(
+        OffsetPageReqDto offsetPageReqDto,
+        QuestionListStatusFilter status,
+        List<String> categoryNames,
+        String keyword
+    ) {
+        CustomPageRequest pageRequest = offsetPageReqDto.toPageRequest();
+        Pageable pageable = PageRequest.of(
+            pageRequest.getPage(),
+            pageRequest.getSize(),
+            Sort.Direction.valueOf(pageRequest.getDirection().name()),
+            pageRequest.getSortBy()
+        );
+
+        Page<QuestionEntity> page = questionRepository.findAll(
+            QuestionSpecifications.filter(status, categoryNames, keyword),
+            pageable
+        );
+
+        List<String> usernames = page.getContent().stream()
+            .map(QuestionEntity::getUsername)
+            .distinct()
+            .toList();
+        Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(usernames);
+
+        List<Long> questionIds = page.getContent().stream()
+            .map(QuestionEntity::getId)
+            .toList();
+
+        Map<Long, Long> answerCountMap = new HashMap<>();
+        if (!questionIds.isEmpty()) {
+            questionAnswerRepository.countByQuestionIds(questionIds)
+                .forEach(p -> answerCountMap.put(p.getQuestionId(), p.getCnt()));
+        }
+
+        List<QuestionListResponse> responses = page.getContent().stream()
+            .map(q -> QuestionListResponse.from(q, userNameInfos, answerCountMap.getOrDefault(q.getId(), 0L)))
+            .toList();
+
+        return OffsetPageResponse.ok(page.getNumber(), page.getTotalPages(), responses);
+    }
+
     private List<CategoryEntity> resolveExistingCategories(List<String> categoryNames) {
         if (categoryNames == null || categoryNames.isEmpty()) {
             return List.of();
         }
-        return categoryRepository.findAllByNameIn(categoryNames);
+        List<String> uniqueNames = categoryNames.stream()
+            .filter(name -> name != null && !name.isBlank())
+            .distinct()
+            .toList();
+
+        if (uniqueNames.isEmpty()) {
+            return List.of();
+        }
+
+        return categoryRepository.findAllByNameIn(uniqueNames);
 
     }
 
