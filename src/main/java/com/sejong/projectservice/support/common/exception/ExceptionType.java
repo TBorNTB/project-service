@@ -30,6 +30,8 @@ public enum ExceptionType implements ExceptionTypeIfs {
     DOCUMENT_NOT_FOUND(404, "document를 찾을 수 없습니다"),
     SUBGOAL_NOT_FOUND(404, "하위목표를 찾을 수 없습니다"),
     TECHSTACK_NOT_FOUND(404, "기술스택을 찾을 수 없습니다"),
+    QUESTION_NOT_FOUND(404, "질문글을 찾을 수 없습니다"),
+    QUESTION_ANSWER_NOT_FOUND(404, "질문 답변을 찾을 수 없습니다"),
 
     // 500 Internal Server Error
     SERVER_ERROR(500, "서버 내부 오류"),

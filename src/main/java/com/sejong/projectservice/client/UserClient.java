@@ -1,5 +1,6 @@
 package com.sejong.projectservice.client;
 
+import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +21,12 @@ public interface UserClient {
 
     @GetMapping("/un-info")
     ResponseEntity<Map<String, UserNameInfo>> getUserNameInfos(@RequestParam("usernames") List<String> usernames);
+
+    @GetMapping("/qna/check/question/{questionId}")
+    ResponseEntity<PostLikeCheckResponse> checkQnaQuestion(@PathVariable("questionId") Long questionId);
+
+    @GetMapping("/qna/check/answer/{answerId}")
+    ResponseEntity<PostLikeCheckResponse> checkQnaAnswer(@PathVariable("answerId") Long answerId);
 
 
 }

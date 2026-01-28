@@ -1,10 +1,10 @@
 package com.sejong.projectservice.support.common.internal.response;
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
-import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
-import com.sejong.projectservice.domains.news.dto.NewsDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
+import com.sejong.projectservice.domains.qna.domain.QuestionAnswerEntity;
+import com.sejong.projectservice.domains.qna.domain.QuestionEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -41,6 +41,20 @@ public class PostLikeCheckResponse {
     public static PostLikeCheckResponse hasOfProject(ProjectEntity project, boolean isStored) {
         return PostLikeCheckResponse.builder()
                 .ownerUsername(project.getUsername())
+                .isStored(isStored)
+                .build();
+    }
+
+    public static PostLikeCheckResponse hasOfQuestion(QuestionEntity question, boolean isStored) {
+        return PostLikeCheckResponse.builder()
+                .ownerUsername(question.getUsername())
+                .isStored(isStored)
+                .build();
+    }
+
+    public static PostLikeCheckResponse hasOfAnswer(QuestionAnswerEntity answer, boolean isStored) {
+        return PostLikeCheckResponse.builder()
+                .ownerUsername(answer.getUsername())
                 .isStored(isStored)
                 .build();
     }
