@@ -1,12 +1,8 @@
 package com.sejong.projectservice.support.common.util;
 
 
-
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
-import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
-import com.sejong.projectservice.domains.news.dto.NewsDto;
-
 import java.util.List;
 
 public class ExtractorUsername {
