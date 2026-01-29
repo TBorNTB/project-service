@@ -22,6 +22,7 @@ public class CategoryAllResponse {
                             .id(it.getId())
                             .name(it.getName())
                             .description(it.getDescription())
+                            .content(it.getContent())
                             .build();
                 }).toList();
         return new CategoryAllResponse(categoryDtoList);

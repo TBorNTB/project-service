@@ -35,7 +35,11 @@ public class CategoryEntity {
     @Column(unique = true)
     private String name;
 
+    @Column(length=200)
     private String description;
+
+    @Column(columnDefinition = "TEXT")
+    private String content;
 
     @OneToMany(mappedBy = "categoryEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
@@ -49,11 +53,12 @@ public class CategoryEntity {
                 .build();
     }
 
-    public static CategoryEntity of(String name, String description) {
+    public static CategoryEntity of(String name, String description, String content) {
         return CategoryEntity.builder()
                 .id(null)
                 .name(name)
                 .description(description)
+                .content(content)
                 .projectCategories(new ArrayList<>())
                 .build();
     }
@@ -68,6 +73,10 @@ public class CategoryEntity {
 
     public void updateDescription(String description) {
         this.description = description;
+    }
+
+    public void updateContent(String content) {
+        this.content= content;
     }
 
     @Override

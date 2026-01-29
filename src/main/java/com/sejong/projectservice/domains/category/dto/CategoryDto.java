@@ -17,6 +17,7 @@ public class CategoryDto {
     private Long id;
     private String name;
     private String description;
+    private String content;
 
     public static CategoryDto of(String name) {
         return CategoryDto.builder()
@@ -32,6 +33,7 @@ public class CategoryDto {
                             .id(it.getId())
                             .name(it.getName())
                             .description(it.getDescription())
+                            .content(it.getContent())
                             .build();
                 }).toList();
     }

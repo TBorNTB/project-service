@@ -22,21 +22,22 @@ public class CategoryService {
     private final ProjectRepository projectRepository;
 
     @Transactional
-    public CategoryResponse create(String userRole, String name, String description) {
+    public CategoryResponse create(String userRole, String name, String description, String content) {
 
         validateAdminRole(userRole);
-        CategoryEntity categoryEntity = CategoryEntity.of(name, description);
+        CategoryEntity categoryEntity = CategoryEntity.of(name, description, content);
         CategoryEntity savedCategoryEntity = categoryRepository.save(categoryEntity);
         return CategoryResponse.from(savedCategoryEntity);
     }
 
     @Transactional
-    public CategoryResponse update(String userRole, String prevName, String nextName, String description) {
+    public CategoryResponse update(String userRole, String prevName, String nextName, String description, String content) {
         validateAdminRole(userRole);
         CategoryEntity categoryEntity = categoryRepository.findByName(prevName)
                 .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
         categoryEntity.updateName(nextName);
         categoryEntity.updateDescription(description);
+        categoryEntity.updateContent(content);
         return CategoryResponse.updateFrom(categoryEntity);
     }
 
@@ -56,7 +57,7 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryAllResponse updateProject( String username,Long projectId, List<String> categoryNames) {
+    public CategoryAllResponse updateProject(String username, Long projectId, List<String> categoryNames) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
@@ -71,17 +72,19 @@ public class CategoryService {
     }
 
     private void validateAdminRole(String userRole) {
-        if(!userRole.equals("ADMIN")){
+        if (!userRole.equals("ADMIN")) {
             throw new BaseException(ExceptionType.REQUIRED_ADMIN);
         }
     }
 
     @Transactional
-    public CategoryResponse updateDescription(String userRole, Long categoryId,String description) {
+    public CategoryResponse updateDescription(String userRole, Long categoryId, String description, String content) {
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));;
+                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
+        ;
         categoryEntity.updateDescription(description);
-       return CategoryResponse.updateFrom(categoryEntity);
+        categoryEntity.updateContent(content);
+        return CategoryResponse.updateFrom(categoryEntity);
 
     }
 }

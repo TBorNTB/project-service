@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CategoryDescriptionRequest {
     private String description;
+    private String content;
 }

@@ -17,4 +17,6 @@ public class CategoryUpdateRequest {
     private String nextName;
 
     private String description;
+
+    private String content;
 }

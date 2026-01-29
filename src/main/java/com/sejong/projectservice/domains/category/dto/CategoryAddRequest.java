@@ -15,4 +15,7 @@ public class CategoryAddRequest {
     private String name;
 
     private String description;
+
+    private String content;
+
 }
