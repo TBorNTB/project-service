@@ -6,7 +6,6 @@ import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.support.common.constants.NewsCategory;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
-import com.sejong.projectservice.support.common.file.Filepath;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -30,8 +29,8 @@ public class NewsEntity {
     @Embedded
     private ContentEmbeddable content;
 
-    @Column(name = "thumbnail_path")
-    private String thumbnailPath;
+    @Column(name = "thumbnail_key")
+    private String thumbnailKey;
 
     @Column(name = "writer_id", nullable = false)
     private String writerId;
@@ -49,12 +48,12 @@ public class NewsEntity {
     private LocalDateTime updatedAt;
 
     @Builder
-    private NewsEntity(Long id, ContentEmbeddable content, String thumbnailPath,
+    private NewsEntity(Long id, ContentEmbeddable content, String thumbnailKey,
                        String writerId, String participantIds, String tags,
                        LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.content = content;
-        this.thumbnailPath = thumbnailPath;
+        this.thumbnailKey = thumbnailKey;
         this.writerId = writerId;
         this.participantIds = participantIds;
         this.tags = tags;
@@ -72,7 +71,7 @@ public class NewsEntity {
         return NewsEntity.builder()
                 .id(null)
                 .content(contentEmbeddable)
-                .thumbnailPath(null)
+                .thumbnailKey(null)
                 .writerId(userId.userId())
                 .participantIds(userIds.toString())
                 .tags(String.join(",", tags))
@@ -101,10 +100,6 @@ public class NewsEntity {
         return Arrays.stream(this.getTags().split(",")).toList();
     }
 
-    public Filepath toFilepathVo(){
-        return Filepath.of(thumbnailPath);
-    }
-
     public void update(String title, String summary, String content, String category, String participantIds, String tags) {
         Content contentVo = Content.of(title, summary, content, NewsCategory.of(category));
         this.content = ContentEmbeddable.of(contentVo);
@@ -113,8 +108,20 @@ public class NewsEntity {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public void updateFileInfo(Filepath filepath) {
-        this.thumbnailPath =  filepath.path();
+    public void updateThumbnailKey(String thumbnailKey) {
+        this.thumbnailKey = thumbnailKey;
+    }
+
+    public void updateContent(String newContent) {
+        this.content = ContentEmbeddable.of(
+                Content.of(
+                        this.content.getTitle(),
+                        this.content.getSummary(),
+                        newContent,
+                        this.content.getCategory()
+                )
+        );
+        this.updatedAt = LocalDateTime.now();
     }
 
     public void validateOwner(String writerId) {

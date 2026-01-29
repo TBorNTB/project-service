@@ -2,15 +2,13 @@ package com.sejong.projectservice.domains.news.kafka;
 
 import com.sejong.projectservice.domains.news.domain.Content;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
-import com.sejong.projectservice.domains.news.dto.NewsDto;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -22,7 +20,7 @@ public class NewsEvent {
 
     private String id;
     private Content content;
-    private String thumbnailPath;
+    private String thumbnailKey;
     private String writerId;
     private List<String> participantIds;
     private List<String> tags;
@@ -33,9 +31,10 @@ public class NewsEvent {
         return NewsEvent.builder()
                 .id(newsEntity.getId().toString())
                 .content(newsEntity.toContentVo())
-                .thumbnailPath(newsEntity.toFilepathVo() != null ? newsEntity.toFilepathVo().path() : null)
+                .thumbnailKey(newsEntity.getThumbnailKey())
                 .writerId(newsEntity.getWriterId())
-                .participantIds(newsEntity.toParticipantIdsVo() != null ? newsEntity.toParticipantIdsVo().toList() : null)
+                .participantIds(
+                        newsEntity.toParticipantIdsVo() != null ? newsEntity.toParticipantIdsVo().toList() : null)
                 .tags(newsEntity.toTagsList())
                 .createdAt(newsEntity.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .updatedAt(newsEntity.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
