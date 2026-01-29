@@ -1,27 +1,34 @@
 package com.sejong.projectservice.domains.news.controller;
 
-import com.sejong.projectservice.support.common.file.FileUploadRequest;
-import com.sejong.projectservice.support.common.file.FileUploader;
-import com.sejong.projectservice.support.common.file.PreSignedUrl;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.news.dto.NewsResDto;
 import com.sejong.projectservice.domains.news.service.NewsService;
+import com.sejong.projectservice.support.common.file.FileUploadRequest;
+import com.sejong.projectservice.support.common.file.FileUploader;
+import com.sejong.projectservice.support.common.file.PreSignedUrl;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
-import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.pagination.CursorPageRes;
+import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/news")
@@ -51,7 +58,7 @@ public class NewsController {
 
     @PostMapping("/files/presigned-url")
     @Operation(summary = "파일 업로드용 PreSigned URL 생성")
-//    @SecurityRequirement(name = "bearerAuth") TODO: 보안 설정
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<PreSignedUrl> preSignedUrl(@RequestBody FileUploadRequest request) {
         PreSignedUrl preSignedUrl = fileUploader.generatePreSignedUrl(
                 request.fileName(),
@@ -90,7 +97,7 @@ public class NewsController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<NewsResDto> updateNews(@PathVariable Long newsId,
                                                  @RequestBody NewsReqDto newsReqDto,
-                                                 @Parameter(hidden = true)  @RequestHeader("X-User-Id") String username) {
+                                                 @Parameter(hidden = true) @RequestHeader("X-User-Id") String username) {
         NewsResDto response = newsService.updateNews(newsId, newsReqDto, username);
         return ResponseEntity.ok(response);
     }
