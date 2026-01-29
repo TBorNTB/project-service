@@ -110,6 +110,7 @@ app:
 
   file:
     base-url: http://tbntb-bucket.localhost:3902
+    presigner-endpoint: http://localhost:3900
 
 aws:
   s3:
