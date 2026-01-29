@@ -41,6 +41,10 @@ spring:
     enabled: false
 
   cloud:
+    aws:
+      credentials:
+        access-key: ${S3_ACCESS_KEY}
+        secret-key: ${S3_SECRET_KEY}
     discovery:
       enabled: true
     loadbalancer:
@@ -104,11 +108,15 @@ app:
     base-backoff-ms: 1000
     max-backoff-ms: 60000
 
+  file:
+    base-url: http://tbntb-bucket.localhost:3902
 
 aws:
   s3:
     bucket: ${S3_BUCKET}
-    region: ap-northeast-2
+    region: garage
+    endpoint: http://localhost:3900
+    path-style-access-enabled: true
 
 management:
   server:
