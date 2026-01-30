@@ -1,7 +1,6 @@
 package com.sejong.projectservice.domains.project.dto.request;
 
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -27,6 +26,6 @@ public class ProjectFormRequest {
     private List<String> techStacks;
     private List<String> subGoals;
 
-    private LocalDateTime createdAt;
+    private LocalDateTime startedAt;
     private LocalDateTime endedAt;
 }

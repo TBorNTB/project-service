@@ -55,9 +55,12 @@ public class ProjectEntity {
     @Column(columnDefinition = "VARCHAR(50)")
     private ProjectStatus projectStatus;
 
+
+    private LocalDateTime startedAt;
+    private LocalDateTime endedAt;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private LocalDateTime endedAt;
 
     private String thumbnailUrl;
 
@@ -89,8 +92,9 @@ public class ProjectEntity {
                 .projectStatus(request.getProjectStatus())
                 .thumbnailUrl(request.getThumbnail())
                 .content(request.getContent())
-                .createdAt(request.getCreatedAt())
-                .updatedAt(request.getCreatedAt())
+                .createdAt(request.getStartedAt())
+                .startedAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .endedAt(request.getEndedAt())
                 .projectCategories(new ArrayList<>())
                 .projectTechStacks(new ArrayList<>())
