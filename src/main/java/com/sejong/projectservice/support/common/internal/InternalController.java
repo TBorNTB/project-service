@@ -1,5 +1,6 @@
 package com.sejong.projectservice.support.common.internal;
 
+import com.sejong.projectservice.domains.category.service.CategoryService;
 import com.sejong.projectservice.domains.project.service.ProjectService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.ProjectResponse;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/internal/project")
 public class InternalController {
     private final ProjectService projectService;
+    private final CategoryService categoryService;
 
     @GetMapping("/check/{postId}")
     public ResponseEntity<PostLikeCheckResponse> checkProject(@PathVariable Long postId) {
@@ -31,6 +33,12 @@ public class InternalController {
     @GetMapping("/count")
     public ResponseEntity<Long> getProjectCount() {
         Long count = projectService.getProjectCount();
+        return ResponseEntity.ok(count);
+    }
+
+    @GetMapping("/category/count")
+    public ResponseEntity<Long> getCategoryCount() {
+        Long count = categoryService.getCategoryCount();
         return ResponseEntity.ok(count);
     }
 

@@ -87,4 +87,10 @@ public class CategoryService {
         return CategoryResponse.updateFrom(categoryEntity);
 
     }
+
+    @Transactional(readOnly = true)
+    public Long getCategoryCount() {
+        Long count = categoryRepository.findAllCategoryCount();
+        return count;
+    }
 }
