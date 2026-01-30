@@ -125,10 +125,16 @@ app:
     base-backoff-ms: 1000
     max-backoff-ms: 60000
 
+  file:
+    base-url: ${FILE_BASE_URL:https://files.sejongssg.kr}
+    presigner-endpoint: ${PRESIGNER_ENDPOINT:https://s3.sejongssg.kr}
+
 aws:
   s3:
     bucket: ${S3_BUCKET}
-    region: ap-northeast-2
+    region: ${S3_REGION:garage}
+    endpoint: http://${DB_HOST}:3900
+    path-style-access-enabled: true
 
 management:
   server:

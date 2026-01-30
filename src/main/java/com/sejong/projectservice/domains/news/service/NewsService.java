@@ -11,6 +11,7 @@ import com.sejong.projectservice.domains.news.repository.ArchiveRepository;
 import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
@@ -45,6 +46,7 @@ public class NewsService {
     private final ArchiveRepository archiveRepository;
     private final UserExternalService userExternalService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final FileUploader fileUploader;
 
     @Transactional
     public NewsResDto createNews(NewsReqDto newsReqDto) {
@@ -64,6 +66,24 @@ public class NewsService {
                 LocalDateTime.now()
         );
         NewsEntity savedNewsEntity = archiveRepository.save(newsEntity);
+
+        // 썸네일 파일 처리 (temp → 최종 위치)
+        if (newsReqDto.getThumbnailKey() != null && !newsReqDto.getThumbnailKey().isEmpty()) {
+            String targetDir = String.format("project-service/news/%d/thumbnail", savedNewsEntity.getId());
+            String finalKey = fileUploader.moveFile(newsReqDto.getThumbnailKey(), targetDir);
+            savedNewsEntity.updateThumbnailKey(finalKey);
+        }
+
+        // 에디터 본문 이미지 처리 (temp → 최종 위치) 및 content URL 치환
+        if (newsReqDto.getContentImageKeys() != null && !newsReqDto.getContentImageKeys().isEmpty()) {
+            String updatedContent = processContentImages(
+                    savedNewsEntity.getId(),
+                    newsReqDto.getContent(),
+                    newsReqDto.getContentImageKeys()
+            );
+            savedNewsEntity.updateContent(updatedContent);
+        }
+
         applicationEventPublisher.publishEvent(NewsCreatedEventDto.of(savedNewsEntity.getId()));
         return resolveUsernames(savedNewsEntity);
     }
@@ -82,6 +102,32 @@ public class NewsService {
                 UserIds.of(newsReqDto.getParticipantIds()).toString(),
                 String.join(",", newsReqDto.getTags())
         );
+
+        // 새 썸네일이 전달된 경우 (temp key)
+        if (newsReqDto.getThumbnailKey() != null && !newsReqDto.getThumbnailKey().isEmpty()) {
+            // 기존 썸네일 삭제
+            if (newsEntity.getThumbnailKey() != null) {
+                try {
+                    fileUploader.delete(newsEntity.getThumbnailKey());
+                } catch (Exception e) {
+                    log.warn("기존 썸네일 삭제 실패, 계속 진행: {}", newsEntity.getThumbnailKey(), e);
+                }
+            }
+            // 새 썸네일 이동
+            String targetDir = String.format("project-service/news/%d/thumbnail", newsEntity.getId());
+            String finalKey = fileUploader.moveFile(newsReqDto.getThumbnailKey(), targetDir);
+            newsEntity.updateThumbnailKey(finalKey);
+        }
+
+        // 새 에디터 이미지가 전달된 경우
+        if (newsReqDto.getContentImageKeys() != null && !newsReqDto.getContentImageKeys().isEmpty()) {
+            String updatedContent = processContentImages(
+                    newsEntity.getId(),
+                    newsEntity.toContentVo().getContent(),
+                    newsReqDto.getContentImageKeys()
+            );
+            newsEntity.updateContent(updatedContent);
+        }
 
         applicationEventPublisher.publishEvent(NewsUpdatedEventDto.of(newsEntity.getId()));
 
@@ -155,7 +201,29 @@ public class NewsService {
     private NewsResDto resolveUsernames(NewsEntity newsEntity) {
         List<String> usernames = ExtractorUsername.FromNewses(newsEntity);
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return NewsResDto.from(newsEntity, usernamesMap);
+        return NewsResDto.from(newsEntity, usernamesMap, fileUploader);
+    }
+
+    /**
+     * 에디터 본문 이미지를 temp에서 최종 위치로 이동하고 content 내 key 치환
+     * content는 Tiptap JSON 형식이며, image 노드의 key 속성을 치환
+     */
+    private String processContentImages(Long newsId, String content, List<String> imageKeys) {
+        String updatedContent = content;
+        String targetDir = String.format("project-service/news/%d/images", newsId);
+
+        for (String tempKey : imageKeys) {
+            if (tempKey == null || tempKey.isEmpty()) continue;
+
+            try {
+                String finalKey = fileUploader.moveFile(tempKey, targetDir);
+                // temp key → final key 치환 (URL이 아닌 key만 치환)
+                updatedContent = updatedContent.replace(tempKey, finalKey);
+            } catch (Exception e) {
+                log.warn("이미지 이동 실패, 스킵: {}", tempKey, e);
+            }
+        }
+        return updatedContent;
     }
 
     @Transactional(readOnly = true)
