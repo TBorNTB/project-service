@@ -127,7 +127,7 @@ app:
 
   file:
     base-url: ${FILE_BASE_URL:https://files.sejongssg.kr}
-    presigner-endpoint: ${PRESIGNER_ENDPOINT:https://s3.sejongssg.kr}
+    presigner-endpoint: ${PRESIGNER_ENDPOINT:https://files.sejongssg.kr}
 
 aws:
   s3:
