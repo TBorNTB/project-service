@@ -12,6 +12,7 @@ import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.pagination.Cursor;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
@@ -25,6 +26,7 @@ import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,12 +43,14 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class CsKnowledgeService {
 
     private final UserExternalService userExternalService;
     private final CsKnowledgeRepository csKnowledgeRepository;
     private final CategoryRepository categoryRepository;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final FileUploader fileUploader;
 
     @Transactional
     public CsKnowledgeResDto createCsKnowledge(CsKnowledgeReqDto csKnowledgeReqDto, String username) {
@@ -61,6 +65,16 @@ public class CsKnowledgeService {
                 LocalDateTime.now()
         );
         CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(csKnowledgeEntity);
+
+        // 에디터 본문 이미지 처리 (temp → 최종 위치) 및 content key 치환
+        if (csKnowledgeReqDto.contentImageKeys() != null && !csKnowledgeReqDto.contentImageKeys().isEmpty()) {
+            String updatedContent = processContentImages(
+                    savedEntity.getId(),
+                    csKnowledgeReqDto.content(),
+                    csKnowledgeReqDto.contentImageKeys()
+            );
+            savedEntity.updateContent(updatedContent);
+        }
 
         CsKnowledgeResDto response = resolveUsername(savedEntity);
         applicationEventPublisher.publishEvent(CsKnowledgeCreatedEventDto.of(savedEntity.getId()));
@@ -82,6 +96,16 @@ public class CsKnowledgeService {
                 categoryEntity,
                 LocalDateTime.now()
         );
+
+        // 새 에디터 이미지가 전달된 경우
+        if (csKnowledgeReqDto.contentImageKeys() != null && !csKnowledgeReqDto.contentImageKeys().isEmpty()) {
+            String updatedContent = processContentImages(
+                    csKnowledgeEntity.getId(),
+                    csKnowledgeEntity.getContent(),
+                    csKnowledgeReqDto.contentImageKeys()
+            );
+            csKnowledgeEntity.updateContent(updatedContent);
+        }
 
         CsKnowledgeResDto response = resolveUsername(csKnowledgeEntity);
         applicationEventPublisher.publishEvent(CsKnowledgeUpdatedEventDto.of(csKnowledgeEntity.getId()));
@@ -214,5 +238,25 @@ public class CsKnowledgeService {
     @Transactional(readOnly = true)
     public List<Long> getCsKnowledgeIdsByUsername(String username) {
         return csKnowledgeRepository.findCsKnowledgeIdsByUsername(username);
+    }
+
+    /**
+     * 에디터 본문 이미지를 temp에서 최종 위치로 이동하고 content 내 key 치환
+     */
+    private String processContentImages(Long csKnowledgeId, String content, List<String> imageKeys) {
+        String updatedContent = content;
+        String targetDir = String.format("project-service/cs-knowledge/%d/images", csKnowledgeId);
+
+        for (String tempKey : imageKeys) {
+            if (tempKey == null || tempKey.isEmpty()) continue;
+
+            try {
+                String finalKey = fileUploader.moveFile(tempKey, targetDir);
+                updatedContent = updatedContent.replace(tempKey, finalKey);
+            } catch (Exception e) {
+                log.warn("이미지 이동 실패, 스킵: {}", tempKey, e);
+            }
+        }
+        return updatedContent;
     }
 }

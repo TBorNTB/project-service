@@ -76,4 +76,9 @@ public class CsKnowledgeEntity {
             throw new BaseException(ExceptionType.FORBIDDEN);
         }
     }
+
+    public void updateContent(String newContent) {
+        this.content = newContent;
+        this.updatedAt = LocalDateTime.now();
+    }
 }
