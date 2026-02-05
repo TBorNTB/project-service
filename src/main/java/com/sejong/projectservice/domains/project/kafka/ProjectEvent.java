@@ -99,7 +99,7 @@ public class ProjectEvent {
                 .id(project.getId().toString())
                 .title(project.getTitle())
                 .description(project.getDescription())
-                .thumbnailUrl(project.getThumbnailUrl())
+                .thumbnailUrl(project.getThumbnailKey())
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .updatedAt(project.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
