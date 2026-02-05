@@ -205,8 +205,7 @@ public class NewsService {
     }
 
     /**
-     * 에디터 본문 이미지를 temp에서 최종 위치로 이동하고 content 내 key 치환
-     * content는 Tiptap JSON 형식이며, image 노드의 key 속성을 치환
+     * 에디터 본문 이미지를 temp에서 최종 위치로 이동하고 content 내 URL 치환
      */
     private String processContentImages(Long newsId, String content, List<String> imageKeys) {
         String updatedContent = content;
@@ -216,9 +215,10 @@ public class NewsService {
             if (tempKey == null || tempKey.isEmpty()) continue;
 
             try {
+                String tempUrl = fileUploader.getFileUrl(tempKey);
                 String finalKey = fileUploader.moveFile(tempKey, targetDir);
-                // temp key → final key 치환 (URL이 아닌 key만 치환)
-                updatedContent = updatedContent.replace(tempKey, finalKey);
+                String finalUrl = fileUploader.getFileUrl(finalKey);
+                updatedContent = updatedContent.replace(tempUrl, finalUrl);
             } catch (Exception e) {
                 log.warn("이미지 이동 실패, 스킵: {}", tempKey, e);
             }
