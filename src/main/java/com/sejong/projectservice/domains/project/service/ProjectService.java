@@ -1,5 +1,7 @@
 package com.sejong.projectservice.domains.project.service;
 
+import com.sejong.projectservice.domains.csknowledge.service.CsKnowledgeService;
+import com.sejong.projectservice.domains.news.service.NewsService;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.dto.request.DateCountRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
@@ -18,17 +20,17 @@ import com.sejong.projectservice.domains.project.util.ProjectUsernamesExtractor;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
-import com.sejong.projectservice.domains.csknowledge.service.CsKnowledgeService;
-import com.sejong.projectservice.domains.news.service.NewsService;
 import com.sejong.projectservice.support.common.util.Mapper;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProjectService {
 
     private final UserExternalService userExternalService;
@@ -45,6 +48,7 @@ public class ProjectService {
     private final ApplicationEventPublisher eventPublisher;
     private final NewsService newsService;
     private final CsKnowledgeService csKnowledgeService;
+    private final FileUploader fileUploader;
 
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
@@ -52,8 +56,27 @@ public class ProjectService {
         ProjectEntity projectEntity = ProjectEntity.of(projectFormRequest, username);
         ProjectEntity savedProject = projectRepository.save(projectEntity);
         mapper.connectJoins(savedProject, projectFormRequest);
+
+        // 썸네일 파일 처리 (temp → 최종 위치)
+        if (projectFormRequest.getThumbnailKey() != null && !projectFormRequest.getThumbnailKey().isEmpty()) {
+            String targetDir = String.format("project-service/project/%d/thumbnail", savedProject.getId());
+            String finalKey = fileUploader.moveFile(projectFormRequest.getThumbnailKey(), targetDir);
+            savedProject.updateThumbnail(finalKey);
+        }
+
+        // 에디터 본문 이미지 처리 (temp → 최종 위치) 및 content key 치환
+        if (projectFormRequest.getContentImageKeys() != null && !projectFormRequest.getContentImageKeys().isEmpty()) {
+            String updatedContent = processContentImages(
+                    savedProject.getId(),
+                    projectFormRequest.getContent(),
+                    projectFormRequest.getContentImageKeys()
+            );
+            savedProject.updateContent(updatedContent);
+        }
+
         eventPublisher.publishEvent(ProjectCreatedEventDto.of(savedProject.getId()));
-        return ProjectAddResponse.from(savedProject.getId(),savedProject.getTitle(), "저장 완료", savedProject.getContent(), savedProject.getEndedAt());
+        return ProjectAddResponse.from(savedProject.getId(), savedProject.getTitle(), "저장 완료",
+                savedProject.getContent(), savedProject.getEndedAt());
     }
 
     @Transactional
@@ -65,6 +88,39 @@ public class ProjectService {
         project.update(projectUpdateRequest.getTitle(), projectUpdateRequest.getDescription(),
                 projectUpdateRequest.getProjectStatus(),
                 projectUpdateRequest.getThumbnailUrl());
+
+        // 새 썸네일이 전달된 경우 (temp key)
+        if (projectUpdateRequest.getThumbnailKey() != null && !projectUpdateRequest.getThumbnailKey().isEmpty()) {
+            // 기존 썸네일 삭제
+            if (project.getThumbnailKey() != null) {
+                try {
+                    fileUploader.delete(project.getThumbnailKey());
+                } catch (Exception e) {
+                    log.warn("기존 썸네일 삭제 실패, 계속 진행: {}", project.getThumbnailKey(), e);
+                }
+            }
+            // 새 썸네일 이동
+            String targetDir = String.format("project-service/project/%d/thumbnail", project.getId());
+            String finalKey = fileUploader.moveFile(projectUpdateRequest.getThumbnailKey(), targetDir);
+            project.updateThumbnail(finalKey);
+        }
+
+        // 새 에디터 이미지가 전달된 경우
+        if (projectUpdateRequest.getContentImageKeys() != null && !projectUpdateRequest.getContentImageKeys()
+                .isEmpty()) {
+            String contentToUpdate = projectUpdateRequest.getContent() != null
+                    ? projectUpdateRequest.getContent()
+                    : project.getContent();
+            String updatedContent = processContentImages(
+                    project.getId(),
+                    contentToUpdate,
+                    projectUpdateRequest.getContentImageKeys()
+            );
+            project.updateContent(updatedContent);
+        } else if (projectUpdateRequest.getContent() != null) {
+            project.updateContent(projectUpdateRequest.getContent());
+        }
+
         ProjectEntity savedProject = projectRepository.save(project);
         eventPublisher.publishEvent(ProjectUpdatedEventDto.of(savedProject.getId()));
         return ProjectUpdateResponse.from(savedProject.getId(), savedProject.getTitle(), "수정 완료");
@@ -87,7 +143,7 @@ public class ProjectService {
         List<String> usernames = ProjectUsernamesExtractor.extract(projectEntityPage.getContent());
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return ProjectPageResponse.from(projectEntityPage, usernamesMap);
+        return ProjectPageResponse.from(projectEntityPage, usernamesMap, fileUploader);
     }
 
     @Transactional(readOnly = true)
@@ -96,7 +152,7 @@ public class ProjectService {
         List<String> usernames = ProjectUsernamesExtractor.extract(projectEntitiesPage.getContent());
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return ProjectPageResponse.from(projectEntitiesPage, usernamesMap);
+        return ProjectPageResponse.from(projectEntitiesPage, usernamesMap, fileUploader);
     }
 
     @Transactional(readOnly = true)
@@ -107,14 +163,14 @@ public class ProjectService {
         List<String> usernames = ProjectUsernamesExtractor.extract(projectEntity);
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return ProjectSpecifyInfo.from(projectEntity, usernamesMap);
+        return ProjectSpecifyInfo.from(projectEntity, usernamesMap, fileUploader);
     }
 
     @Transactional(readOnly = true)
     public PostLikeCheckResponse checkPost(Long postId) {
         boolean exists = projectRepository.existsById(postId);
         if (exists) {
-            ProjectEntity project  = projectRepository.findById(postId)
+            ProjectEntity project = projectRepository.findById(postId)
                     .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
             return PostLikeCheckResponse.hasOfProject(project, true);
         }
@@ -150,5 +206,27 @@ public class ProjectService {
     @Transactional(readOnly = true)
     public List<Long> getProjectIdsByUsername(String username) {
         return projectRepository.findProjectIdsByUsername(username);
+    }
+
+    /**
+     * 에디터 본문 이미지를 temp에서 최종 위치로 이동하고 content 내 key 치환
+     */
+    private String processContentImages(Long projectId, String content, List<String> imageKeys) {
+        String updatedContent = content;
+        String targetDir = String.format("project-service/project/%d/images", projectId);
+
+        for (String tempKey : imageKeys) {
+            if (tempKey == null || tempKey.isEmpty()) {
+                continue;
+            }
+
+            try {
+                String finalKey = fileUploader.moveFile(tempKey, targetDir);
+                updatedContent = updatedContent.replace(tempKey, finalKey);
+            } catch (Exception e) {
+                log.warn("이미지 이동 실패, 스킵: {}", tempKey, e);
+            }
+        }
+        return updatedContent;
     }
 }

@@ -62,7 +62,7 @@ public class ProjectEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    private String thumbnailUrl;
+    private String thumbnailKey;
 
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
@@ -90,7 +90,7 @@ public class ProjectEntity {
                 .description(request.getDescription())
                 .username(username)
                 .projectStatus(request.getProjectStatus())
-                .thumbnailUrl(request.getThumbnail())
+                .thumbnailKey(request.getThumbnail())
                 .content(request.getContent())
                 .createdAt(request.getStartedAt())
                 .startedAt(LocalDateTime.now())
@@ -144,7 +144,7 @@ public class ProjectEntity {
         this.title = title;
         this.description = description;
         this.projectStatus = projectStatus;
-        this.thumbnailUrl = thumbnailUrl;
+        this.thumbnailKey = thumbnailUrl;
         this.updatedAt = LocalDateTime.now();
     }
 
@@ -200,5 +200,15 @@ public class ProjectEntity {
         for (String name : uniqueNames) {
             CollaboratorEntity.of(name, this);
         }
+    }
+
+    public void updateContent(String newContent) {
+        this.content = newContent;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateThumbnail(String thumbnailKey) {
+        this.thumbnailKey = thumbnailKey;
+        this.updatedAt = LocalDateTime.now();
     }
 }

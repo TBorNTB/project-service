@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.project.dto.response;
 
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 
 import java.util.List;
@@ -23,11 +24,11 @@ public class ProjectPageResponse {
     Long totalElements;
     int page;
 
-    public static ProjectPageResponse from(Page<ProjectEntity> projectPage, Map<String, UserNameInfo> userNameInfos) {
+    public static ProjectPageResponse from(Page<ProjectEntity> projectPage, Map<String, UserNameInfo> userNameInfos, FileUploader fileUploader) {
 
         List<ProjectSimpleInfo> projectSimpleInfos = projectPage.stream()
                 .map(project -> {
-                    return ProjectSimpleInfo.from(project, userNameInfos);
+                    return ProjectSimpleInfo.from(project, userNameInfos, fileUploader);
                 })
                 .toList();
 
