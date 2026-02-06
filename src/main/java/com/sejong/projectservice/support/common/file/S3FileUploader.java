@@ -1,5 +1,7 @@
 package com.sejong.projectservice.support.common.file;
 
+import com.sejong.projectservice.support.common.exception.BaseException;
+import com.sejong.projectservice.support.common.exception.ExceptionType;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.UUID;
@@ -19,10 +21,8 @@ import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignReques
 
 /**
  * S3 호환 스토리지 (Garage) 파일 업로더
- *
- * 지원 방식:
- * 1. Presigned URL - generatePreSignedUrl() + moveFile()
- * 2. 직접 업로드 - uploadFile()
+ * <p>
+ * 지원 방식: 1. Presigned URL - generatePreSignedUrl() + moveFile() 2. 직접 업로드 - uploadFile()
  */
 @Component
 @Slf4j
@@ -55,21 +55,20 @@ public class S3FileUploader implements FileUploader {
         try {
             String key = keyOrUrl.startsWith("http") ? extractKeyFromUrl(keyOrUrl) : keyOrUrl;
             DeleteObjectRequest deleteRequest = DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .build();
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
             s3Client.deleteObject(deleteRequest);
             log.info("S3 파일 삭제 완료: {}", key);
         } catch (Exception e) {
             log.error("S3 파일 삭제 실패: {}", keyOrUrl, e);
-            throw new RuntimeException("파일 삭제 실패", e);
+            throw new BaseException(ExceptionType.FILE_REMOVE_FAIL);
         }
     }
 
     /**
-     * key 또는 외부 URL을 전체 URL로 변환
-     * - 외부 URL (http://, https://): 그대로 반환
-     * - 내부 key: baseUrl/key 형태로 조립 (버킷명은 nginx에서 Host 헤더로 처리)
+     * key 또는 외부 URL을 전체 URL로 변환 - 외부 URL (http://, https://): 그대로 반환 - 내부 key: baseUrl/key 형태로 조립 (버킷명은 nginx에서 Host
+     * 헤더로 처리)
      */
     @Override
     public String getFileUrl(String keyOrUrl) {
@@ -92,8 +91,7 @@ public class S3FileUploader implements FileUploader {
     // ==================== Presigned URL 방식 ====================
 
     /**
-     * Presigned URL 생성
-     * - temp 폴더에 업로드 후, 저장 시 moveFile()로 최종 위치 이동
+     * Presigned URL 생성 - temp 폴더에 업로드 후, 저장 시 moveFile()로 최종 위치 이동
      */
     @Override
     public PreSignedUrl generatePreSignedUrl(String fileName, String contentType, String fileType) {
@@ -152,28 +150,33 @@ public class S3FileUploader implements FileUploader {
      */
     @Override
     public String moveFile(String sourceKey, String targetDirectory) {
+        if (sourceKey == null || sourceKey.isBlank()) {
+            log.warn("moveFile 스킵 - sourceKey가 null 또는 빈 값");
+            return null;
+        }
+
         String fileName = sourceKey.substring(sourceKey.lastIndexOf("/") + 1);
         String targetKey = String.format("%s/%s", targetDirectory, fileName);
 
         try {
             s3Client.copyObject(CopyObjectRequest.builder()
-                .sourceBucket(bucketName)
-                .sourceKey(sourceKey)
-                .destinationBucket(bucketName)
-                .destinationKey(targetKey)
-                .build());
+                    .sourceBucket(bucketName)
+                    .sourceKey(sourceKey)
+                    .destinationBucket(bucketName)
+                    .destinationKey(targetKey)
+                    .build());
 
             s3Client.deleteObject(DeleteObjectRequest.builder()
-                .bucket(bucketName)
-                .key(sourceKey)
-                .build());
+                    .bucket(bucketName)
+                    .key(sourceKey)
+                    .build());
 
             log.info("S3 파일 이동 완료: {} -> {}", sourceKey, targetKey);
             return targetKey;
 
         } catch (Exception e) {
             log.error("S3 파일 이동 실패: {} -> {}", sourceKey, targetDirectory, e);
-            throw new RuntimeException("파일 이동 실패", e);
+            throw new BaseException(ExceptionType.FILE_MOVE_FAIL);
         }
     }
 
@@ -188,15 +191,15 @@ public class S3FileUploader implements FileUploader {
             String key = generateDirectUploadKey(directory, fileName);
 
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(bucketName)
-                .key(key)
-                .contentType(file.getContentType())
-                .contentLength(file.getSize())
-                .build();
+                    .bucket(bucketName)
+                    .key(key)
+                    .contentType(file.getContentType())
+                    .contentLength(file.getSize())
+                    .build();
 
             s3Client.putObject(
-                putObjectRequest,
-                RequestBody.fromInputStream(file.getInputStream(), file.getSize())
+                    putObjectRequest,
+                    RequestBody.fromInputStream(file.getInputStream(), file.getSize())
             );
 
             log.info("S3 파일 업로드 완료: {}", key);
@@ -204,7 +207,7 @@ public class S3FileUploader implements FileUploader {
 
         } catch (IOException e) {
             log.error("파일 업로드 실패: {}", fileName, e);
-            throw new RuntimeException("파일 업로드 실패", e);
+            throw new BaseException(ExceptionType.FILE_UPLOAD_FAIL);
         }
     }
 

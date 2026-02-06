@@ -39,7 +39,9 @@ public enum ExceptionType implements ExceptionTypeIfs {
     EXTERNAL_SERVICE_ERROR(503, "외부 서비스 연결 실패"),
     KAFKA_PUBLISH_ERROR(500, "이벤트 발행 실패"),
     JSON_PARSHING_ERROR(500, "Json 파싱 에러"),
-    FILE_REMOVE_FAIL(500, "S3 파일 삭제 실패"),
+    FILE_REMOVE_FAIL(500, "파일 삭제 실패"),
+    FILE_MOVE_FAIL(500, "파일 이동 실패"),
+    FILE_UPLOAD_FAIL(500, "파일 업로드 실패"),
     ;
 
     private final Integer httpStatus;
