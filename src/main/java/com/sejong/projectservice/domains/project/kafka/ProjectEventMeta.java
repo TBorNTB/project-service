@@ -2,6 +2,7 @@ package com.sejong.projectservice.domains.project.kafka;
 
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.support.common.constants.Type;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,8 +18,8 @@ public class ProjectEventMeta {
     private long occurredAt;
     private ProjectEvent projectEvent;
 
-    public static ProjectEventMeta of(ProjectEntity project, Type type, long occurredAt) {
-        ProjectEvent pe = ProjectEvent.from(project);
+    public static ProjectEventMeta of(ProjectEntity project, FileUploader fileUploader, Type type, long occurredAt) {
+        ProjectEvent pe = ProjectEvent.from(project, fileUploader);
         return ProjectEventMeta.builder()
                 .aggregatedId(pe.getId())
                 .type(type)

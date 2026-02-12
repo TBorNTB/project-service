@@ -6,6 +6,7 @@ import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +16,10 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Slf4j
 public class ProjectEventPublisher {
-    
+
     private final OutboxService outboxService;
     private final ObjectMapper objectMapper;
+    private final FileUploader fileUploader;
     private final String PROJECT_EVENTS = "project";
 
     public void publishCreated(ProjectEntity project) {
@@ -34,7 +36,7 @@ public class ProjectEventPublisher {
     }
 
     private void publish(ProjectEntity project, Type type) {
-        ProjectEventMeta event = ProjectEventMeta.of(project, type, System.currentTimeMillis());
+        ProjectEventMeta event = ProjectEventMeta.of(project, fileUploader, type, System.currentTimeMillis());
 
         outboxService.enqueue("project", event.getAggregatedId(), "Project" + type.name(), PROJECT_EVENTS, event.getAggregatedId(), toJsonString(event));
         log.info("발행완료");

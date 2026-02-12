@@ -7,6 +7,7 @@ import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -74,7 +75,10 @@ public class ProjectEvent {
                 .build();
     }
 
-    public static ProjectEvent from(ProjectEntity project) {
+    public static ProjectEvent from(ProjectEntity project, FileUploader fileUploader) {
+        String thumbnailUrl = project.getThumbnailKey() != null
+                ? fileUploader.getFileUrl(project.getThumbnailKey())
+                : null;
 
         List<String> categoryNames = project.getProjectCategories().stream()
                 .map(it -> {
@@ -99,7 +103,7 @@ public class ProjectEvent {
                 .id(project.getId().toString())
                 .title(project.getTitle())
                 .description(project.getDescription())
-                .thumbnailUrl(project.getThumbnailKey())
+                .thumbnailUrl(thumbnailUrl)
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .updatedAt(project.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
