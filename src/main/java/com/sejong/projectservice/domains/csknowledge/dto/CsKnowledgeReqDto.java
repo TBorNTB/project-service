@@ -15,6 +15,9 @@ public record CsKnowledgeReqDto(
         @NotNull(message = "카테고리는 필수입니다")
         String category,
 
+        @Schema(description = "썸네일 이미지 key (presigned URL 업로드 후 받은 key)")
+        String thumbnailKey,
+
         @Schema(description = "에디터 본문에 삽입된 이미지 key 목록")
         List<String> contentImageKeys
 ) {

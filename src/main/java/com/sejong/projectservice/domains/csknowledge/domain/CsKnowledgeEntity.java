@@ -38,6 +38,9 @@ public class CsKnowledgeEntity {
     @Lob
     private String content;
 
+    @Column(name = "thumbnail_key")
+    private String thumbnailKey;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity categoryEntity;
@@ -75,6 +78,10 @@ public class CsKnowledgeEntity {
         if (!writerId.equals(username) && !userRole.equalsIgnoreCase("ADMIN")) {
             throw new BaseException(ExceptionType.FORBIDDEN);
         }
+    }
+
+    public void updateThumbnailKey(String thumbnailKey) {
+        this.thumbnailKey = thumbnailKey;
     }
 
     public void updateContent(String newContent) {

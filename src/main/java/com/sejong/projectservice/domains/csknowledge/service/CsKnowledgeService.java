@@ -66,6 +66,13 @@ public class CsKnowledgeService {
         );
         CsKnowledgeEntity savedEntity = csKnowledgeRepository.save(csKnowledgeEntity);
 
+        // 썸네일 파일 처리 (temp → 최종 위치)
+        if (csKnowledgeReqDto.thumbnailKey() != null && !csKnowledgeReqDto.thumbnailKey().isEmpty()) {
+            String targetDir = String.format("project-service/cs-knowledge/%d/thumbnail", savedEntity.getId());
+            String finalKey = fileUploader.moveFile(csKnowledgeReqDto.thumbnailKey(), targetDir);
+            savedEntity.updateThumbnailKey(finalKey);
+        }
+
         // 에디터 본문 이미지 처리 (temp → 최종 위치) 및 content key 치환
         if (csKnowledgeReqDto.contentImageKeys() != null && !csKnowledgeReqDto.contentImageKeys().isEmpty()) {
             String updatedContent = processContentImages(
@@ -96,6 +103,22 @@ public class CsKnowledgeService {
                 categoryEntity,
                 LocalDateTime.now()
         );
+
+        // 새 썸네일이 전달된 경우 (temp key)
+        if (csKnowledgeReqDto.thumbnailKey() != null && !csKnowledgeReqDto.thumbnailKey().isEmpty()) {
+            // 기존 썸네일 삭제
+            if (csKnowledgeEntity.getThumbnailKey() != null) {
+                try {
+                    fileUploader.delete(csKnowledgeEntity.getThumbnailKey());
+                } catch (Exception e) {
+                    log.warn("기존 썸네일 삭제 실패, 계속 진행: {}", csKnowledgeEntity.getThumbnailKey(), e);
+                }
+            }
+            // 새 썸네일 이동
+            String targetDir = String.format("project-service/cs-knowledge/%d/thumbnail", csKnowledgeEntity.getId());
+            String finalKey = fileUploader.moveFile(csKnowledgeReqDto.thumbnailKey(), targetDir);
+            csKnowledgeEntity.updateThumbnailKey(finalKey);
+        }
 
         // 새 에디터 이미지가 전달된 경우
         if (csKnowledgeReqDto.contentImageKeys() != null && !csKnowledgeReqDto.contentImageKeys().isEmpty()) {
@@ -212,14 +235,14 @@ public class CsKnowledgeService {
     private CsKnowledgeResDto resolveUsername(CsKnowledgeEntity csKnowledgeEntity) {
         List<String> usernames = ExtractorUsername.FromKnowledge(csKnowledgeEntity);
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return CsKnowledgeResDto.from(csKnowledgeEntity, usernamesMap.get(csKnowledgeEntity.getWriterId()).nickname());
+        return CsKnowledgeResDto.from(csKnowledgeEntity, usernamesMap.get(csKnowledgeEntity.getWriterId()).nickname(), fileUploader);
     }
 
     private List<CsKnowledgeResDto> resolveUsernames(List<CsKnowledgeEntity> csKnowledgeEntities) {
         List<String> usernames = ExtractorUsername.FromKnowledges(csKnowledgeEntities);
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
         return csKnowledgeEntities.stream()
-                .map(cs -> CsKnowledgeResDto.from(cs, usernamesMap.get(cs.getWriterId()).nickname()))
+                .map(cs -> CsKnowledgeResDto.from(cs, usernamesMap.get(cs.getWriterId()).nickname(), fileUploader))
                 .toList();
     }
 
