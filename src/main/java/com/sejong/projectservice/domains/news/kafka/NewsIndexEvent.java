@@ -3,6 +3,7 @@ package com.sejong.projectservice.domains.news.kafka;
 
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.support.common.constants.Type;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,11 +19,10 @@ public class NewsIndexEvent {
     private Type type;
     private long occurredAt;
 
-    public static NewsIndexEvent of(NewsEntity newsEntity, Type type, long occurredAt) {
+    public static NewsIndexEvent of(NewsEntity newsEntity, FileUploader fileUploader, Type type, long occurredAt) {
         return NewsIndexEvent.builder()
-                .aggregatedId(
-                        newsEntity.getId().toString())// 추후 outbox패턴 도입시 필요할 수 있어 이대로 유지 elastic 서비스는 동기화 했습니다. 필드명
-                .newsEvent(NewsEvent.from(newsEntity))
+                .aggregatedId(newsEntity.getId().toString())
+                .newsEvent(NewsEvent.from(newsEntity, fileUploader))
                 .type(type)
                 .occurredAt(occurredAt)
                 .build();

@@ -7,6 +7,7 @@ import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +22,7 @@ import static com.sejong.projectservice.support.common.constants.Type.*;
 public class NewsEventPublisher {
     private final OutboxService outboxService;
     private final ObjectMapper objectMapper;
+    private final FileUploader fileUploader;
     private final String NEWS_EVENTS = "news";
 
     public void publishCreated(NewsEntity newsEntity){
@@ -38,7 +40,7 @@ public class NewsEventPublisher {
     }
 
     private void publish(NewsEntity newsEntity, Type type) {
-        NewsIndexEvent event = NewsIndexEvent.of(newsEntity, type, System.currentTimeMillis());
+        NewsIndexEvent event = NewsIndexEvent.of(newsEntity, fileUploader, type, System.currentTimeMillis());
         outboxService.enqueue("news", newsEntity.getId().toString(), "News" + type.name(), NEWS_EVENTS, newsEntity.getId().toString(), toJsonString(event));
     }
 
