@@ -7,7 +7,7 @@ import com.sejong.projectservice.domains.news.dto.NewsResDto;
 import com.sejong.projectservice.domains.news.kafka.dto.NewsCreatedEventDto;
 import com.sejong.projectservice.domains.news.kafka.dto.NewsDeletedEventDto;
 import com.sejong.projectservice.domains.news.kafka.dto.NewsUpdatedEventDto;
-import com.sejong.projectservice.domains.news.repository.ArchiveRepository;
+import com.sejong.projectservice.domains.news.repository.NewsRepository;
 import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
@@ -43,7 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class NewsService {
 
-    private final ArchiveRepository archiveRepository;
+    private final NewsRepository newsRepository;
     private final UserExternalService userExternalService;
     private final ApplicationEventPublisher applicationEventPublisher;
     private final FileUploader fileUploader;
@@ -65,7 +65,7 @@ public class NewsService {
                 newsReqDto.getTags(),
                 LocalDateTime.now()
         );
-        NewsEntity savedNewsEntity = archiveRepository.save(newsEntity);
+        NewsEntity savedNewsEntity = newsRepository.save(newsEntity);
 
         // 썸네일 파일 처리 (temp → 최종 위치)
         if (newsReqDto.getThumbnailKey() != null && !newsReqDto.getThumbnailKey().isEmpty()) {
@@ -90,7 +90,7 @@ public class NewsService {
 
     @Transactional
     public NewsResDto updateNews(Long newsId, NewsReqDto newsReqDto, String writerId) {
-        NewsEntity newsEntity = archiveRepository.findById(newsId)
+        NewsEntity newsEntity = newsRepository.findById(newsId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
         newsEntity.validateOwner(writerId);
 
@@ -136,16 +136,16 @@ public class NewsService {
 
     @Transactional
     public void deleteNews(Long newsId, String writerId) {
-        NewsEntity newsEntity = archiveRepository.findById(newsId)
+        NewsEntity newsEntity = newsRepository.findById(newsId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
         newsEntity.validateOwner(writerId);
 
-        archiveRepository.deleteById(newsEntity.getId());
+        newsRepository.deleteById(newsEntity.getId());
         applicationEventPublisher.publishEvent(NewsDeletedEventDto.of(newsEntity.getId()));
     }
 
     public NewsResDto findById(Long newsId) {
-        NewsEntity newsEntity = archiveRepository.findById(newsId)
+        NewsEntity newsEntity = newsRepository.findById(newsId)
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
 
         return resolveUsernames(newsEntity);
@@ -160,7 +160,7 @@ public class NewsService {
                 Sort.Direction.valueOf(pageRequest.getDirection().name()),
                 pageRequest.getSortBy());
 
-        Page<NewsEntity> archiveEntities = archiveRepository.findAll(pageable);
+        Page<NewsEntity> archiveEntities = newsRepository.findAll(pageable);
 
         List<NewsResDto> dtoList = archiveEntities.getContent().stream()
                 .map(this::resolveUsernames)
@@ -189,9 +189,9 @@ public class NewsService {
 
     @Transactional(readOnly = true)
     public PostLikeCheckResponse checkNews(Long newsId) {
-        boolean exists = archiveRepository.existsById(newsId);
+        boolean exists = newsRepository.existsById(newsId);
         if (exists) {
-            NewsEntity newsEntity = archiveRepository.findById(newsId)
+            NewsEntity newsEntity = newsRepository.findById(newsId)
                     .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
             return PostLikeCheckResponse.hasOfNews(newsEntity, true);
         }
@@ -212,7 +212,9 @@ public class NewsService {
         String targetDir = String.format("project-service/news/%d/images", newsId);
 
         for (String tempKey : imageKeys) {
-            if (tempKey == null || tempKey.isEmpty()) continue;
+            if (tempKey == null || tempKey.isEmpty()) {
+                continue;
+            }
 
             try {
                 String tempUrl = fileUploader.getFileUrl(tempKey);
@@ -228,7 +230,7 @@ public class NewsService {
 
     @Transactional(readOnly = true)
     public Long getNewsCount() {
-        Long count = archiveRepository.getNewsCount();
+        Long count = newsRepository.getNewsCount();
         return count;
     }
 
@@ -236,12 +238,12 @@ public class NewsService {
     public Long getNewsCountByDate(LocalDate startDate, LocalDate endDate) {
         LocalDateTime startDateTime = startDate.atStartOfDay();
         LocalDateTime endDateTime = endDate.plusDays(1).atStartOfDay();
-        return archiveRepository.getNewsCountByDate(startDateTime, endDateTime);
+        return newsRepository.getNewsCountByDate(startDateTime, endDateTime);
     }
 
     @Transactional(readOnly = true)
     public List<Long> getNewsIdsByUsername(String username) {
-        return archiveRepository.findNewsIdsByUsername(username);
+        return newsRepository.findNewsIdsByUsername(username);
     }
 
     private List<NewsEntity> getCursorBasedEntities(CursorPageRequest request, Pageable pageable) {
@@ -250,13 +252,13 @@ public class NewsService {
         if (request.getCursor() == null) {
             // 첫 페이지
             return isDesc ?
-                    archiveRepository.findFirstPageDesc(pageable) :
-                    archiveRepository.findFirstPageAsc(pageable);
+                    newsRepository.findFirstPageDesc(pageable) :
+                    newsRepository.findFirstPageAsc(pageable);
         } else {
             // 커서 기반 페이지
             return isDesc ?
-                    archiveRepository.findByCursorDesc(request.getCursor().getProjectId(), pageable) :
-                    archiveRepository.findByCursorAsc(request.getCursor().getProjectId(), pageable);
+                    newsRepository.findByCursorDesc(request.getCursor().getProjectId(), pageable) :
+                    newsRepository.findByCursorAsc(request.getCursor().getProjectId(), pageable);
         }
     }
 }

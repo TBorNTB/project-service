@@ -2,18 +2,16 @@ package com.sejong.projectservice.domains.news.repository;
 
 
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
-public interface ArchiveRepository extends JpaRepository<NewsEntity, Long> {
-    boolean existsById(Long archiveId);
+public interface NewsRepository extends JpaRepository<NewsEntity, Long> {
+    boolean existsById(Long newsId);
 
     Page<NewsEntity> findAll(Pageable pageable);
 
@@ -37,7 +35,7 @@ public interface ArchiveRepository extends JpaRepository<NewsEntity, Long> {
 
     @Query("SELECT count(ne) FROM NewsEntity ne " +
             "WHERE ne.createdAt >= :startDate AND ne.createdAt < :endDate")
-    Long getNewsCountByDate(@Param("startDate") LocalDateTime startDate, 
+    Long getNewsCountByDate(@Param("startDate") LocalDateTime startDate,
                             @Param("endDate") LocalDateTime endDate);
 
     @Query("SELECT ne.id FROM NewsEntity ne WHERE ne.writerId = :username")

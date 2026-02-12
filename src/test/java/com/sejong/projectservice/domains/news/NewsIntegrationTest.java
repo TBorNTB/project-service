@@ -1,14 +1,30 @@
 package com.sejong.projectservice.domains.news;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.news.domain.ContentEmbeddable;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
-import com.sejong.projectservice.domains.news.repository.ArchiveRepository;
+import com.sejong.projectservice.domains.news.repository.NewsRepository;
 import com.sejong.projectservice.support.common.constants.NewsCategory;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,20 +36,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -49,14 +51,14 @@ public class NewsIntegrationTest {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private ArchiveRepository archiveRepository;
+    private NewsRepository newsRepository;
 
     @MockitoBean
     private UserExternalService userExternalService;
 
     @BeforeEach
     void setUp() {
-        archiveRepository.deleteAll();
+        newsRepository.deleteAll();
 
         // UserExternalService 모킹 설정
         doNothing().when(userExternalService).validateExistence(any(String.class), anyList());
@@ -72,7 +74,7 @@ public class NewsIntegrationTest {
 
     @Test
     @DisplayName("뉴스를 생성할 수 있다.")
-    void 뉴스를_생성할_수_있다() throws Exception{
+    void 뉴스를_생성할_수_있다() throws Exception {
         //given
         NewsReqDto request = NewsReqDto.builder()
                 .title("뉴스 제목")
@@ -105,10 +107,10 @@ public class NewsIntegrationTest {
 
     @Test
     @DisplayName("뉴스를 조회할 수 있다.")
-    void 뉴스를_조회할_수_있다() throws Exception{
+    void 뉴스를_조회할_수_있다() throws Exception {
         //given
         NewsEntity news = createNews("tbntb-1", "뉴스 제목", "뉴스 요약", "뉴스 내용", NewsCategory.MT);
-        NewsEntity savedNews = archiveRepository.save(news);
+        NewsEntity savedNews = newsRepository.save(news);
         Long newsId = savedNews.getId();
 
         //when && then
@@ -136,10 +138,10 @@ public class NewsIntegrationTest {
 
     @Test
     @DisplayName("뉴스 소유자가 뉴스를 수정할 수 있다.")
-    void 뉴스_소유자가_뉴스를_수정할_수_있다() throws Exception{
+    void 뉴스_소유자가_뉴스를_수정할_수_있다() throws Exception {
         //given
         NewsEntity news = createNews("tbntb-1", "뉴스 제목", "뉴스 요약", "뉴스 내용", NewsCategory.MT);
-        NewsEntity savedNews = archiveRepository.save(news);
+        NewsEntity savedNews = newsRepository.save(news);
         Long newsId = savedNews.getId();
 
         NewsReqDto request = NewsReqDto.builder()
@@ -166,10 +168,10 @@ public class NewsIntegrationTest {
 
     @Test
     @DisplayName("소유주가 아닌 사용자가 뉴스를 수정하려고 하면 에러가 발생한다.")
-    void 소유주가_아닌_사용자가_뉴스를_수정하려고_하면_에러가_발생한다() throws Exception{
+    void 소유주가_아닌_사용자가_뉴스를_수정하려고_하면_에러가_발생한다() throws Exception {
         //given
         NewsEntity news = createNews("tbntb-1", "뉴스 제목", "뉴스 요약", "뉴스 내용", NewsCategory.MT);
-        NewsEntity savedNews = archiveRepository.save(news);
+        NewsEntity savedNews = newsRepository.save(news);
         Long newsId = savedNews.getId();
 
         NewsReqDto request = NewsReqDto.builder()
@@ -194,7 +196,7 @@ public class NewsIntegrationTest {
     void 뉴스_소유자가_뉴스를_삭제할_수_있다() throws Exception {
         //given
         NewsEntity news = createNews("tbntb-1", "뉴스 제목", "뉴스 요약", "뉴스 내용", NewsCategory.MT);
-        NewsEntity savedNews = archiveRepository.save(news);
+        NewsEntity savedNews = newsRepository.save(news);
         Long newsId = savedNews.getId();
 
         //when & then
@@ -212,7 +214,7 @@ public class NewsIntegrationTest {
     void 소유자가_아닌_사용자가_뉴스를_삭제하려고_하면_에러가_발생한다() throws Exception {
         //given
         NewsEntity news = createNews("tbntb-1", "뉴스 제목", "뉴스 요약", "뉴스 내용", NewsCategory.MT);
-        NewsEntity savedNews = archiveRepository.save(news);
+        NewsEntity savedNews = newsRepository.save(news);
         Long newsId = savedNews.getId();
 
         //when & then
@@ -239,7 +241,7 @@ public class NewsIntegrationTest {
         //given
         for (int i = 1; i <= 10; i++) {
             NewsEntity news = createNews("tbntb-" + i, "뉴스 제목 " + i, "뉴스 요약 " + i, "뉴스 내용 " + i, NewsCategory.MT);
-            archiveRepository.save(news);
+            newsRepository.save(news);
         }
 
         //when & then
@@ -255,13 +257,14 @@ public class NewsIntegrationTest {
                 .andExpect(jsonPath("$.data.length()").value(5))
                 .andExpect(jsonPath("$.message").value("조회성공"));
     }
+
     @Test
     @DisplayName("커서 페이지네이션으로 뉴스 목록을 조회하고 다음 페이지를 조회할 수 있다.")
     void 커서_페이지네이션으로_뉴스_목록을_조회하고_다음_페이지를_조회할_수_있다() throws Exception {
         //given
         for (int i = 1; i <= 15; i++) {
             NewsEntity news = createNews("tbntb-" + i, "뉴스 제목 " + i, "뉴스 요약 " + i, "뉴스 내용 " + i, NewsCategory.MT);
-            archiveRepository.save(news);
+            newsRepository.save(news);
         }
 
         //when & then - 첫 페이지 조회 (size=10)
@@ -301,7 +304,7 @@ public class NewsIntegrationTest {
         //given
         for (int i = 1; i <= 5; i++) {
             NewsEntity news = createNews("tbntb-" + i, "뉴스 제목 " + i, "뉴스 요약 " + i, "뉴스 내용 " + i, NewsCategory.MT);
-            archiveRepository.save(news);
+            newsRepository.save(news);
         }
 
         //when & then - 오프셋 페이지네이션 오름차순 정렬
@@ -403,7 +406,8 @@ public class NewsIntegrationTest {
                 .andExpect(status().isBadRequest());
     }
 
-    private NewsEntity createNews(String writerId, String title, String summary, String content, NewsCategory category) {
+    private NewsEntity createNews(String writerId, String title, String summary, String content,
+                                  NewsCategory category) {
         ContentEmbeddable contentEmbeddable = ContentEmbeddable.of(
                 com.sejong.projectservice.domains.news.domain.Content.of(title, summary, content, category)
         );
