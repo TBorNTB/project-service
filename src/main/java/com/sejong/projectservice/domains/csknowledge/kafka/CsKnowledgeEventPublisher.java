@@ -7,6 +7,7 @@ import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import static com.sejong.projectservice.support.common.constants.Type.*;
 public class CsKnowledgeEventPublisher {
     private final OutboxService outboxService;
     private final ObjectMapper objectMapper;
+    private final FileUploader fileUploader;
     private final String CS_KNOWLEDGE_EVENTS = "cs-knowledge";
 
     public void publishCreated(CsKnowledgeEntity csKnowledgeEntity){
@@ -35,7 +37,7 @@ public class CsKnowledgeEventPublisher {
     }
 
     private void publish(CsKnowledgeEntity csKnowledgeEntity, Type type) {
-        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledgeEntity, type, System.currentTimeMillis());
+        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledgeEntity, fileUploader, type, System.currentTimeMillis());
         outboxService.enqueue("cs-knowledge", csKnowledgeEntity.getId().toString(), "CsKnowledge" + type.name(), CS_KNOWLEDGE_EVENTS, csKnowledgeEntity.getId().toString(), toJsonString(event));
     }
 

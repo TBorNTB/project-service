@@ -2,7 +2,7 @@ package com.sejong.projectservice.domains.csknowledge.kafka;
 
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
-import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,15 +24,21 @@ public class CsKnowledgeEvent {
     private String content;
     private String writerId;
     private String category;
+    private String thumbnailUrl;
     private String createdAt;
 
-    public static CsKnowledgeEvent from(CsKnowledgeEntity csKnowledgeEntity) {
+    public static CsKnowledgeEvent from(CsKnowledgeEntity csKnowledgeEntity, FileUploader fileUploader) {
+        String thumbnailUrl = csKnowledgeEntity.getThumbnailKey() != null
+                ? fileUploader.getFileUrl(csKnowledgeEntity.getThumbnailKey())
+                : null;
+
         return CsKnowledgeEvent.builder()
                 .id(csKnowledgeEntity.getId().toString())
                 .title(csKnowledgeEntity.getTitle())
                 .writerId(csKnowledgeEntity.getWriterId())
                 .content(csKnowledgeEntity.getContent())
                 .category(csKnowledgeEntity.getCategoryEntity().getName())
+                .thumbnailUrl(thumbnailUrl)
                 .createdAt(csKnowledgeEntity.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .build();
     }

@@ -2,8 +2,8 @@ package com.sejong.projectservice.domains.csknowledge.kafka;
 
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
-import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeDto;
 import com.sejong.projectservice.support.common.constants.Type;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,10 +19,10 @@ public class CsKnowledgeIndexEvent {
     private Type type;
     private long occurredAt;
 
-    public static CsKnowledgeIndexEvent of(CsKnowledgeEntity csKnowledgeEntity, Type type, long occurredAt) {
+    public static CsKnowledgeIndexEvent of(CsKnowledgeEntity csKnowledgeEntity, FileUploader fileUploader, Type type, long occurredAt) {
         return CsKnowledgeIndexEvent.builder()
-                .aggregatedId(csKnowledgeEntity.getId().toString()) // 추후 outbox패턴 도입시 필요할 수 있어 이대로 유지 elastic 서비스는 동기화 했습니다. 필드명
-                .csKnowledgeEvent(CsKnowledgeEvent.from(csKnowledgeEntity))
+                .aggregatedId(csKnowledgeEntity.getId().toString())
+                .csKnowledgeEvent(CsKnowledgeEvent.from(csKnowledgeEntity, fileUploader))
                 .type(type)
                 .occurredAt(occurredAt)
                 .build();
