@@ -1,20 +1,17 @@
 package com.sejong.projectservice.support.common.util;
 
-import com.sejong.projectservice.domains.project.dto.ProjectDto;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
-import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.subgoal.domain.SubGoalEntity;
 import com.sejong.projectservice.domains.techstack.domain.TechStackEntity;
 import com.sejong.projectservice.domains.techstack.repository.TechStackRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -24,69 +21,28 @@ public class Mapper {
     private final TechStackRepository techStackRepository;
 
     // project 생성 시에 특화된 메서드
-    public void map(ProjectDto projectDto, ProjectEntity projectEntity) {
-
-        projectDto.getCollaboratorDtos().stream()
-                .map(dto -> CollaboratorEntity.of(dto.getCollaboratorName(), projectEntity))
-                .forEach(collaborator -> {}); // 이미 addCollaborator가 of 메서드 내부에서 호출됨
-
-        projectDto.getSubGoalDtos().stream()
-                .map(dto -> SubGoalEntity.of(dto.getContent(), dto.getCompleted(), dto.getCreatedAt(), dto.getUpdatedAt(), projectEntity))
-                .forEach(subGoal -> {}); // 이미 addSubGoal이 of 메서드 내부에서 호출됨
-
-        projectDto.getDocumentDtos().stream()
-                .map(dto -> DocumentEntity.of(dto.getTitle(), dto.getDescription(), dto.getThumbnailUrl(), dto.getContent(), projectEntity))
-                .forEach(document -> {}); // 이미 addDocument가 of 메서드 내부에서 호출됨
-
-        projectDto.getCategories().stream()
-                .map(c -> categoryRepository.findByName(c.getName())
-                        .orElseGet(() -> categoryRepository.save(CategoryEntity.of(c.getName()))))
-                .forEach(projectEntity::addCategory);
-
-        projectDto.getTechStackDtos().stream()
-                .map(t -> techStackRepository.findByName(t.getName())
-                        .orElseGet(() -> techStackRepository.save(TechStackEntity.of(t.getName()))))
-                .forEach(projectEntity::addTechStack);
-    }
-
-    public void connectJoins(ProjectEntity projectEntity, ProjectFormRequest request) {
-
+    public void connectRelationship(ProjectEntity projectEntity, ProjectFormRequest request) {
+        // cascade - collaborator
         List<CollaboratorEntity> collaboratorEntities = request.getCollaborators().stream()
                 .map(collaboratorname -> CollaboratorEntity.of(collaboratorname, projectEntity))
                 .toList();
 
+        // cascade - subgoal
         List<SubGoalEntity> subGoals = request.getSubGoals().stream()
-                .map(content -> SubGoalEntity.of(content, false, LocalDateTime.now(), LocalDateTime.now(), projectEntity))
+                .map(content -> SubGoalEntity.of(content, false, LocalDateTime.now(), LocalDateTime.now(),
+                        projectEntity))
                 .toList();
 
+        // category 기존 것 있으면 쓰고 없으면 생성
         request.getCategories().stream()
                 .map(categoryName -> categoryRepository.findByName(categoryName)
                         .orElseGet(() -> categoryRepository.save(CategoryEntity.of(categoryName))))
                 .forEach(projectEntity::addCategory);
 
+        // techstack 기존 것 있으면 쓰고 없으면 생성
         request.getTechStacks().stream()
                 .map(techStackName -> techStackRepository.findByName(techStackName)
                         .orElseGet(() -> techStackRepository.save(TechStackEntity.of(techStackName))))
                 .forEach(projectEntity::addTechStack);
-    }
-
-
-    public void updateCollaborator(ProjectDto projectDto, ProjectEntity projectEntity) {
-        projectEntity.getCollaboratorEntities().clear();
-
-        projectDto.getCollaboratorDtos().stream()
-                .map(dto -> CollaboratorEntity.of(dto.getCollaboratorName(), projectEntity))
-                .forEach(collaborator -> {}); // 이미 addCollaborator가 of 메서드 내부에서 호출됨
-
-    //변경감지하여 영속화 하는 작업
-    }
-    public void updateCategory(ProjectDto projectDto, ProjectEntity projectEntity) {
-        projectEntity.getProjectCategories().clear();
-
-        projectDto.getCategories().stream()
-                .map(c -> categoryRepository.findByName(c.getName())
-                        .orElseGet(() -> categoryRepository.save(CategoryEntity.of(c.getName()))))
-                .forEach(projectEntity::addCategory);
-
     }
 }

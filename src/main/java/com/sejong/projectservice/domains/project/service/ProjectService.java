@@ -55,7 +55,7 @@ public class ProjectService {
         userExternalService.validateExistence(username, projectFormRequest.getCollaborators());
         ProjectEntity projectEntity = ProjectEntity.of(projectFormRequest, username);
         ProjectEntity savedProject = projectRepository.save(projectEntity);
-        mapper.connectJoins(savedProject, projectFormRequest);
+        mapper.connectRelationship(savedProject, projectFormRequest);
 
         // 썸네일 파일 처리 (temp → 최종 위치)
         if (projectFormRequest.getThumbnailKey() != null && !projectFormRequest.getThumbnailKey().isEmpty()) {
