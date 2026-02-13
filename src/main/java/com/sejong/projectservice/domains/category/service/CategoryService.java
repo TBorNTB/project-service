@@ -1,5 +1,7 @@
 package com.sejong.projectservice.domains.category.service;
 
+import static com.sejong.projectservice.support.common.exception.ExceptionType.CATEGORY_NOT_FOUND;
+
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.dto.CategoryAllResponse;
 import com.sejong.projectservice.domains.category.dto.CategoryResponse;
@@ -8,11 +10,10 @@ import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -31,10 +32,11 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryResponse update(String userRole, String prevName, String nextName, String description, String content) {
+    public CategoryResponse update(String userRole, String prevName, String nextName, String description,
+                                   String content) {
         validateAdminRole(userRole);
         CategoryEntity categoryEntity = categoryRepository.findByName(prevName)
-                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND));
         categoryEntity.updateName(nextName);
         categoryEntity.updateDescription(description);
         categoryEntity.updateContent(content);
@@ -45,7 +47,7 @@ public class CategoryService {
     public CategoryResponse remove(String userRole, String name) {
         validateAdminRole(userRole);
         CategoryEntity categoryEntity = categoryRepository.findByName(name)
-                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND));
         categoryRepository.deleteById(categoryEntity.getId());
         return CategoryResponse.deleteFrom(categoryEntity);
     }
@@ -62,13 +64,13 @@ public class CategoryService {
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
 
-        List<CategoryEntity> categoryEntities = categoryNames.stream()
-                .map(CategoryEntity::of).toList();
+        List<CategoryEntity> categories = categoryNames.stream().map(
+                c -> categoryRepository.findByName(c).orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND))
+        ).toList();
 
-        categoryRepository.saveAll(categoryEntities);
-        projectEntity.updateCategory(categoryNames, categoryEntities);
-
-        return CategoryAllResponse.from(categoryEntities);
+        projectEntity.updateCategory(categoryNames, categories);
+        // TODO: kafka 발행
+        return CategoryAllResponse.from(categories);
     }
 
     private void validateAdminRole(String userRole) {
@@ -80,7 +82,7 @@ public class CategoryService {
     @Transactional
     public CategoryResponse updateDescription(String userRole, Long categoryId, String description, String content) {
         CategoryEntity categoryEntity = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND));
         ;
         categoryEntity.updateDescription(description);
         categoryEntity.updateContent(content);
