@@ -54,7 +54,8 @@ public class ProjectSimpleInfo {
                             collaborator.getId(),
                             collaborator.getCollaboratorName(),
                             userNameInfos.get(collaborator.getCollaboratorName()).nickname(),
-                            userNameInfos.get(collaborator.getCollaboratorName()).realName());
+                            userNameInfos.get(collaborator.getCollaboratorName()).realName(),
+                            userNameInfos.get(collaborator.getCollaboratorName()).profileImageUrl());
                 }).toList();
 
         List<CategoryEntity> categoryEntityEntities = project.getProjectCategories().stream()

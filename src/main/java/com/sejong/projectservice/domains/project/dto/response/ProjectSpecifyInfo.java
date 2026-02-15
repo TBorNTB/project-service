@@ -34,6 +34,7 @@ public class ProjectSpecifyInfo {
     private String username;
     private String ownerNickname;
     private String ownerRealname;
+    private String ownerProfileImageUrl;
 
     private ProjectStatus projectStatus;
 
@@ -56,7 +57,8 @@ public class ProjectSpecifyInfo {
                 .map(collaborator -> {
                     return CollaboratorResponse.of(collaborator.getId(), collaborator.getCollaboratorName(),
                             usernames.get(collaborator.getCollaboratorName()).nickname(),
-                            usernames.get(collaborator.getCollaboratorName()).realName());
+                            usernames.get(collaborator.getCollaboratorName()).realName(),
+                            usernames.get(collaborator.getCollaboratorName()).profileImageUrl());
                 }).toList();
 
         List<CategoryEntity> categoryEntityEntities = project.getProjectCategories().stream()
@@ -76,6 +78,7 @@ public class ProjectSpecifyInfo {
                 .username(project.getUsername())
                 .ownerNickname(usernames.get(project.getUsername()).nickname())
                 .ownerRealname(usernames.get(project.getUsername()).realName())
+                .ownerProfileImageUrl(usernames.get(project.getUsername()).profileImageUrl())
                 .description(project.getDescription())
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt())
