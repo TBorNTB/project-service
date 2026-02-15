@@ -19,6 +19,7 @@ import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import com.sejong.projectservice.support.common.internal.response.UserProfileDto;
 import com.sejong.projectservice.support.common.util.ExtractorUsername;
 import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageRes;
@@ -235,14 +236,16 @@ public class CsKnowledgeService {
     private CsKnowledgeResDto resolveUsername(CsKnowledgeEntity csKnowledgeEntity) {
         List<String> usernames = ExtractorUsername.FromKnowledge(csKnowledgeEntity);
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return CsKnowledgeResDto.from(csKnowledgeEntity, usernamesMap.get(csKnowledgeEntity.getWriterId()).nickname(), fileUploader);
+        String username = csKnowledgeEntity.getWriterId();
+        UserProfileDto writerProfile = UserProfileDto.from(username, usernamesMap.get(username));
+        return CsKnowledgeResDto.from(csKnowledgeEntity, writerProfile, fileUploader);
     }
 
     private List<CsKnowledgeResDto> resolveUsernames(List<CsKnowledgeEntity> csKnowledgeEntities) {
         List<String> usernames = ExtractorUsername.FromKnowledges(csKnowledgeEntities);
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
         return csKnowledgeEntities.stream()
-                .map(cs -> CsKnowledgeResDto.from(cs, usernamesMap.get(cs.getWriterId()).nickname(), fileUploader))
+                .map(cs -> CsKnowledgeResDto.from(cs, UserProfileDto.from(cs.getWriterId(), usernamesMap.get(cs.getWriterId())), fileUploader))
                 .toList();
     }
 

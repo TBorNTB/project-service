@@ -12,6 +12,7 @@ import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import com.sejong.projectservice.support.common.internal.response.UserProfileDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,9 +31,7 @@ public class ProjectSimpleInfo {
     private String title;
     private String description;
 
-    private String username;
-    private String ownerNickname;
-    private String ownerRealName;
+    private UserProfileDto ownerProfile;
 
     private ProjectStatus projectStatus;
     private LocalDateTime createdAt;
@@ -49,14 +48,10 @@ public class ProjectSimpleInfo {
     public static ProjectSimpleInfo from(ProjectEntity project, Map<String, UserNameInfo> userNameInfos, FileUploader fileUploader) {
 
         List<CollaboratorResponse> collaboratorList = project.getCollaboratorEntities().stream()
-                .map(collaborator -> {
-                    return CollaboratorResponse.of(
-                            collaborator.getId(),
-                            collaborator.getCollaboratorName(),
-                            userNameInfos.get(collaborator.getCollaboratorName()).nickname(),
-                            userNameInfos.get(collaborator.getCollaboratorName()).realName(),
-                            userNameInfos.get(collaborator.getCollaboratorName()).profileImageUrl());
-                }).toList();
+                .map(collaborator -> CollaboratorResponse.of(
+                        collaborator.getId(),
+                        UserProfileDto.from(collaborator.getCollaboratorName(), userNameInfos.get(collaborator.getCollaboratorName()))))
+                .toList();
 
         List<CategoryEntity> categoryEntityEntities = project.getProjectCategories().stream()
                 .map(ProjectCategoryEntity::getCategoryEntity).toList();
@@ -72,9 +67,7 @@ public class ProjectSimpleInfo {
         return ProjectSimpleInfo.builder()
                 .id(project.getId())
                 .title(project.getTitle())
-                .username(project.getUsername())
-                .ownerNickname(userNameInfos.get(project.getUsername()).nickname())
-                .ownerRealName(userNameInfos.get(project.getUsername()).realName())
+                .ownerProfile(UserProfileDto.from(project.getUsername(), userNameInfos.get(project.getUsername())))
                 .description(project.getDescription())
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt())

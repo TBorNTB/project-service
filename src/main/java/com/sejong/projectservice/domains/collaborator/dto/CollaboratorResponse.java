@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.collaborator.dto;
 
+import com.sejong.projectservice.support.common.internal.response.UserProfileDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,18 +13,12 @@ import lombok.NoArgsConstructor;
 public class CollaboratorResponse {
 
     private Long id;
-    private String username;
-    private String nickname;
-    private String realname;
-    private String profileImageUrl;
+    private UserProfileDto profile;
 
-    public static CollaboratorResponse of(Long id, String username, String nickname, String realName, String profileImageUrl) {
+    public static CollaboratorResponse of(Long id, UserProfileDto profile) {
         return CollaboratorResponse.builder()
                 .id(id)
-                .username(username)
-                .nickname(nickname)
-                .realname(realName)
-                .profileImageUrl(profileImageUrl)
+                .profile(profile)
                 .build();
     }
 }

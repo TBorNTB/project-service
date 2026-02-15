@@ -13,6 +13,7 @@ import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import com.sejong.projectservice.support.common.internal.response.UserProfileDto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,10 +32,7 @@ public class ProjectSpecifyInfo {
     private Long id;
     private String title;
     private String description;
-    private String username;
-    private String ownerNickname;
-    private String ownerRealname;
-    private String ownerProfileImageUrl;
+    private UserProfileDto ownerProfile;
 
     private ProjectStatus projectStatus;
 
@@ -54,12 +52,10 @@ public class ProjectSpecifyInfo {
     public static ProjectSpecifyInfo from(ProjectEntity project, Map<String, UserNameInfo> usernames, FileUploader fileUploader) {
 
         List<CollaboratorResponse> collaboratorResponseList = project.getCollaboratorEntities().stream()
-                .map(collaborator -> {
-                    return CollaboratorResponse.of(collaborator.getId(), collaborator.getCollaboratorName(),
-                            usernames.get(collaborator.getCollaboratorName()).nickname(),
-                            usernames.get(collaborator.getCollaboratorName()).realName(),
-                            usernames.get(collaborator.getCollaboratorName()).profileImageUrl());
-                }).toList();
+                .map(collaborator -> CollaboratorResponse.of(
+                        collaborator.getId(),
+                        UserProfileDto.from(collaborator.getCollaboratorName(), usernames.get(collaborator.getCollaboratorName()))))
+                .toList();
 
         List<CategoryEntity> categoryEntityEntities = project.getProjectCategories().stream()
                 .map(ProjectCategoryEntity::getCategoryEntity).toList();
@@ -75,10 +71,7 @@ public class ProjectSpecifyInfo {
         return ProjectSpecifyInfo.builder()
                 .id(project.getId())
                 .title(project.getTitle())
-                .username(project.getUsername())
-                .ownerNickname(usernames.get(project.getUsername()).nickname())
-                .ownerRealname(usernames.get(project.getUsername()).realName())
-                .ownerProfileImageUrl(usernames.get(project.getUsername()).profileImageUrl())
+                .ownerProfile(UserProfileDto.from(project.getUsername(), usernames.get(project.getUsername())))
                 .description(project.getDescription())
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt())
