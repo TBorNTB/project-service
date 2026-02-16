@@ -101,6 +101,7 @@ public class CsKnowledgeService {
         csKnowledgeEntity.update(
                 csKnowledgeReqDto.title(),
                 csKnowledgeReqDto.content(),
+                csKnowledgeReqDto.description(),
                 username,
                 categoryEntity,
                 LocalDateTime.now()

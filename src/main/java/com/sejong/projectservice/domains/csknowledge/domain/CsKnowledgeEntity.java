@@ -64,10 +64,11 @@ public class CsKnowledgeEntity {
                 .build();
     }
 
-    public void update(String title, String content, String username, CategoryEntity categoryEntity, LocalDateTime updatedAt) {
+    public void update(String title, String content, String description ,String username, CategoryEntity categoryEntity, LocalDateTime updatedAt) {
         this.title = title;
         this.writerId = username;
         this.content = content;
+        this.description = description;
         this.categoryEntity = categoryEntity;
         this.updatedAt = updatedAt;
     }
