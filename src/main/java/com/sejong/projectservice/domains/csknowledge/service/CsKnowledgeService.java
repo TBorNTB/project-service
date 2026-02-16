@@ -61,6 +61,7 @@ public class CsKnowledgeService {
         CsKnowledgeEntity csKnowledgeEntity = CsKnowledgeEntity.of(
                 csKnowledgeReqDto.title(),
                 csKnowledgeReqDto.content(),
+                csKnowledgeReqDto.description(),
                 username,
                 categoryEntity,
                 LocalDateTime.now()

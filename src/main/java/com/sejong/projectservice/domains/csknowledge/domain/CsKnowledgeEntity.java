@@ -38,6 +38,9 @@ public class CsKnowledgeEntity {
     @Lob
     private String content;
 
+    @Column(name = "description", nullable = true)
+    private String description;
+
     @Column(name = "thumbnail_key")
     private String thumbnailKey;
 
@@ -48,12 +51,13 @@ public class CsKnowledgeEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static CsKnowledgeEntity of(String title, String content, String username, CategoryEntity categoryEntity, LocalDateTime time) {
+    public static CsKnowledgeEntity of(String title, String content, String description, String username, CategoryEntity categoryEntity, LocalDateTime time) {
         return CsKnowledgeEntity.builder()
                 .id(null)
                 .title(title)
                 .writerId(username)
                 .content(content)
+                .description(description)
                 .categoryEntity(categoryEntity)
                 .createdAt(time)
                 .updatedAt(time)

@@ -23,6 +23,7 @@ public class CsKnowledgeEvent {
     private String title;
     private String content;
     private String writerId;
+    private String description;
     private String category;
     private String thumbnailUrl;
     private String createdAt;
@@ -36,6 +37,7 @@ public class CsKnowledgeEvent {
                 .id(csKnowledgeEntity.getId().toString())
                 .title(csKnowledgeEntity.getTitle())
                 .writerId(csKnowledgeEntity.getWriterId())
+                .description(csKnowledgeEntity.getDescription())
                 .content(csKnowledgeEntity.getContent())
                 .category(csKnowledgeEntity.getCategoryEntity().getName())
                 .thumbnailUrl(thumbnailUrl)

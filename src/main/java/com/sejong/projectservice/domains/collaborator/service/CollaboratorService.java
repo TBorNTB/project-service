@@ -26,7 +26,7 @@ public class CollaboratorService {
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         projectEntity.updateCollaborator(collaboratorNames);
-        // TODO: 카프카 발행
+        // TODO: 카프카 발행 *(_*
         return CollaboratorDto.toDtoList(projectEntity.getCollaboratorEntities());
     }
 }

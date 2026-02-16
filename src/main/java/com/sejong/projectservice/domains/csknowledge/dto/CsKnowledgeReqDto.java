@@ -12,6 +12,9 @@ public record CsKnowledgeReqDto(
         @NotBlank(message = "내용은 필수입니다")
         String content,
 
+        @NotBlank(message = "요약은 필수입니다")
+        String description,
+
         @NotNull(message = "카테고리는 필수입니다")
         String category,
 
