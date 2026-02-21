@@ -4,11 +4,9 @@ package com.sejong.projectservice.domains.news.service;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.news.dto.NewsResDto;
-import com.sejong.projectservice.domains.news.kafka.dto.NewsCreatedEventDto;
-import com.sejong.projectservice.domains.news.kafka.dto.NewsDeletedEventDto;
-import com.sejong.projectservice.domains.news.kafka.dto.NewsUpdatedEventDto;
 import com.sejong.projectservice.domains.news.repository.NewsRepository;
 import com.sejong.projectservice.domains.user.UserIds;
+import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
@@ -27,9 +25,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+
+import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -45,8 +45,8 @@ public class NewsService {
 
     private final NewsRepository newsRepository;
     private final UserExternalService userExternalService;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final FileUploader fileUploader;
+    private final OutboxService outboxService;
 
     @Transactional
     public NewsResDto createNews(NewsReqDto newsReqDto) {
@@ -83,8 +83,8 @@ public class NewsService {
             );
             savedNewsEntity.updateContent(updatedContent);
         }
-
-        applicationEventPublisher.publishEvent(NewsCreatedEventDto.of(savedNewsEntity.getId()));
+        OutBoxFactory outbox = OutBoxFactory.of(savedNewsEntity, fileUploader, Type.CREATED);
+        outboxService.enqueue(outbox);
         return resolveUsernames(savedNewsEntity);
     }
 
@@ -129,8 +129,8 @@ public class NewsService {
             newsEntity.updateContent(updatedContent);
         }
 
-        applicationEventPublisher.publishEvent(NewsUpdatedEventDto.of(newsEntity.getId()));
-
+        OutBoxFactory outbox = OutBoxFactory.of(newsEntity, fileUploader, Type.UPDATED);
+        outboxService.enqueue(outbox);
         return resolveUsernames(newsEntity);
     }
 
@@ -141,7 +141,8 @@ public class NewsService {
         newsEntity.validateOwner(writerId);
 
         newsRepository.deleteById(newsEntity.getId());
-        applicationEventPublisher.publishEvent(NewsDeletedEventDto.of(newsEntity.getId()));
+        OutBoxFactory outbox = OutBoxFactory.remove(newsEntity, Type.DELETED);
+        outboxService.enqueue(outbox);
     }
 
     public NewsResDto findById(Long newsId) {

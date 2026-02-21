@@ -1,4 +1,4 @@
-package com.sejong.projectservice.domains.document.kafka;
+package com.sejong.projectservice.domains.document.dto.event;
 
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import lombok.AllArgsConstructor;

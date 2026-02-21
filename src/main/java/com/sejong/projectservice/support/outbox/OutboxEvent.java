@@ -105,6 +105,20 @@ public class OutboxEvent {
         return e;
     }
 
+    public static OutboxEvent pending(OutBoxFactory outBoxFactory, Instant now) {
+        OutboxEvent e = new OutboxEvent();
+        e.aggregateType = outBoxFactory.getAggregateType();
+        e.aggregateId = outBoxFactory.getAggregateId();
+        e.eventType = outBoxFactory.getEventType();
+        e.topic = outBoxFactory.getTopic();
+        e.messageKey = outBoxFactory.getMessageKey();
+        e.payload = outBoxFactory.getPayload();
+        e.status = OutboxStatus.PENDING;
+        e.attempts = 0;
+        e.nextAttemptAt = now;
+        return e;
+    }
+
     public void claim(String instanceId, Instant now) {
         this.status = OutboxStatus.PROCESSING;
         this.lockedBy = instanceId;

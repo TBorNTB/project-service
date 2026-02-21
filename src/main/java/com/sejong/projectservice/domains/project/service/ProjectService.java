@@ -12,12 +12,10 @@ import com.sejong.projectservice.domains.project.dto.response.ProjectDeleteRespo
 import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfo;
 import com.sejong.projectservice.domains.project.dto.response.ProjectUpdateResponse;
-import com.sejong.projectservice.domains.project.kafka.dto.ProjectCreatedEventDto;
-import com.sejong.projectservice.domains.project.kafka.dto.ProjectDeletedEventDto;
-import com.sejong.projectservice.domains.project.kafka.dto.ProjectUpdatedEventDto;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.domains.project.util.ProjectUsernamesExtractor;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
+import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
@@ -29,9 +27,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -45,10 +44,10 @@ public class ProjectService {
     private final UserExternalService userExternalService;
     private final ProjectRepository projectRepository;
     private final Mapper mapper;
-    private final ApplicationEventPublisher eventPublisher;
     private final NewsService newsService;
     private final CsKnowledgeService csKnowledgeService;
     private final FileUploader fileUploader;
+    private final OutboxService outboxService;
 
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
@@ -74,7 +73,8 @@ public class ProjectService {
             savedProject.updateContent(updatedContent);
         }
 
-        eventPublisher.publishEvent(ProjectCreatedEventDto.of(savedProject.getId()));
+        OutBoxFactory outbox = OutBoxFactory.of(savedProject, fileUploader, Type.CREATED);
+        outboxService.enqueue(outbox);
         return ProjectAddResponse.from(savedProject.getId(), savedProject.getTitle(), "저장 완료",
                 savedProject.getContent(), savedProject.getEndedAt());
     }
@@ -122,7 +122,8 @@ public class ProjectService {
         }
 
         ProjectEntity savedProject = projectRepository.save(project);
-        eventPublisher.publishEvent(ProjectUpdatedEventDto.of(savedProject.getId()));
+        OutBoxFactory outbox = OutBoxFactory.of(savedProject, fileUploader, Type.UPDATED);
+        outboxService.enqueue(outbox);
         return ProjectUpdateResponse.from(savedProject.getId(), savedProject.getTitle(), "수정 완료");
     }
 
@@ -132,7 +133,8 @@ public class ProjectService {
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         project.validateOwner(username, userRole);
         projectRepository.deleteById(projectId);
-        eventPublisher.publishEvent(ProjectDeletedEventDto.of(projectId));
+        OutBoxFactory outBox = OutBoxFactory.remove(project, Type.DELETED);
+        outboxService.enqueue(outBox);
         return ProjectDeleteResponse.of(project.getTitle(), "삭제 완료");
     }
 

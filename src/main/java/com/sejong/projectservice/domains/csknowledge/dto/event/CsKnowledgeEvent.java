@@ -1,4 +1,4 @@
-package com.sejong.projectservice.domains.csknowledge.kafka;
+package com.sejong.projectservice.domains.csknowledge.dto.event;
 
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;

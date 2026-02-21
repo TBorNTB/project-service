@@ -33,6 +33,13 @@ public class OutboxService {
         repository.save(event);
     }
 
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void enqueue(OutBoxFactory outBoxFactory) {
+        Instant now = Instant.now();
+        OutboxEvent event = OutboxEvent.pending(outBoxFactory,now);
+        repository.save(event);
+    }
+
     @Transactional
     public void markSent(UUID id) {
         OutboxEvent event = repository.findById(id).orElse(null);

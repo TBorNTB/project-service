@@ -1,4 +1,4 @@
-package com.sejong.projectservice.domains.news.kafka;
+package com.sejong.projectservice.domains.news.dto.event;
 
 import com.sejong.projectservice.domains.news.domain.Content;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;

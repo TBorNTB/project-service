@@ -4,16 +4,13 @@ package com.sejong.projectservice.domains.csknowledge.service;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
-import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeCreatedEventDto;
-import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeDeletedEventDto;
-import com.sejong.projectservice.domains.csknowledge.kafka.dto.CsKnowledgeUpdatedEventDto;
 import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeRepository;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
+import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
-import com.sejong.projectservice.support.common.pagination.Cursor;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
@@ -26,9 +23,10 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRes;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
+import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,8 +48,8 @@ public class CsKnowledgeService {
     private final UserExternalService userExternalService;
     private final CsKnowledgeRepository csKnowledgeRepository;
     private final CategoryRepository categoryRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
     private final FileUploader fileUploader;
+    private final OutboxService outboxService;
 
     @Transactional
     public CsKnowledgeResDto createCsKnowledge(CsKnowledgeReqDto csKnowledgeReqDto, String username) {
@@ -86,7 +84,8 @@ public class CsKnowledgeService {
         }
 
         CsKnowledgeResDto response = resolveUsername(savedEntity);
-        applicationEventPublisher.publishEvent(CsKnowledgeCreatedEventDto.of(savedEntity.getId()));
+        OutBoxFactory outbox = OutBoxFactory.of(csKnowledgeEntity, fileUploader, Type.CREATED);
+        outboxService.enqueue(outbox);
         return response;
     }
 
@@ -134,7 +133,8 @@ public class CsKnowledgeService {
         }
 
         CsKnowledgeResDto response = resolveUsername(csKnowledgeEntity);
-        applicationEventPublisher.publishEvent(CsKnowledgeUpdatedEventDto.of(csKnowledgeEntity.getId()));
+        OutBoxFactory outbox = OutBoxFactory.of(csKnowledgeEntity, fileUploader, Type.UPDATED);
+        outboxService.enqueue(outbox);
         return response;
     }
 
@@ -144,7 +144,8 @@ public class CsKnowledgeService {
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
         csKnowledgeEntity.validateOwnerPermission(username, userRole);
         csKnowledgeRepository.deleteById(csKnowledgeEntity.getId());
-        applicationEventPublisher.publishEvent(CsKnowledgeDeletedEventDto.of(csKnowledgeEntity.getId()));
+        OutBoxFactory outbox = OutBoxFactory.remove(csKnowledgeEntity, Type.DELETED);
+        outboxService.enqueue(outbox);
     }
 
     public CsKnowledgeResDto findById(Long csKnowledgeId) {

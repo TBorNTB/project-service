@@ -1,4 +1,4 @@
-package com.sejong.projectservice.domains.project.kafka;
+package com.sejong.projectservice.domains.project.dto.event;
 
 import com.sejong.projectservice.domains.category.dto.CategoryDto;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;

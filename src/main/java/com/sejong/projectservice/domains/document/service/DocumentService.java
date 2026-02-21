@@ -4,17 +4,16 @@ import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.domains.document.dto.DocumentInfoRes;
 import com.sejong.projectservice.domains.document.dto.DocumentUpdateReq;
-import com.sejong.projectservice.domains.document.kafka.dto.DocumentCreatedEventDto;
-import com.sejong.projectservice.domains.document.kafka.dto.DocumentDeletedEventDto;
-import com.sejong.projectservice.domains.document.kafka.dto.DocumentUpdatedEventDto;
 import com.sejong.projectservice.domains.document.repository.DocumentRepository;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
+import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
+import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +24,7 @@ public class DocumentService {
     private final UserExternalService userExternalService;
     private final DocumentRepository documentRepository;
     private final ProjectRepository projectRepository;
-    private final ApplicationEventPublisher applicationEventPublisher;
+    private final OutboxService outboxService;
 
     @Transactional
     public DocumentInfoRes createDocument(Long projectId, DocumentCreateReq request, String username) {
@@ -42,7 +41,8 @@ public class DocumentService {
         );
 
         DocumentEntity savedDocumentEntity = documentRepository.save(documentEntity);
-        applicationEventPublisher.publishEvent(DocumentCreatedEventDto.of(savedDocumentEntity.getId()));
+        OutBoxFactory outbox = OutBoxFactory.of(savedDocumentEntity, Type.CREATED);
+        outboxService.enqueue(outbox);
         return DocumentInfoRes.from(savedDocumentEntity);
     }
 
@@ -62,7 +62,8 @@ public class DocumentService {
         projectEntity.validateUserPermission(username);
         documentEntity.update(request.getTitle(), request.getContent(), request.getDescription(),
                 request.getThumbnailUrl());
-        applicationEventPublisher.publishEvent(DocumentUpdatedEventDto.of(documentEntity.getId()));
+        OutBoxFactory outbox = OutBoxFactory.of(documentEntity, Type.UPDATED);
+        outboxService.enqueue(outbox);
         return DocumentInfoRes.from(documentEntity);
     }
 
@@ -74,6 +75,7 @@ public class DocumentService {
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         documentRepository.deleteById(documentEntity.getId());
-        applicationEventPublisher.publishEvent(DocumentDeletedEventDto.of(documentEntity.getId()));
+        OutBoxFactory outbox = OutBoxFactory.remove(documentEntity, Type.DELETED);
+        outboxService.enqueue(outbox);
     }
 }
