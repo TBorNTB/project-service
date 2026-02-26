@@ -187,6 +187,11 @@ public class ProjectEntity {
         categories.forEach(this::addCategory);
     }
 
+    public void updateTechStack(List<TechStackEntity> techStacks) {
+        this.projectTechStacks.clear();
+        techStacks.forEach(this::addTechStack);
+    }
+
     public void updateCollaborator(List<String> collaboratorNames) {
         List<String> uniqueNames = collaboratorNames.stream()
                 .filter(Objects::nonNull)
