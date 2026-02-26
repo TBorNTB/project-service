@@ -27,9 +27,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProjectSpecifyInfo {
+public class ProjectSpecifyInfoRes {
 
     private Long id;
+    private Long parentProjectId;
     private String title;
     private String description;
     private UserProfileDto ownerProfile;
@@ -49,12 +50,14 @@ public class ProjectSpecifyInfo {
     private List<CollaboratorResponse> collaborators = new ArrayList<>();
     private List<DocumentDto> documentDtos = new ArrayList<>();
 
-    public static ProjectSpecifyInfo from(ProjectEntity project, Map<String, UserNameInfo> usernames, FileUploader fileUploader) {
+    public static ProjectSpecifyInfoRes from(ProjectEntity project, Map<String, UserNameInfo> usernames,
+                                             FileUploader fileUploader) {
 
         List<CollaboratorResponse> collaboratorResponseList = project.getCollaboratorEntities().stream()
                 .map(collaborator -> CollaboratorResponse.of(
                         collaborator.getId(),
-                        UserProfileDto.from(collaborator.getCollaboratorName(), usernames.get(collaborator.getCollaboratorName()))))
+                        UserProfileDto.from(collaborator.getCollaboratorName(),
+                                usernames.get(collaborator.getCollaboratorName()))))
                 .toList();
 
         List<CategoryEntity> categoryEntityEntities = project.getProjectCategories().stream()
@@ -68,8 +71,9 @@ public class ProjectSpecifyInfo {
                 ? fileUploader.getFileUrl(project.getThumbnailKey())
                 : null;
 
-        return ProjectSpecifyInfo.builder()
+        return ProjectSpecifyInfoRes.builder()
                 .id(project.getId())
+                .parentProjectId(project.getParentProjectId())
                 .title(project.getTitle())
                 .ownerProfile(UserProfileDto.from(project.getUsername(), usernames.get(project.getUsername())))
                 .description(project.getDescription())

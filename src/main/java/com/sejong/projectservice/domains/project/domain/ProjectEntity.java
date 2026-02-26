@@ -64,6 +64,9 @@ public class ProjectEntity {
 
     private String thumbnailKey;
 
+    @Column(name = "parent_project_id")
+    private Long parentProjectId;
+
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
@@ -96,6 +99,7 @@ public class ProjectEntity {
                 .startedAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .endedAt(request.getEndedAt())
+                .parentProjectId(request.getParentProjectId())
                 .projectCategories(new ArrayList<>())
                 .projectTechStacks(new ArrayList<>())
                 .collaboratorEntities(new ArrayList<>())

@@ -35,4 +35,7 @@ public class ProjectFormRequest {
 
     @Schema(description = "에디터 본문에 삽입된 이미지 key 목록")
     private List<String> contentImageKeys;
+
+    @Schema(description = "계승 원본 프로젝트 ID (없으면 null)")
+    private Long parentProjectId;
 }

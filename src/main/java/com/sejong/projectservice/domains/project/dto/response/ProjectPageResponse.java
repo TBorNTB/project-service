@@ -1,12 +1,10 @@
 package com.sejong.projectservice.domains.project.dto.response;
 
+import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
-
 import java.util.List;
 import java.util.Map;
-
-import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,22 +16,23 @@ import org.springframework.data.domain.Page;
 @NoArgsConstructor
 @Builder
 public class ProjectPageResponse {
-    List<ProjectSimpleInfo> projects;
+    List<ProjectSimpleInfoRes> projects;
     int size;
     int element;
     Long totalElements;
     int page;
 
-    public static ProjectPageResponse from(Page<ProjectEntity> projectPage, Map<String, UserNameInfo> userNameInfos, FileUploader fileUploader) {
+    public static ProjectPageResponse from(Page<ProjectEntity> projectPage, Map<String, UserNameInfo> userNameInfos,
+                                           FileUploader fileUploader) {
 
-        List<ProjectSimpleInfo> projectSimpleInfos = projectPage.stream()
+        List<ProjectSimpleInfoRes> projectSimpleInfoRes = projectPage.stream()
                 .map(project -> {
-                    return ProjectSimpleInfo.from(project, userNameInfos, fileUploader);
+                    return ProjectSimpleInfoRes.from(project, userNameInfos, fileUploader);
                 })
                 .toList();
 
         return ProjectPageResponse.builder()
-                .projects(projectSimpleInfos)
+                .projects(projectSimpleInfoRes)
                 .size(projectPage.getSize())
                 .element(projectPage.getNumber())
                 .page(projectPage.getTotalPages())

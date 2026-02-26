@@ -3,7 +3,12 @@ package com.sejong.projectservice.domains.project.controller;
 import com.sejong.projectservice.domains.project.dto.request.DateCountRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
-import com.sejong.projectservice.domains.project.dto.response.*;
+import com.sejong.projectservice.domains.project.dto.response.DateCountResponse;
+import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
+import com.sejong.projectservice.domains.project.dto.response.ProjectDeleteResponse;
+import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
+import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfoRes;
+import com.sejong.projectservice.domains.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.domains.project.service.ProjectService;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,7 +23,16 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -78,10 +92,10 @@ public class ProjectController {
 
     @GetMapping("{projectId}")
     @Operation(summary = "프로젝트 상세 정보 조회")
-    public ResponseEntity<ProjectSpecifyInfo> specifyProject(
+    public ResponseEntity<ProjectSpecifyInfoRes> specifyProject(
             @PathVariable(name = "projectId") Long projectId
     ) {
-        ProjectSpecifyInfo response = projectService.findOne(projectId);
+        ProjectSpecifyInfoRes response = projectService.findOne(projectId);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(response);
