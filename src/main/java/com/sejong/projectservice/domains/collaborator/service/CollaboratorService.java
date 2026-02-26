@@ -3,9 +3,13 @@ package com.sejong.projectservice.domains.collaborator.service;
 import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
+import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
+import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +21,8 @@ public class CollaboratorService {
 
     private final UserExternalService userExternalService;
     private final ProjectRepository projectRepository;
+    private final OutboxService outboxService;
+    private final FileUploader fileUploader;
 
     @Transactional
     public List<CollaboratorDto> updateProject(String username, Long projectId, List<String> collaboratorNames) {
@@ -26,7 +32,8 @@ public class CollaboratorService {
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         projectEntity.updateCollaborator(collaboratorNames);
-        // TODO: 카프카 발행 *(_*
+        OutBoxFactory outbox = OutBoxFactory.of(projectEntity, fileUploader, Type.UPDATED);
+        outboxService.enqueue(outbox);
         return CollaboratorDto.toDtoList(projectEntity.getCollaboratorEntities());
     }
 }
