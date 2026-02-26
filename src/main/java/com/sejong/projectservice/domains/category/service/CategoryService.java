@@ -8,8 +8,12 @@ import com.sejong.projectservice.domains.category.dto.CategoryResponse;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
+import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
+import com.sejong.projectservice.support.common.file.FileUploader;
+import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +25,8 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final ProjectRepository projectRepository;
+    private final OutboxService outboxService;
+    private final FileUploader fileUploader;
 
     @Transactional
     public CategoryResponse create(String userRole, String name, String description, String content) {
@@ -68,8 +74,9 @@ public class CategoryService {
                 c -> categoryRepository.findByName(c).orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND))
         ).toList();
 
-        projectEntity.updateCategory(categoryNames, categories);
-        // TODO: kafka 발행
+        projectEntity.updateCategory(categories);
+        OutBoxFactory outbox = OutBoxFactory.of(projectEntity, fileUploader, Type.UPDATED);
+        outboxService.enqueue(outbox);
         return CategoryAllResponse.from(categories);
     }
 

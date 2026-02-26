@@ -182,9 +182,9 @@ public class ProjectEntity {
         selectedSubGaol.check();
     }
 
-    public void updateCategory(List<String> categoryNames, List<CategoryEntity> categoryEntityEntities1) {
+    public void updateCategory(List<CategoryEntity> categories) {
         this.projectCategories.clear(); // orphanRemoval로 기존 링크 전부 삭제
-        categoryEntityEntities1.forEach(this::addCategory);
+        categories.forEach(this::addCategory);
     }
 
     public void updateCollaborator(List<String> collaboratorNames) {
