@@ -19,10 +19,8 @@ public class ExtractorUsername {
 
 
     public static List<String> FromNewses(NewsEntity newsEntity) {
-        List<String> usernames = newsEntity.toParticipantIdsVo().toList();
-        String username = newsEntity.getWriterId();
-
-        usernames.add(username);
+        List<String> usernames = newsEntity.toParticipantUsernameList();
+        usernames.add(newsEntity.getWriterUsername());
         return usernames;
     }
 }

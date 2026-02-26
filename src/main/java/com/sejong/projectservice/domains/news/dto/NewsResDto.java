@@ -28,13 +28,14 @@ public record NewsResDto(
             Map<String, UserNameInfo> usernamesMap,
             FileUploader fileUploader
     ) {
-        UserProfileDto writerProfile = UserProfileDto.from(newsEntity.getWriterId(), usernamesMap.get(newsEntity.getWriterId()));
+        UserProfileDto writerProfile = UserProfileDto.from(newsEntity.getWriterUsername(),
+                usernamesMap.get(newsEntity.getWriterUsername()));
 
         String thumbnailUrl = (newsEntity.getThumbnailKey() != null && !newsEntity.getThumbnailKey().isEmpty())
                 ? fileUploader.getFileUrl(newsEntity.getThumbnailKey())
                 : null;
 
-        List<UserProfileDto> participantProfiles = newsEntity.toParticipantIdsVo().toList().stream()
+        List<UserProfileDto> participantProfiles = newsEntity.toParticipantUsernameList().stream()
                 .map(userId -> UserProfileDto.from(userId, usernamesMap.get(userId)))
                 .toList();
 
