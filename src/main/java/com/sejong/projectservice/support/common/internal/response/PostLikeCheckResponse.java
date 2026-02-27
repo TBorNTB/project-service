@@ -20,7 +20,7 @@ public class PostLikeCheckResponse {
 
     public static PostLikeCheckResponse hasOfNews(NewsEntity newsEntity, boolean isStored) {
         return PostLikeCheckResponse.builder()
-                .ownerUsername(newsEntity.getWriterId())
+                .ownerUsername(newsEntity.getWriterUsername())
                 .isStored(isStored)
                 .build();
     }
@@ -31,6 +31,7 @@ public class PostLikeCheckResponse {
                 .isStored(isStored)
                 .build();
     }
+
     public static PostLikeCheckResponse hasNotOf() {
         return PostLikeCheckResponse.builder()
                 .ownerUsername(null)

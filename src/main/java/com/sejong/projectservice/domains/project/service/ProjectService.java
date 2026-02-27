@@ -10,7 +10,7 @@ import com.sejong.projectservice.domains.project.dto.response.DateCountResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectAddResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectDeleteResponse;
 import com.sejong.projectservice.domains.project.dto.response.ProjectPageResponse;
-import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfo;
+import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfoRes;
 import com.sejong.projectservice.domains.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.domains.project.util.ProjectUsernamesExtractor;
@@ -23,12 +23,12 @@ import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.support.common.util.Mapper;
+import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import com.sejong.projectservice.support.outbox.OutBoxFactory;
-import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -158,14 +158,14 @@ public class ProjectService {
     }
 
     @Transactional(readOnly = true)
-    public ProjectSpecifyInfo findOne(Long projectId) {
+    public ProjectSpecifyInfoRes findOne(Long projectId) {
         ProjectEntity projectEntity = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
 
         List<String> usernames = ProjectUsernamesExtractor.extract(projectEntity);
 
         Map<String, UserNameInfo> usernamesMap = userExternalService.getUserNameInfos(usernames);
-        return ProjectSpecifyInfo.from(projectEntity, usernamesMap, fileUploader);
+        return ProjectSpecifyInfoRes.from(projectEntity, usernamesMap, fileUploader);
     }
 
     @Transactional(readOnly = true)

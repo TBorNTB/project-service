@@ -5,7 +5,6 @@ import com.sejong.projectservice.domains.news.domain.NewsEntity;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.news.dto.NewsResDto;
 import com.sejong.projectservice.domains.news.repository.NewsRepository;
-import com.sejong.projectservice.domains.user.UserIds;
 import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
@@ -99,7 +98,7 @@ public class NewsService {
                 newsReqDto.getSummary(),
                 newsReqDto.getContent(),
                 newsReqDto.getCategory(),
-                UserIds.of(newsReqDto.getParticipantIds()).toString(),
+                String.join(",", newsReqDto.getParticipantIds()),
                 String.join(",", newsReqDto.getTags())
         );
 

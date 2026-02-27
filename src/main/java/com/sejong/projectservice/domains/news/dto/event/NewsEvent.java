@@ -37,9 +37,9 @@ public class NewsEvent {
                 .id(newsEntity.getId().toString())
                 .content(newsEntity.toContentVo())
                 .thumbnailUrl(thumbnailUrl)
-                .writerId(newsEntity.getWriterId())
+                .writerId(newsEntity.getWriterUsername())
                 .participantIds(
-                        newsEntity.toParticipantIdsVo() != null ? newsEntity.toParticipantIdsVo().toList() : null)
+                        newsEntity.toParticipantUsernameList() != null ? newsEntity.toParticipantUsernameList() : null)
                 .tags(newsEntity.toTagsList())
                 .createdAt(newsEntity.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .updatedAt(newsEntity.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))

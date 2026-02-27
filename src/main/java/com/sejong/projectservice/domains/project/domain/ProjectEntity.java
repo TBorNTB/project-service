@@ -64,6 +64,9 @@ public class ProjectEntity {
 
     private String thumbnailKey;
 
+    @Column(name = "parent_project_id")
+    private Long parentProjectId;
+
     @OneToMany(mappedBy = "projectEntity", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
@@ -96,6 +99,7 @@ public class ProjectEntity {
                 .startedAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .endedAt(request.getEndedAt())
+                .parentProjectId(request.getParentProjectId())
                 .projectCategories(new ArrayList<>())
                 .projectTechStacks(new ArrayList<>())
                 .collaboratorEntities(new ArrayList<>())
@@ -182,9 +186,14 @@ public class ProjectEntity {
         selectedSubGaol.check();
     }
 
-    public void updateCategory(List<String> categoryNames, List<CategoryEntity> categoryEntityEntities1) {
+    public void updateCategory(List<CategoryEntity> categories) {
         this.projectCategories.clear(); // orphanRemoval로 기존 링크 전부 삭제
-        categoryEntityEntities1.forEach(this::addCategory);
+        categories.forEach(this::addCategory);
+    }
+
+    public void updateTechStack(List<TechStackEntity> techStacks) {
+        this.projectTechStacks.clear();
+        techStacks.forEach(this::addTechStack);
     }
 
     public void updateCollaborator(List<String> collaboratorNames) {

@@ -1,11 +1,7 @@
 package com.sejong.projectservice.domains.project.dto.event;
 
-import com.sejong.projectservice.domains.category.dto.CategoryDto;
 import com.sejong.projectservice.domains.collaborator.domain.CollaboratorEntity;
-import com.sejong.projectservice.domains.collaborator.dto.CollaboratorDto;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
-import com.sejong.projectservice.domains.project.dto.ProjectDto;
-import com.sejong.projectservice.domains.techstack.dto.TechStackDto;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import java.time.format.DateTimeFormatter;
@@ -43,38 +39,7 @@ public class ProjectEvent {
 
     private String username;
     private List<String> collaborators = new ArrayList<>();
-
-    public static ProjectEvent from(ProjectDto projectDto) {
-
-        List<String> categoryNames = projectDto.getCategories().stream()
-                .map(CategoryDto::getName)
-                .distinct()
-                .toList();
-
-        List<String> techStackNames = projectDto.getTechStackDtos().stream()
-                .map(TechStackDto::getName)
-                .distinct()
-                .toList();
-
-        List<String> collaboratorNames = projectDto.getCollaboratorDtos().stream()
-                .map(CollaboratorDto::getCollaboratorName)
-                .distinct()
-                .toList();
-
-        return ProjectEvent.builder()
-                .id(projectDto.getId().toString())
-                .title(projectDto.getTitle())
-                .description(projectDto.getDescription())
-                .thumbnailUrl(projectDto.getThumbnailUrl())
-                .projectStatus(projectDto.getProjectStatus())
-                .createdAt(projectDto.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
-                .updatedAt(projectDto.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
-                .projectCategories(categoryNames)
-                .projectTechStacks(techStackNames)
-                .collaborators(collaboratorNames)
-                .build();
-    }
-
+    
     public static ProjectEvent from(ProjectEntity project, FileUploader fileUploader) {
         String thumbnailUrl = project.getThumbnailKey() != null
                 ? fileUploader.getFileUrl(project.getThumbnailKey())

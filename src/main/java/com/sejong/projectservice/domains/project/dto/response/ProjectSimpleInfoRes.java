@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class ProjectSimpleInfo {
+public class ProjectSimpleInfoRes {
     private Long id;
     private String title;
     private String description;
@@ -45,12 +45,14 @@ public class ProjectSimpleInfo {
     private List<CollaboratorResponse> collaborators = new ArrayList<>();
     private Integer collaboratorSize;
 
-    public static ProjectSimpleInfo from(ProjectEntity project, Map<String, UserNameInfo> userNameInfos, FileUploader fileUploader) {
+    public static ProjectSimpleInfoRes from(ProjectEntity project, Map<String, UserNameInfo> userNameInfos,
+                                            FileUploader fileUploader) {
 
         List<CollaboratorResponse> collaboratorList = project.getCollaboratorEntities().stream()
                 .map(collaborator -> CollaboratorResponse.of(
                         collaborator.getId(),
-                        UserProfileDto.from(collaborator.getCollaboratorName(), userNameInfos.get(collaborator.getCollaboratorName()))))
+                        UserProfileDto.from(collaborator.getCollaboratorName(),
+                                userNameInfos.get(collaborator.getCollaboratorName()))))
                 .toList();
 
         List<CategoryEntity> categoryEntityEntities = project.getProjectCategories().stream()
@@ -64,7 +66,7 @@ public class ProjectSimpleInfo {
                 ? fileUploader.getFileUrl(project.getThumbnailKey())
                 : null;
 
-        return ProjectSimpleInfo.builder()
+        return ProjectSimpleInfoRes.builder()
                 .id(project.getId())
                 .title(project.getTitle())
                 .ownerProfile(UserProfileDto.from(project.getUsername(), userNameInfos.get(project.getUsername())))

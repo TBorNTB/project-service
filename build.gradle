@@ -92,6 +92,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     // Prometheus metrics
     implementation 'io.micrometer:micrometer-registry-prometheus'
+
+    // Flyway (MySQL module required for Flyway 9+)
+    implementation 'org.flywaydb:flyway-mysql'
 }
 
 tasks.named('test') {
