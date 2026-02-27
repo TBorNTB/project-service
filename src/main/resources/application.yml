@@ -16,7 +16,7 @@ spring:
 
   sql:
     init:
-      mode: never
+      mode: create-drop
 
   flyway:
     enabled: true
