@@ -14,6 +14,10 @@ import jakarta.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.ArrayList;
+
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -97,7 +101,7 @@ public class NewsEntity {
         return Arrays.stream(participantUsernames.split(","))
                 .map(String::trim)
                 .filter(s -> !s.isBlank())
-                .toList();
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
     public List<String> toTagsList() {

@@ -3,6 +3,8 @@ package com.sejong.projectservice.support.common.util;
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.news.domain.NewsEntity;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ExtractorUsername {
