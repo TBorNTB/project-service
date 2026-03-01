@@ -2,6 +2,7 @@ package com.sejong.projectservice.domains.document;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -20,6 +21,7 @@ import com.sejong.projectservice.domains.document.repository.DocumentRepository;
 import com.sejong.projectservice.domains.project.domain.ProjectEntity;
 import com.sejong.projectservice.domains.project.repository.ProjectRepository;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import java.time.LocalDateTime;
@@ -61,6 +63,11 @@ public class DocumentIntegrationTest {
     @MockitoBean
     private UserExternalService userExternalService;
 
+    @MockitoBean
+    private FileUploader fileUploader;
+
+    private static final String RESOLVED_THUMBNAIL_URL = "https://resolved-thumbnail-url";
+
     @BeforeEach
     void setUp() {
         documentRepository.deleteAll();
@@ -76,6 +83,11 @@ public class DocumentIntegrationTest {
             }
             return result;
         });
+
+        // FileUploader 모킹: 썸네일/본문 이미지 이동 및 URL 반환
+        when(fileUploader.moveFile(anyString(), anyString())).thenAnswer(inv -> inv.getArgument(1) + "/moved");
+        when(fileUploader.getFileUrl(anyString())).thenReturn(RESOLVED_THUMBNAIL_URL);
+        doNothing().when(fileUploader).delete(anyString());
     }
 
     @Test
@@ -90,7 +102,7 @@ public class DocumentIntegrationTest {
                 .title("문서 제목")
                 .description("문서 설명")
                 .content("문서 내용")
-                .thumbnailUrl("thumbnail-url")
+                .thumbnailKey("temp-thumbnail-key")
                 .build();
 
         //when & then
@@ -103,7 +115,7 @@ public class DocumentIntegrationTest {
                 .andExpect(jsonPath("$.title").value("문서 제목"))
                 .andExpect(jsonPath("$.description").value("문서 설명"))
                 .andExpect(jsonPath("$.content").value("문서 내용"))
-                .andExpect(jsonPath("$.thumbnailUrl").value("thumbnail-url"))
+                .andExpect(jsonPath("$.thumbnailUrl").value(RESOLVED_THUMBNAIL_URL))
                 .andExpect(jsonPath("$.createdAt").exists())
                 .andExpect(jsonPath("$.updatedAt").exists());
     }
@@ -122,7 +134,7 @@ public class DocumentIntegrationTest {
                 .title("문서 제목")
                 .description("문서 설명")
                 .content("문서 내용")
-                .thumbnailUrl("thumbnail-url")
+                .thumbnailKey("temp-thumbnail-key")
                 .build();
 
         //when & then
@@ -147,7 +159,7 @@ public class DocumentIntegrationTest {
                 .title("문서 제목")
                 .description("문서 설명")
                 .content("문서 내용")
-                .thumbnailUrl("thumbnail-url")
+                .thumbnailKey("temp-thumbnail-key")
                 .build();
 
         //when & then
@@ -168,7 +180,7 @@ public class DocumentIntegrationTest {
                 .title("문서 제목")
                 .description("문서 설명")
                 .content("문서 내용")
-                .thumbnailUrl("thumbnail-url")
+                .thumbnailKey("temp-thumbnail-key")
                 .build();
 
         //when & then
@@ -186,7 +198,7 @@ public class DocumentIntegrationTest {
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
 
-        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-url");
+        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "stored-thumbnail-key");
         DocumentEntity savedDocument = documentRepository.save(document);
         Long documentId = savedDocument.getId();
 
@@ -197,7 +209,7 @@ public class DocumentIntegrationTest {
                 .andExpect(jsonPath("$.title").value("문서 제목"))
                 .andExpect(jsonPath("$.description").value("문서 설명"))
                 .andExpect(jsonPath("$.content").value("문서 내용"))
-                .andExpect(jsonPath("$.thumbnailUrl").value("thumbnail-url"))
+                .andExpect(jsonPath("$.thumbnailUrl").value(RESOLVED_THUMBNAIL_URL))
                 .andExpect(jsonPath("$.createdAt").exists())
                 .andExpect(jsonPath("$.updatedAt").exists());
     }
@@ -220,7 +232,7 @@ public class DocumentIntegrationTest {
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
 
-        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-url");
+        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-key");
         DocumentEntity savedDocument = documentRepository.save(document);
         Long documentId = savedDocument.getId();
 
@@ -228,7 +240,7 @@ public class DocumentIntegrationTest {
                 .title("수정된 제목")
                 .description("수정된 설명")
                 .content("수정된 내용")
-                .thumbnailUrl("수정된-thumbnail-url")
+                .thumbnailKey("updated-temp-thumbnail-key")
                 .build();
 
         //when & then
@@ -241,7 +253,7 @@ public class DocumentIntegrationTest {
                 .andExpect(jsonPath("$.title").value("수정된 제목"))
                 .andExpect(jsonPath("$.description").value("수정된 설명"))
                 .andExpect(jsonPath("$.content").value("수정된 내용"))
-                .andExpect(jsonPath("$.thumbnailUrl").value("수정된-thumbnail-url"));
+                .andExpect(jsonPath("$.thumbnailUrl").value(RESOLVED_THUMBNAIL_URL));
 
         // 수정된 내용이 반영되었는지 확인
         mockMvc.perform(get("/api/document/{documentId}", documentId))
@@ -260,7 +272,7 @@ public class DocumentIntegrationTest {
         project.addCollaborator(collaborator);
         ProjectEntity savedProject = projectRepository.save(project);
 
-        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-url");
+        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-key");
         DocumentEntity savedDocument = documentRepository.save(document);
         Long documentId = savedDocument.getId();
 
@@ -268,7 +280,7 @@ public class DocumentIntegrationTest {
                 .title("수정된 제목")
                 .description("수정된 설명")
                 .content("수정된 내용")
-                .thumbnailUrl("수정된-thumbnail-url")
+                .thumbnailKey("updated-temp-thumbnail-key")
                 .build();
 
         //when & then
@@ -287,7 +299,7 @@ public class DocumentIntegrationTest {
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
 
-        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-url");
+        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-key");
         DocumentEntity savedDocument = documentRepository.save(document);
         Long documentId = savedDocument.getId();
 
@@ -295,7 +307,7 @@ public class DocumentIntegrationTest {
                 .title("수정된 제목")
                 .description("수정된 설명")
                 .content("수정된 내용")
-                .thumbnailUrl("수정된-thumbnail-url")
+                .thumbnailKey("updated-temp-thumbnail-key")
                 .build();
 
         //when & then
@@ -316,7 +328,7 @@ public class DocumentIntegrationTest {
                 .title("수정된 제목")
                 .description("수정된 설명")
                 .content("수정된 내용")
-                .thumbnailUrl("수정된-thumbnail-url")
+                .thumbnailKey("updated-temp-thumbnail-key")
                 .build();
 
         //when & then
@@ -334,7 +346,7 @@ public class DocumentIntegrationTest {
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
 
-        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-url");
+        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-key");
         DocumentEntity savedDocument = documentRepository.save(document);
         Long documentId = savedDocument.getId();
 
@@ -357,7 +369,7 @@ public class DocumentIntegrationTest {
         project.addCollaborator(collaborator);
         ProjectEntity savedProject = projectRepository.save(project);
 
-        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-url");
+        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-key");
         DocumentEntity savedDocument = documentRepository.save(document);
         Long documentId = savedDocument.getId();
 
@@ -378,7 +390,7 @@ public class DocumentIntegrationTest {
         ProjectEntity project = createProject("tbntb-1", "프로젝트 제목", "프로젝트 설명");
         ProjectEntity savedProject = projectRepository.save(project);
 
-        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-url");
+        DocumentEntity document = createDocument(savedProject, "문서 제목", "문서 설명", "문서 내용", "thumbnail-key");
         DocumentEntity savedDocument = documentRepository.save(document);
         Long documentId = savedDocument.getId();
 
@@ -417,12 +429,12 @@ public class DocumentIntegrationTest {
     }
 
     private DocumentEntity createDocument(ProjectEntity project, String title, String description, String content,
-                                          String thumbnailUrl) {
+                                          String thumbnailKey) {
         DocumentEntity document = DocumentEntity.builder()
                 .title(title)
                 .description(description)
                 .content(content)
-                .thumbnailUrl(thumbnailUrl)
+                .thumbnailKey(thumbnailKey)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .projectEntity(project)

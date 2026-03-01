@@ -1,6 +1,8 @@
 package com.sejong.projectservice.support.common.sanitizer;
 
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
+import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
+import com.sejong.projectservice.domains.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
@@ -51,6 +53,20 @@ public class DefaultRequestSanitizer implements RequestSanitizer {
         if (request.getContent() != null) request.setContent(XssSanitizer.sanitizeHtml(request.getContent()));
         if (request.getCategory() != null) request.setCategory(XssSanitizer.escape(request.getCategory()));
         if (request.getTags() != null) request.setTags(XssSanitizer.escapeList(request.getTags()));
+    }
+
+    @Override
+    public void sanitize(DocumentCreateReq request) {
+        if (request.getTitle() != null) request.setTitle(XssSanitizer.escape(request.getTitle()));
+        if (request.getDescription() != null) request.setDescription(XssSanitizer.escape(request.getDescription()));
+        if (request.getContent() != null) request.setContent(XssSanitizer.sanitizeHtml(request.getContent()));
+    }
+
+    @Override
+    public void sanitize(DocumentUpdateReq request) {
+        if (request.getTitle() != null) request.setTitle(XssSanitizer.escape(request.getTitle()));
+        if (request.getDescription() != null) request.setDescription(XssSanitizer.escape(request.getDescription()));
+        if (request.getContent() != null) request.setContent(XssSanitizer.sanitizeHtml(request.getContent()));
     }
 
     @Override

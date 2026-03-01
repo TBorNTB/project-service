@@ -1,8 +1,8 @@
 package com.sejong.projectservice.domains.document.dto.event;
 
-
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
 import com.sejong.projectservice.support.common.constants.Type;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +18,8 @@ public class DocumentIndexEvent {
     private long occurredAt;
     private DocumentEvent documentEvent;
 
-    public static DocumentIndexEvent of(DocumentEntity documentEntity, Type type, long occurredAt) {
-        DocumentEvent documentEvent = DocumentEvent.from(documentEntity);
+    public static DocumentIndexEvent of(DocumentEntity documentEntity, FileUploader fileUploader, Type type, long occurredAt) {
+        DocumentEvent documentEvent = DocumentEvent.from(documentEntity, fileUploader);
         return DocumentIndexEvent.builder()
                 .aggregatedId(documentEvent.getId())
                 .type(type)

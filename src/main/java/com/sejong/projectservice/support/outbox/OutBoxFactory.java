@@ -77,9 +77,9 @@ public class OutBoxFactory {
         return new OutBoxFactory(aggregateType.getAggregateType(), documentId, aggregateType.getEventType(type), aggregateType.getTopic(), documentId, toJsonString(event));
     }
 
-    public static OutBoxFactory of(DocumentEntity document, Type type) {
+    public static OutBoxFactory of(DocumentEntity document, FileUploader fileUploader, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.DOCUMENT;
-        DocumentIndexEvent event = DocumentIndexEvent.of(document, type, System.currentTimeMillis());
+        DocumentIndexEvent event = DocumentIndexEvent.of(document, fileUploader, type, System.currentTimeMillis());
         String aggregatedId = event.getAggregatedId();
         return new OutBoxFactory(aggregateType.getAggregateType(), aggregatedId, aggregateType.getEventType(type), aggregateType.getTopic(), aggregatedId, toJsonString(event));
     }

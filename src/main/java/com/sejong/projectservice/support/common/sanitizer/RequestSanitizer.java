@@ -1,6 +1,8 @@
 package com.sejong.projectservice.support.common.sanitizer;
 
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
+import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
+import com.sejong.projectservice.domains.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.project.dto.request.ProjectFormRequest;
 import com.sejong.projectservice.domains.project.dto.request.ProjectUpdateRequest;
@@ -24,6 +26,12 @@ public interface RequestSanitizer {
 
     /** News 요청 Sanitize (원본 수정) */
     void sanitize(NewsReqDto request);
+
+    /** Document 생성 요청 Sanitize (원본 수정) */
+    void sanitize(DocumentCreateReq request);
+
+    /** Document 수정 요청 Sanitize (원본 수정) */
+    void sanitize(DocumentUpdateReq request);
 
     /** QnA 질문 입력 Sanitize (title, description, content, categories) */
     SanitizedQuestionInput sanitizeQuestionInput(String title, String description, String content, List<String> categories);

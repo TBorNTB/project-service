@@ -38,8 +38,8 @@ public class DocumentEntity {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "thumbnail_url")
-    private String thumbnailUrl;
+    @Column(name = "thumbnail_key")
+    private String thumbnailKey;
 
     @Column(name = "content", columnDefinition = "TEXT")
     private String content;
@@ -52,12 +52,12 @@ public class DocumentEntity {
     @JoinColumn(name = "project_id", nullable = false)
     private ProjectEntity projectEntity;
 
-    public static DocumentEntity of(String title, String description, String thumbnailUrl, String content, ProjectEntity projectEntity) {
+    public static DocumentEntity of(String title, String description, String content, ProjectEntity projectEntity) {
         DocumentEntity documentEntity = DocumentEntity.builder()
                 .id(null)
                 .title(title)
                 .description(description)
-                .thumbnailUrl(thumbnailUrl)
+                .thumbnailKey(null)
                 .content(content)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
@@ -72,10 +72,19 @@ public class DocumentEntity {
         this.projectEntity = projectEntity;
     }
 
-    public void update(String title, String content, String description, String thumbnailUrl) {
+    public void update(String title, String content, String description) {
         this.title = title;
         this.description = description;
-        this.thumbnailUrl = thumbnailUrl;
+        this.content = content;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateThumbnailKey(String thumbnailKey) {
+        this.thumbnailKey = thumbnailKey;
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    public void updateContent(String content) {
         this.content = content;
         this.updatedAt = LocalDateTime.now();
     }

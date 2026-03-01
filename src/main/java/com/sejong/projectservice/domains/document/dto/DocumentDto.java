@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
+import com.sejong.projectservice.support.common.file.FileUploader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,20 +27,22 @@ public class DocumentDto {
 
     private Long projectId;
 
-    public static List<DocumentDto> from(List<DocumentEntity> documentEntities) {
+    public static List<DocumentDto> from(List<DocumentEntity> documentEntities, FileUploader fileUploader) {
         return documentEntities.stream()
-                .map(it->{
+                .map(it -> {
+                    String thumbnailUrl = it.getThumbnailKey() != null && !it.getThumbnailKey().isEmpty()
+                            ? fileUploader.getFileUrl(it.getThumbnailKey())
+                            : null;
                     return DocumentDto.builder()
                             .id(it.getId())
                             .title(it.getTitle())
                             .content(it.getContent())
                             .description(it.getDescription())
-                            .thumbnailUrl(it.getThumbnailUrl())
+                            .thumbnailUrl(thumbnailUrl)
                             .createdAt(it.getCreatedAt())
                             .updatedAt(it.getUpdatedAt())
                             .build();
                 }).toList();
-
     }
 
     public void update(String title, String content, String description, String thumbnailUrl) {

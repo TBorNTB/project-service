@@ -87,7 +87,7 @@ public class ProjectSpecifyInfoRes {
                 .subGoalDtos(SubGoalDto.toDtoList(project.getSubGoals()))
                 .techStackDtos(TechStackDto.fromList(techStackEntities))
                 .collaborators(collaboratorResponseList)
-                .documentDtos(DocumentDto.from(project.getDocumentEntities()))
+                .documentDtos(DocumentDto.from(project.getDocumentEntities(), fileUploader))
                 .build();
     }
 }
