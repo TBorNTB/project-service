@@ -17,6 +17,8 @@ import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.support.common.internal.response.UserProfileDto;
+import com.sejong.projectservice.support.common.sanitizer.RequestSanitizer;
+import com.sejong.projectservice.support.common.sanitizer.SanitizedCsKnowledge;
 import com.sejong.projectservice.support.common.util.ExtractorUsername;
 import com.sejong.projectservice.support.common.pagination.CursorPageRequest;
 import com.sejong.projectservice.support.common.pagination.CursorPageRes;
@@ -45,6 +47,7 @@ import java.util.Optional;
 @Slf4j
 public class CsKnowledgeService {
 
+    private final RequestSanitizer requestSanitizer;
     private final UserExternalService userExternalService;
     private final CsKnowledgeRepository csKnowledgeRepository;
     private final CategoryRepository categoryRepository;
@@ -54,12 +57,13 @@ public class CsKnowledgeService {
     @Transactional
     public CsKnowledgeResDto createCsKnowledge(CsKnowledgeReqDto csKnowledgeReqDto, String username) {
         userExternalService.validateExistence(username);
-        CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
+        SanitizedCsKnowledge sanitized = requestSanitizer.sanitize(csKnowledgeReqDto);
+        CategoryEntity categoryEntity = categoryRepository.findByName(sanitized.category())
                 .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
         CsKnowledgeEntity csKnowledgeEntity = CsKnowledgeEntity.of(
-                csKnowledgeReqDto.title(),
-                csKnowledgeReqDto.content(),
-                csKnowledgeReqDto.description(),
+                sanitized.title(),
+                sanitized.content(),
+                sanitized.description(),
                 username,
                 categoryEntity,
                 LocalDateTime.now()
@@ -77,7 +81,7 @@ public class CsKnowledgeService {
         if (csKnowledgeReqDto.contentImageKeys() != null && !csKnowledgeReqDto.contentImageKeys().isEmpty()) {
             String updatedContent = processContentImages(
                     savedEntity.getId(),
-                    csKnowledgeReqDto.content(),
+                    sanitized.content(),
                     csKnowledgeReqDto.contentImageKeys()
             );
             savedEntity.updateContent(updatedContent);
@@ -93,14 +97,15 @@ public class CsKnowledgeService {
     public CsKnowledgeResDto updateCsKnowledge(Long csKnowledgeId, CsKnowledgeReqDto csKnowledgeReqDto, String username) {
         CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
-        CategoryEntity categoryEntity = categoryRepository.findByName(csKnowledgeReqDto.category())
+        SanitizedCsKnowledge sanitized = requestSanitizer.sanitize(csKnowledgeReqDto);
+        CategoryEntity categoryEntity = categoryRepository.findByName(sanitized.category())
                 .orElseThrow(() -> new BaseException(ExceptionType.CATEGORY_NOT_FOUND));
 
         csKnowledgeEntity.validateOwnerPermission(username);
         csKnowledgeEntity.update(
-                csKnowledgeReqDto.title(),
-                csKnowledgeReqDto.content(),
-                csKnowledgeReqDto.description(),
+                sanitized.title(),
+                sanitized.content(),
+                sanitized.description(),
                 username,
                 categoryEntity,
                 LocalDateTime.now()

@@ -95,6 +95,9 @@ dependencies {
 
     // Flyway (MySQL module required for Flyway 9+)
     implementation 'org.flywaydb:flyway-mysql'
+
+    // XSS 방어 (HTML Sanitizer)
+    implementation 'com.googlecode.owasp-java-html-sanitizer:owasp-java-html-sanitizer:20240325.1'
 }
 
 tasks.named('test') {

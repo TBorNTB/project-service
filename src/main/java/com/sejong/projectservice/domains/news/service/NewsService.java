@@ -19,6 +19,7 @@ import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
+import com.sejong.projectservice.support.common.sanitizer.RequestSanitizer;
 import com.sejong.projectservice.support.common.util.ExtractorUsername;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class NewsService {
 
+    private final RequestSanitizer requestSanitizer;
     private final NewsRepository newsRepository;
     private final UserExternalService userExternalService;
     private final FileUploader fileUploader;
@@ -54,6 +56,7 @@ public class NewsService {
                 newsReqDto.getParticipantIds()
         );
 
+        requestSanitizer.sanitize(newsReqDto);
         NewsEntity newsEntity = NewsEntity.of(
                 newsReqDto.getTitle(),
                 newsReqDto.getSummary(),
@@ -93,13 +96,14 @@ public class NewsService {
                 .orElseThrow(() -> new BaseException(ExceptionType.NEWS_NOT_FOUND));
         newsEntity.validateOwner(writerId);
 
+        requestSanitizer.sanitize(newsReqDto);
         newsEntity.update(
                 newsReqDto.getTitle(),
                 newsReqDto.getSummary(),
                 newsReqDto.getContent(),
                 newsReqDto.getCategory(),
                 String.join(",", newsReqDto.getParticipantIds()),
-                String.join(",", newsReqDto.getTags())
+                newsReqDto.getTags() != null ? String.join(",", newsReqDto.getTags()) : ""
         );
 
         // 새 썸네일이 전달된 경우 (temp key)

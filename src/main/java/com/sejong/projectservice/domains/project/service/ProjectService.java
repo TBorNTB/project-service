@@ -22,6 +22,7 @@ import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
+import com.sejong.projectservice.support.common.sanitizer.RequestSanitizer;
 import com.sejong.projectservice.support.common.util.Mapper;
 import com.sejong.projectservice.support.outbox.OutBoxFactory;
 import com.sejong.projectservice.support.outbox.OutboxService;
@@ -41,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class ProjectService {
 
+    private final RequestSanitizer requestSanitizer;
     private final UserExternalService userExternalService;
     private final ProjectRepository projectRepository;
     private final Mapper mapper;
@@ -51,6 +53,7 @@ public class ProjectService {
 
     @Transactional
     public ProjectAddResponse createProject(ProjectFormRequest projectFormRequest, String username) {
+        requestSanitizer.sanitize(projectFormRequest);
         userExternalService.validateExistence(username, projectFormRequest.getCollaborators());
         ProjectEntity projectEntity = ProjectEntity.of(projectFormRequest, username);
         ProjectEntity savedProject = projectRepository.save(projectEntity);
@@ -81,6 +84,7 @@ public class ProjectService {
 
     @Transactional
     public ProjectUpdateResponse update(Long projectId, ProjectUpdateRequest projectUpdateRequest, String username) {
+        requestSanitizer.sanitize(projectUpdateRequest);
         ProjectEntity project = projectRepository.findById(projectId)
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         project.validateUserPermission(username);
@@ -233,4 +237,5 @@ public class ProjectService {
         }
         return updatedContent;
     }
+
 }

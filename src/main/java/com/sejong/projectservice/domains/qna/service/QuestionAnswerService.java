@@ -8,6 +8,7 @@ import com.sejong.projectservice.domains.qna.repository.QuestionRepository;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
+import com.sejong.projectservice.support.common.sanitizer.RequestSanitizer;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
@@ -28,6 +29,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class QuestionAnswerService {
 
+    private final RequestSanitizer requestSanitizer;
     private final QuestionAnswerRepository questionAnswerRepository;
     private final QuestionRepository questionRepository;
     private final UserExternalService userExternalService;
@@ -39,7 +41,8 @@ public class QuestionAnswerService {
         QuestionEntity questionEntity = questionRepository.findById(questionId)
                 .orElseThrow(() -> new BaseException(ExceptionType.QUESTION_NOT_FOUND));
 
-        QuestionAnswerEntity answerEntity = QuestionAnswerEntity.of(content, username, questionEntity);
+        String safeContent = requestSanitizer.sanitizeAnswerContent(content);
+        QuestionAnswerEntity answerEntity = QuestionAnswerEntity.of(safeContent, username, questionEntity);
         QuestionAnswerEntity saved = questionAnswerRepository.save(answerEntity);
         Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(List.of(saved.getUsername()));
         return QuestionAnswerResponse.from(saved, userNameInfos);
@@ -61,7 +64,7 @@ public class QuestionAnswerService {
                 .orElseThrow(() -> new BaseException(ExceptionType.QUESTION_ANSWER_NOT_FOUND));
         entity.validateOwnerPermission(username);
 
-        entity.update(content);
+        entity.update(requestSanitizer.sanitizeAnswerContent(content));
         Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(List.of(entity.getUsername()));
         return QuestionAnswerResponse.from(entity, userNameInfos);
     }

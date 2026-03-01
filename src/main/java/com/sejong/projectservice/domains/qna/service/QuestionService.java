@@ -12,6 +12,8 @@ import com.sejong.projectservice.domains.qna.repository.spec.QuestionSpecificati
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
+import com.sejong.projectservice.support.common.sanitizer.RequestSanitizer;
+import com.sejong.projectservice.support.common.sanitizer.SanitizedQuestionInput;
 import com.sejong.projectservice.support.common.internal.response.PostLikeCheckResponse;
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
@@ -32,16 +34,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
+    private final RequestSanitizer requestSanitizer;
     private final QuestionRepository questionRepository;
     private final QuestionAnswerRepository questionAnswerRepository;
     private final UserExternalService userExternalService;
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    public QuestionResponse createQuestion(String title,String description ,String content, List<String> categories, String username) {
+    public QuestionResponse createQuestion(String title, String description, String content, List<String> categories, String username) {
         userExternalService.validateExistence(username);
-        List<CategoryEntity> categoryEntities = resolveExistingCategories(categories);
-        QuestionEntity question = QuestionEntity.of(title, description, content, username, categoryEntities);
+        SanitizedQuestionInput sanitized = requestSanitizer.sanitizeQuestionInput(title, description, content, categories);
+        List<CategoryEntity> categoryEntities = resolveExistingCategories(sanitized.categories());
+        QuestionEntity question = QuestionEntity.of(sanitized.title(), sanitized.description(), sanitized.content(), username, categoryEntities);
         QuestionEntity saved = questionRepository.save(question);
         Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(List.of(saved.getUsername()));
         return QuestionResponse.from(saved, userNameInfos);
@@ -71,8 +75,9 @@ public class QuestionService {
             .orElseThrow(() -> new BaseException(ExceptionType.QUESTION_NOT_FOUND));
         questionEntity.validateOwnerPermission(username);
 
-        List<CategoryEntity> categoryEntities = categories == null ? null : resolveExistingCategories(categories);
-        questionEntity.update(title, description, content, categoryEntities);
+        SanitizedQuestionInput sanitized = requestSanitizer.sanitizeQuestionInput(title, description, content, categories);
+        List<CategoryEntity> categoryEntities = categories == null ? null : resolveExistingCategories(sanitized.categories());
+        questionEntity.update(sanitized.title(), sanitized.description(), sanitized.content(), categoryEntities);
 
         Map<String, UserNameInfo> userNameInfos = userExternalService.getUserNameInfos(List.of(questionEntity.getUsername()));
         return QuestionResponse.from(questionEntity, userNameInfos);
