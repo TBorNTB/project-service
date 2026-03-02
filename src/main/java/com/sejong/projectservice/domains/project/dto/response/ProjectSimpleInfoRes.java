@@ -36,6 +36,7 @@ public class ProjectSimpleInfoRes {
     private ProjectStatus projectStatus;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime startedAt;
     private LocalDateTime endedAt;
     private String thumbnailUrl;
 
@@ -74,6 +75,7 @@ public class ProjectSimpleInfoRes {
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
+                .startedAt(project.getStartedAt())
                 .endedAt(project.getEndedAt())
                 .thumbnailUrl(thumbnailUrl)
                 .categories(CategoryDto.fromList(categoryEntityEntities))

@@ -39,6 +39,7 @@ public class ProjectSpecifyInfoRes {
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private LocalDateTime startedAt;
     private LocalDateTime endedAt;
 
     private String thumbnailUrl;
@@ -80,6 +81,7 @@ public class ProjectSpecifyInfoRes {
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt())
                 .updatedAt(project.getUpdatedAt())
+                .startedAt(project.getStartedAt())
                 .endedAt(project.getEndedAt())
                 .thumbnailUrl(thumbnailUrl)
                 .content(project.getContent())
