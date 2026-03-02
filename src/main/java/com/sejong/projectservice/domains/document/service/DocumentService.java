@@ -13,7 +13,7 @@ import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
 import com.sejong.projectservice.support.common.sanitizer.RequestSanitizer;
-import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxEventRequest;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,7 +67,7 @@ public class DocumentService {
             savedDocumentEntity.updateContent(updatedContent);
         }
 
-        OutBoxFactory outbox = OutBoxFactory.of(savedDocumentEntity, fileUploader, Type.CREATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(savedDocumentEntity, fileUploader, Type.CREATED);
         outboxService.enqueue(outbox);
         return DocumentInfoRes.from(savedDocumentEntity, fileUploader);
     }
@@ -113,7 +113,7 @@ public class DocumentService {
             documentEntity.updateContent(updatedContent);
         }
 
-        OutBoxFactory outbox = OutBoxFactory.of(documentEntity, fileUploader, Type.UPDATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(documentEntity, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
         return DocumentInfoRes.from(documentEntity, fileUploader);
     }
@@ -126,7 +126,7 @@ public class DocumentService {
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         documentRepository.deleteById(documentEntity.getId());
-        OutBoxFactory outbox = OutBoxFactory.remove(documentEntity, Type.DELETED);
+        OutboxEventRequest outbox = OutboxEventRequest.remove(documentEntity, Type.DELETED);
         outboxService.enqueue(outbox);
     }
 

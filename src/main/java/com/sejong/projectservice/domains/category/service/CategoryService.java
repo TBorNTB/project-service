@@ -12,7 +12,7 @@ import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
-import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxEventRequest;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +75,7 @@ public class CategoryService {
         ).toList();
 
         projectEntity.updateCategory(categories);
-        OutBoxFactory outbox = OutBoxFactory.of(projectEntity, fileUploader, Type.UPDATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(projectEntity, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
         return CategoryAllResponse.from(categories);
     }

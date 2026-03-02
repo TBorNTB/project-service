@@ -42,12 +42,6 @@ public class OutboxEvent {
     @Column(nullable = false, length = 128)
     private String eventType;
 
-    @Column(nullable = false, length = 255)
-    private String topic;
-
-    @Column(nullable = false, length = 255)
-    private String messageKey;
-
     @Lob
     @Column(nullable = false, columnDefinition = "longtext")
     private String payload;
@@ -83,36 +77,12 @@ public class OutboxEvent {
     @Version
     private long version;
 
-    public static OutboxEvent pending(
-            String aggregateType,
-            String aggregateId,
-            String eventType,
-            String topic,
-            String messageKey,
-            String payload,
-            Instant now
-    ) {
+    public static OutboxEvent pending(OutboxEventRequest request, Instant now) {
         OutboxEvent e = new OutboxEvent();
-        e.aggregateType = aggregateType;
-        e.aggregateId = aggregateId;
-        e.eventType = eventType;
-        e.topic = topic;
-        e.messageKey = messageKey;
-        e.payload = payload;
-        e.status = OutboxStatus.PENDING;
-        e.attempts = 0;
-        e.nextAttemptAt = now;
-        return e;
-    }
-
-    public static OutboxEvent pending(OutBoxFactory outBoxFactory, Instant now) {
-        OutboxEvent e = new OutboxEvent();
-        e.aggregateType = outBoxFactory.getAggregateType();
-        e.aggregateId = outBoxFactory.getAggregateId();
-        e.eventType = outBoxFactory.getEventType();
-        e.topic = outBoxFactory.getTopic();
-        e.messageKey = outBoxFactory.getMessageKey();
-        e.payload = outBoxFactory.getPayload();
+        e.aggregateType = request.getAggregateType();
+        e.aggregateId = request.getAggregateId();
+        e.eventType = request.getEventType();
+        e.payload = request.getPayload();
         e.status = OutboxStatus.PENDING;
         e.attempts = 0;
         e.nextAttemptAt = now;

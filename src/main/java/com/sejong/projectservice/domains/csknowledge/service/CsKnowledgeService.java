@@ -25,7 +25,7 @@ import com.sejong.projectservice.support.common.pagination.CursorPageRes;
 import com.sejong.projectservice.support.common.pagination.CustomPageRequest;
 import com.sejong.projectservice.support.common.pagination.OffsetPageResponse;
 import com.sejong.projectservice.support.common.pagination.enums.SortDirection;
-import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxEventRequest;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -88,7 +88,7 @@ public class CsKnowledgeService {
         }
 
         CsKnowledgeResDto response = resolveUsername(savedEntity);
-        OutBoxFactory outbox = OutBoxFactory.of(csKnowledgeEntity, fileUploader, Type.CREATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(csKnowledgeEntity, fileUploader, Type.CREATED);
         outboxService.enqueue(outbox);
         return response;
     }
@@ -138,7 +138,7 @@ public class CsKnowledgeService {
         }
 
         CsKnowledgeResDto response = resolveUsername(csKnowledgeEntity);
-        OutBoxFactory outbox = OutBoxFactory.of(csKnowledgeEntity, fileUploader, Type.UPDATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(csKnowledgeEntity, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
         return response;
     }
@@ -149,7 +149,7 @@ public class CsKnowledgeService {
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
         csKnowledgeEntity.validateOwnerPermission(username, userRole);
         csKnowledgeRepository.deleteById(csKnowledgeEntity.getId());
-        OutBoxFactory outbox = OutBoxFactory.remove(csKnowledgeEntity, Type.DELETED);
+        OutboxEventRequest outbox = OutboxEventRequest.remove(csKnowledgeEntity, Type.DELETED);
         outboxService.enqueue(outbox);
     }
 
