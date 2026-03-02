@@ -28,6 +28,8 @@ public class ProjectEvent {
 
     private ProjectStatus projectStatus;
 
+    private String startedAt;
+    private String endedAt;
     private String createdAt;
     private String updatedAt;
 
@@ -72,6 +74,8 @@ public class ProjectEvent {
                 .projectStatus(project.getProjectStatus())
                 .createdAt(project.getCreatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .updatedAt(project.getUpdatedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
+                .startedAt(project.getStartedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
+                .endedAt(project.getEndedAt().truncatedTo(ChronoUnit.MILLIS).format(FORMATTER))
                 .projectCategories(categoryNames)
                 .projectTechStacks(techStackNames)
                 .username(project.getUsername())
