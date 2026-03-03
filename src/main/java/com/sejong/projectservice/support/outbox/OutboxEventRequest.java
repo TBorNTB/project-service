@@ -20,68 +20,66 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @RequiredArgsConstructor
-public class OutBoxFactory {
+public class OutboxEventRequest {
     private String aggregateType;
     private String aggregateId;
     private String eventType;
-    private String topic;
-    private String messageKey;
     private String payload;
 
-    public static OutBoxFactory remove(ProjectEntity project, Type type) {
+    public static OutboxEventRequest remove(ProjectEntity project, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.PROJECT;
         String projectId = project.getId().toString();
         ProjectEventMeta event = ProjectEventMeta.deleteOf(projectId, type, System.currentTimeMillis());
-        return new OutBoxFactory(aggregateType.getAggregateType(), projectId, aggregateType.getEventType(type), aggregateType.getTopic(), projectId, toJsonString(event));
+        return new OutboxEventRequest(aggregateType.getAggregateType(), projectId, aggregateType.getEventType(type), toJsonString(event));
     }
 
-    public static OutBoxFactory of(ProjectEntity project, FileUploader fileUploader, Type type) {
+    public static OutboxEventRequest of(ProjectEntity project, FileUploader fileUploader, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.PROJECT;
         ProjectEventMeta event = ProjectEventMeta.of(project, fileUploader, type, System.currentTimeMillis());
         String aggregatedId = event.getAggregatedId();
-        return new OutBoxFactory(aggregateType.getAggregateType(), aggregatedId, aggregateType.getEventType(type), aggregateType.getTopic(), aggregatedId, toJsonString(event));
+        return new OutboxEventRequest(aggregateType.getAggregateType(), aggregatedId, aggregateType.getEventType(type), toJsonString(event));
     }
 
-    public static OutBoxFactory remove(NewsEntity news, Type type) {
+    public static OutboxEventRequest remove(NewsEntity news, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.NEWS;
         String newsId = news.getId().toString();
         NewsIndexEvent event = NewsIndexEvent.deleteOf(newsId, type, System.currentTimeMillis());
-        return new OutBoxFactory(aggregateType.getAggregateType(), newsId, aggregateType.getEventType(type), aggregateType.getTopic(), newsId, toJsonString(event));
+        return new OutboxEventRequest(aggregateType.getAggregateType(), newsId, aggregateType.getEventType(type), toJsonString(event));
     }
 
-    public static OutBoxFactory of(NewsEntity news, FileUploader fileUploader, Type type) {
+    public static OutboxEventRequest of(NewsEntity news, FileUploader fileUploader, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.NEWS;
         String newsId = news.getId().toString();
         NewsIndexEvent event = NewsIndexEvent.of(news, fileUploader, type, System.currentTimeMillis());
-        return new OutBoxFactory(aggregateType.getAggregateType(), newsId, aggregateType.getEventType(type), aggregateType.getTopic(), newsId, toJsonString(event));
+        return new OutboxEventRequest(aggregateType.getAggregateType(), newsId, aggregateType.getEventType(type), toJsonString(event));
     }
 
-    public static OutBoxFactory remove(CsKnowledgeEntity csKnowledge, Type type) {
+    public static OutboxEventRequest remove(CsKnowledgeEntity csKnowledge, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.CS_KNOWLEDGE;
         String csKnowledgeId = csKnowledge.getId().toString();
         CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.deleteOf(csKnowledgeId, type, System.currentTimeMillis());
-        return new OutBoxFactory(aggregateType.getAggregateType(), csKnowledgeId, aggregateType.getEventType(type), aggregateType.getTopic(), csKnowledgeId, toJsonString(event));
+        return new OutboxEventRequest(aggregateType.getAggregateType(), csKnowledgeId, aggregateType.getEventType(type), toJsonString(event));
     }
 
-    public static OutBoxFactory of(CsKnowledgeEntity csKnowledge, FileUploader fileUploader, Type type) {
+    public static OutboxEventRequest of(CsKnowledgeEntity csKnowledge, FileUploader fileUploader, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.CS_KNOWLEDGE;
         String csKnowledgeId = csKnowledge.getId().toString();
         CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledge, fileUploader, type, System.currentTimeMillis());
-        return new OutBoxFactory(aggregateType.getAggregateType(), csKnowledgeId, aggregateType.getEventType(type), aggregateType.getTopic(), csKnowledgeId, toJsonString(event));
+        return new OutboxEventRequest(aggregateType.getAggregateType(), csKnowledgeId, aggregateType.getEventType(type), toJsonString(event));
     }
 
-    public static OutBoxFactory remove(DocumentEntity document, Type type) {
+    public static OutboxEventRequest remove(DocumentEntity document, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.DOCUMENT;
         String documentId = document.getId().toString();
         DocumentIndexEvent event = DocumentIndexEvent.deleteOf(documentId, Type.DELETED, System.currentTimeMillis());
-        return new OutBoxFactory(aggregateType.getAggregateType(), documentId, aggregateType.getEventType(type), aggregateType.getTopic(), documentId, toJsonString(event));
+        return new OutboxEventRequest(aggregateType.getAggregateType(), documentId, aggregateType.getEventType(type), toJsonString(event));
     }
 
-    public static OutBoxFactory of(DocumentEntity document, FileUploader fileUploader, Type type) {
+    public static OutboxEventRequest of(DocumentEntity document, FileUploader fileUploader, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.DOCUMENT;
         DocumentIndexEvent event = DocumentIndexEvent.of(document, fileUploader, type, System.currentTimeMillis());
         String aggregatedId = event.getAggregatedId();
-        return new OutBoxFactory(aggregateType.getAggregateType(), aggregatedId, aggregateType.getEventType(type), aggregateType.getTopic(), aggregatedId, toJsonString(event));
+        return new OutboxEventRequest(aggregateType.getAggregateType(), aggregatedId, aggregateType.getEventType(type), toJsonString(event));
     }
 
     private static String toJsonString(Object object) {

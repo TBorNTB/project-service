@@ -8,7 +8,7 @@ import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.UserExternalService;
-import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxEventRequest;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class CollaboratorService {
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         projectEntity.validateUserPermission(username);
         projectEntity.updateCollaborator(collaboratorNames);
-        OutBoxFactory outbox = OutBoxFactory.of(projectEntity, fileUploader, Type.UPDATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(projectEntity, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
         return CollaboratorDto.toDtoList(projectEntity.getCollaboratorEntities());
     }

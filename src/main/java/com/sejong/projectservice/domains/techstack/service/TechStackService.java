@@ -10,7 +10,7 @@ import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
-import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxEventRequest;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +76,7 @@ public class TechStackService {
                 .toList();
 
         projectEntity.updateTechStack(techStacks);
-        OutBoxFactory outbox = OutBoxFactory.of(projectEntity, fileUploader, Type.UPDATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(projectEntity, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
         return techStacks.stream().map(TechStackRes::from).toList();
     }

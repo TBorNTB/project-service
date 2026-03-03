@@ -43,11 +43,11 @@ public class OutboxDispatcher {
         for (OutboxEvent event : claimed) {
             UUID id = event.getId();
             try {
-                kafkaTemplate.send(event.getTopic(), event.getMessageKey(), event.getPayload())
+                kafkaTemplate.send(event.getAggregateType(), event.getAggregateId(), event.getPayload())
                         .get(sendTimeoutMs, TimeUnit.MILLISECONDS);
                 outboxService.markSent(id);
             } catch (Exception ex) {
-                log.warn("outbox dispatch failed id={}, topic={}, key={}", id, event.getTopic(), event.getMessageKey(), ex);
+                log.warn("outbox dispatch failed id={}, topic={}, key={}", id, event.getAggregateType(), event.getAggregateId(), ex);
                 outboxService.markFailure(id, ex);
             }
         }

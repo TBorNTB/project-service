@@ -27,16 +27,9 @@ public class OutboxService {
     private long maxBackoffMs;
 
     @Transactional(propagation = Propagation.MANDATORY)
-    public void enqueue(String aggregateType, String aggregateId, String eventType, String topic, String messageKey, String payload) {
+    public void enqueue(OutboxEventRequest request) {
         Instant now = Instant.now();
-        OutboxEvent event = OutboxEvent.pending(aggregateType, aggregateId, eventType, topic, messageKey, payload, now);
-        repository.save(event);
-    }
-
-    @Transactional(propagation = Propagation.MANDATORY)
-    public void enqueue(OutBoxFactory outBoxFactory) {
-        Instant now = Instant.now();
-        OutboxEvent event = OutboxEvent.pending(outBoxFactory,now);
+        OutboxEvent event = OutboxEvent.pending(request, now);
         repository.save(event);
     }
 

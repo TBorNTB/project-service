@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxEventRequest;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -85,7 +85,7 @@ public class NewsService {
             );
             savedNewsEntity.updateContent(updatedContent);
         }
-        OutBoxFactory outbox = OutBoxFactory.of(savedNewsEntity, fileUploader, Type.CREATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(savedNewsEntity, fileUploader, Type.CREATED);
         outboxService.enqueue(outbox);
         return resolveUsernames(savedNewsEntity);
     }
@@ -132,7 +132,7 @@ public class NewsService {
             newsEntity.updateContent(updatedContent);
         }
 
-        OutBoxFactory outbox = OutBoxFactory.of(newsEntity, fileUploader, Type.UPDATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(newsEntity, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
         return resolveUsernames(newsEntity);
     }
@@ -144,7 +144,7 @@ public class NewsService {
         newsEntity.validateOwner(writerId);
 
         newsRepository.deleteById(newsEntity.getId());
-        OutBoxFactory outbox = OutBoxFactory.remove(newsEntity, Type.DELETED);
+        OutboxEventRequest outbox = OutboxEventRequest.remove(newsEntity, Type.DELETED);
         outboxService.enqueue(outbox);
     }
 

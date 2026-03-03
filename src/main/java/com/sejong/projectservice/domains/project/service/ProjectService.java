@@ -24,7 +24,7 @@ import com.sejong.projectservice.support.common.internal.response.PostLikeCheckR
 import com.sejong.projectservice.support.common.internal.response.UserNameInfo;
 import com.sejong.projectservice.support.common.sanitizer.RequestSanitizer;
 import com.sejong.projectservice.support.common.util.Mapper;
-import com.sejong.projectservice.support.outbox.OutBoxFactory;
+import com.sejong.projectservice.support.outbox.OutboxEventRequest;
 import com.sejong.projectservice.support.outbox.OutboxService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -76,7 +76,7 @@ public class ProjectService {
             savedProject.updateContent(updatedContent);
         }
 
-        OutBoxFactory outbox = OutBoxFactory.of(savedProject, fileUploader, Type.CREATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(savedProject, fileUploader, Type.CREATED);
         outboxService.enqueue(outbox);
         return ProjectAddResponse.from(savedProject.getId(), savedProject.getTitle(), "저장 완료",
                 savedProject.getContent(), savedProject.getEndedAt());
@@ -126,7 +126,7 @@ public class ProjectService {
         }
 
         ProjectEntity savedProject = projectRepository.save(project);
-        OutBoxFactory outbox = OutBoxFactory.of(savedProject, fileUploader, Type.UPDATED);
+        OutboxEventRequest outbox = OutboxEventRequest.of(savedProject, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
         return ProjectUpdateResponse.from(savedProject.getId(), savedProject.getTitle(), "수정 완료");
     }
@@ -137,8 +137,8 @@ public class ProjectService {
                 .orElseThrow(() -> new BaseException(ExceptionType.PROJECT_NOT_FOUND));
         project.validateOwner(username, userRole);
         projectRepository.deleteById(projectId);
-        OutBoxFactory outBox = OutBoxFactory.remove(project, Type.DELETED);
-        outboxService.enqueue(outBox);
+        OutboxEventRequest outbox = OutboxEventRequest.remove(project, Type.DELETED);
+        outboxService.enqueue(outbox);
         return ProjectDeleteResponse.of(project.getTitle(), "삭제 완료");
     }
 
