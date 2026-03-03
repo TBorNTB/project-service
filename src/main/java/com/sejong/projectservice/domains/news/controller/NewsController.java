@@ -3,6 +3,7 @@ package com.sejong.projectservice.domains.news.controller;
 import com.sejong.projectservice.domains.news.dto.NewsReqDto;
 import com.sejong.projectservice.domains.news.dto.NewsResDto;
 import com.sejong.projectservice.domains.news.service.NewsService;
+import com.sejong.projectservice.support.common.util.RoleValidator;
 import com.sejong.projectservice.support.common.file.FileUploadRequest;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.file.PreSignedUrl;
@@ -50,7 +51,9 @@ public class NewsController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<NewsResDto> createNews(
             @RequestBody NewsReqDto newsReqDto,
-            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username) {
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+        RoleValidator.validateNotGuest(userRole);
         newsReqDto.setWriterUsername(username);
         NewsResDto response = newsService.createNews(newsReqDto);
         return ResponseEntity.ok(response);
@@ -59,7 +62,10 @@ public class NewsController {
     @PostMapping("/files/presigned-url")
     @Operation(summary = "파일 업로드용 PreSigned URL 생성")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<PreSignedUrl> preSignedUrl(@RequestBody FileUploadRequest request) {
+    public ResponseEntity<PreSignedUrl> preSignedUrl(
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole,
+            @RequestBody FileUploadRequest request) {
+        RoleValidator.validateNotGuest(userRole);
         PreSignedUrl preSignedUrl = fileUploader.generatePreSignedUrl(
                 request.fileName(),
                 request.contentType(), // "image/jpeg"
@@ -72,7 +78,6 @@ public class NewsController {
     @Operation(summary = "뉴스 조회 (오프셋 기반 페이지네이션)")
     public ResponseEntity<OffsetPageResponse<List<NewsResDto>>> getOffsetNews(
             @ParameterObject @Valid OffsetPageReqDto offsetPageReqDto) {
-
         OffsetPageResponse<List<NewsResDto>> offsetNews = newsService.getOffsetNews(offsetPageReqDto);
         return ResponseEntity.ok(offsetNews);
     }
@@ -81,7 +86,6 @@ public class NewsController {
     @Operation(summary = "뉴스 조회 (커서 기반 페이지네이션)")
     public CursorPageRes<List<NewsResDto>> getCursorNews(
             @ParameterObject @Valid CursorPageReqDto cursorPageReqDto) {
-
         return newsService.getCursorNews(cursorPageReqDto);
     }
 
@@ -97,7 +101,9 @@ public class NewsController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<NewsResDto> updateNews(@PathVariable Long newsId,
                                                  @RequestBody NewsReqDto newsReqDto,
-                                                 @Parameter(hidden = true) @RequestHeader("X-User-Id") String username) {
+                                                 @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+                                                 @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+        RoleValidator.validateNotGuest(userRole);
         NewsResDto response = newsService.updateNews(newsId, newsReqDto, username);
         return ResponseEntity.ok(response);
     }
@@ -106,7 +112,9 @@ public class NewsController {
     @Operation(summary = "뉴스 삭제")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<Void> deleteNews(@PathVariable Long newsId,
-                                           @Parameter(hidden = true) @RequestHeader("X-User-Id") String username) {
+                                           @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+                                           @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+        RoleValidator.validateNotGuest(userRole);
         newsService.deleteNews(newsId, username);
         return ResponseEntity.ok().build();
     }

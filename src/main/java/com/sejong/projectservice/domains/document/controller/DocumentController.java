@@ -4,6 +4,7 @@ import com.sejong.projectservice.domains.document.dto.DocumentCreateReq;
 import com.sejong.projectservice.domains.document.dto.DocumentInfoRes;
 import com.sejong.projectservice.domains.document.dto.DocumentUpdateReq;
 import com.sejong.projectservice.domains.document.service.DocumentService;
+import com.sejong.projectservice.support.common.util.RoleValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -24,9 +25,11 @@ public class DocumentController {
     @Operation(summary = "다큐먼트 생성")
     public ResponseEntity<DocumentInfoRes> createDocumentInProject(
             @Parameter(hidden= true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody DocumentCreateReq request
     ) {
+        RoleValidator.validateNotGuest(userRole);
         DocumentInfoRes response = documentService.createDocument(projectId, request, username);
         return ResponseEntity
                 .status(201)
@@ -47,9 +50,11 @@ public class DocumentController {
     @Operation(summary = "다큐먼트 수정")
     public ResponseEntity<DocumentInfoRes> updateDocument(
             @Parameter(hidden= true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @PathVariable(name = "documentId") Long documentId,
             @RequestBody DocumentUpdateReq request
     ) {
+        RoleValidator.validateNotGuest(userRole);
         DocumentInfoRes documentInfoRes = documentService.updateDocument(documentId, request, username);
         return ResponseEntity.ok(documentInfoRes);
     }
@@ -59,9 +64,10 @@ public class DocumentController {
     @Operation(summary = "다큐먼트 삭제")
     public ResponseEntity<Void> deleteDocument(
             @Parameter(hidden= true)  @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @PathVariable(name = "documentId") Long documentId
     ) {
-
+        RoleValidator.validateNotGuest(userRole);
         documentService.deleteDocument(documentId, username);
         return new ResponseEntity<>(HttpStatus.OK);
     }

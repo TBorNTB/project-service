@@ -4,6 +4,7 @@ package com.sejong.projectservice.domains.csknowledge.controller;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
 import com.sejong.projectservice.domains.csknowledge.service.CsKnowledgeService;
+import com.sejong.projectservice.support.common.util.RoleValidator;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
 import com.sejong.projectservice.support.common.pagination.CursorPageRes;
@@ -33,8 +34,10 @@ public class CsKnowledgeController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<CsKnowledgeResDto> createCsKnowledge(
             @Valid @RequestBody CsKnowledgeReqDto csKnowledgeReqDto,
-            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole
     ) {
+        RoleValidator.validateNotGuest(userRole);
         CsKnowledgeResDto response = csKnowledgeService.createCsKnowledge(csKnowledgeReqDto, username);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -45,7 +48,9 @@ public class CsKnowledgeController {
     public ResponseEntity<CsKnowledgeResDto> updateCsKnowledge(
             @PathVariable Long csKnowledgeId,
             @Valid @RequestBody CsKnowledgeReqDto csKnowledgeReqDto,
-            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username) {
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+        RoleValidator.validateNotGuest(userRole);
         CsKnowledgeResDto response = csKnowledgeService.updateCsKnowledge(csKnowledgeId, csKnowledgeReqDto, username);
         return ResponseEntity.ok(response);
     }
@@ -56,8 +61,8 @@ public class CsKnowledgeController {
     public ResponseEntity<Void> deleteCsKnowledge(
             @PathVariable Long csKnowledgeId,
             @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
-            @Parameter(hidden = true) @RequestHeader("X-User-Role") String userRole) {
-
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole) {
+        RoleValidator.validateNotGuest(userRole);
         csKnowledgeService.deleteCsKnowledge(csKnowledgeId, username, userRole);
         return ResponseEntity.noContent().build();
     }
@@ -78,7 +83,8 @@ public class CsKnowledgeController {
 
     @GetMapping("/category/{techCategory}")
     @Operation(summary = "카테고리별 CS 지식 조회")
-    public ResponseEntity<List<CsKnowledgeResDto>> getCsKnowledgeByCategory(@PathVariable("techCategory") String categoryName) {
+    public ResponseEntity<List<CsKnowledgeResDto>> getCsKnowledgeByCategory(
+            @PathVariable("techCategory") String categoryName) {
         List<CsKnowledgeResDto> response = csKnowledgeService.findAllByTechCategory(categoryName);
         return ResponseEntity.ok(response);
     }

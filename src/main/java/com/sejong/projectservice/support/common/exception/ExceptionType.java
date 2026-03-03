@@ -18,6 +18,7 @@ public enum ExceptionType implements ExceptionTypeIfs {
 
     // 403 Forbidden
     FORBIDDEN(403, "접근 권한이 없습니다"),
+    GUEST_FORBIDDEN(403, "외부인은 권한 없습니다"),
     NOT_NEWS_OWNER(403, "뉴스 작성자만 수정/삭제할 수 있습니다"),
 
     // 404 Not Found

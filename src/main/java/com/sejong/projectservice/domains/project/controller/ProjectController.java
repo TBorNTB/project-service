@@ -11,6 +11,7 @@ import com.sejong.projectservice.domains.project.dto.response.ProjectSpecifyInfo
 import com.sejong.projectservice.domains.project.dto.response.ProjectUpdateResponse;
 import com.sejong.projectservice.domains.project.service.ProjectService;
 import com.sejong.projectservice.support.common.constants.ProjectStatus;
+import com.sejong.projectservice.support.common.util.RoleValidator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -53,7 +54,9 @@ public class ProjectController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ProjectAddResponse> createProject(
             @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @RequestBody ProjectFormRequest projectFormRequest) {
+        RoleValidator.validateNotGuest(userRole);
         log.info("username = {}", username);
         ProjectAddResponse response = projectService.createProject(projectFormRequest, username);
         return ResponseEntity
@@ -63,7 +66,6 @@ public class ProjectController {
 
     @GetMapping()
     @Operation(summary = "프로젝트 조회 (페이지네이션)") // todo: 오프셋 기반 페이지네이션 수정
-    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ProjectPageResponse> getAll(
             @RequestParam(name = "size") int size,
             @RequestParam(name = "page") int page
@@ -82,9 +84,11 @@ public class ProjectController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ProjectUpdateResponse> updateProject(
             @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @PathVariable(name = "projectId") Long projectId,
             @RequestBody ProjectUpdateRequest projectUpdateRequest
     ) {
+        RoleValidator.validateNotGuest(userRole);
         ProjectUpdateResponse response = projectService.update(projectId, projectUpdateRequest, username);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
@@ -126,9 +130,10 @@ public class ProjectController {
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ProjectDeleteResponse> deleteProject(
             @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
-            @Parameter(hidden = true) @RequestHeader("X-User-Role") String userRole,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole,
             @PathVariable Long projectId
     ) {
+        RoleValidator.validateNotGuest(userRole);
         ProjectDeleteResponse response = projectService.removeProject(username, projectId, userRole);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(response);
