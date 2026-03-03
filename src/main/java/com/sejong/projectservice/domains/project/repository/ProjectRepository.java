@@ -30,6 +30,8 @@ public interface ProjectRepository extends JpaRepository<ProjectEntity, Long> {
     Long getProjectCountByDate(@Param("startDate") LocalDateTime startDate,
                                 @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT pe.id FROM ProjectEntity pe WHERE pe.username = :username")
+    @Query("SELECT DISTINCT pe.id FROM ProjectEntity pe " +
+            "LEFT JOIN pe.collaboratorEntities c " +
+            "WHERE pe.username = :username OR c.collaboratorName = :username")
     List<Long> findProjectIdsByUsername(@Param("username") String username);
 }

@@ -38,6 +38,8 @@ public interface NewsRepository extends JpaRepository<NewsEntity, Long> {
     Long getNewsCountByDate(@Param("startDate") LocalDateTime startDate,
                             @Param("endDate") LocalDateTime endDate);
 
-    @Query("SELECT ne.id FROM NewsEntity ne WHERE ne.writerUsername = :username")
+    @Query("SELECT DISTINCT ne.id FROM NewsEntity ne " +
+            "WHERE ne.writerUsername = :username " +
+            "OR CONCAT(',', ne.participantUsernames, ',') LIKE CONCAT('%,', :username, ',%')")
     List<Long> findNewsIdsByUsername(@Param("username") String username);
 }
