@@ -39,9 +39,6 @@ public class OutboxEvent {
     @Column(nullable = false, length = 128)
     private String aggregateId;
 
-    @Column(nullable = false, length = 128)
-    private String eventType;
-
     @Lob
     @Column(nullable = false, columnDefinition = "longtext")
     private String payload;
@@ -81,7 +78,6 @@ public class OutboxEvent {
         OutboxEvent e = new OutboxEvent();
         e.aggregateType = request.getAggregateType();
         e.aggregateId = request.getAggregateId();
-        e.eventType = request.getEventType();
         e.payload = request.getPayload();
         e.status = OutboxStatus.PENDING;
         e.attempts = 0;

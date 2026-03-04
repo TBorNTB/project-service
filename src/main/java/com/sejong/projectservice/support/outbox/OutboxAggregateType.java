@@ -8,20 +8,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum OutboxAggregateType {
 
-    PROJECT("project", "project", "Project", "ProjectDeleted"),
-    NEWS("news", "news", "News", "NewsDeleted"),
-    CS_KNOWLEDGE("cs-knowledge", "cs-knowledge", "CsKnowledge", "CsKnowledgeDeleted"),
-    DOCUMENT("document", "document", "Document", "DocumentDeleted");
+    PROJECT("project"),
+    NEWS("news"),
+    CS_KNOWLEDGE("cs-knowledge"),
+    DOCUMENT("document");
 
     private final String aggregateType;
-    private final String topic;
-    private final String eventTypePrefix;
-    private final String deletedEventType;
 
-    public String getEventType(Type type) {
-        if (type == Type.DELETED) {
-            return deletedEventType;
-        }
-        return eventTypePrefix + type.name();
-    }
 }
