@@ -28,24 +28,45 @@ public class CategoryService {
     private final OutboxService outboxService;
     private final FileUploader fileUploader;
 
+    private static final String CATEGORY_ICON_DIR = "project-service/category-icon";
+
     @Transactional
-    public CategoryResponse create(String userRole, String name, String description, String content) {
+    public CategoryResponse create(String userRole, String name, String description, String content, String iconKey) {
 
         validateAdminRole(userRole);
-        CategoryEntity categoryEntity = CategoryEntity.of(name, description, content);
+        CategoryEntity categoryEntity = CategoryEntity.of(name, description, content, null);
         CategoryEntity savedCategoryEntity = categoryRepository.save(categoryEntity);
+
+        if (iconKey != null && !iconKey.isBlank()) {
+            String targetDir = String.format("%s/%d", CATEGORY_ICON_DIR, savedCategoryEntity.getId());
+            String finalKey = fileUploader.moveFile(iconKey, targetDir);
+            savedCategoryEntity.updateIconKey(finalKey);
+        }
         return CategoryResponse.from(savedCategoryEntity);
     }
 
     @Transactional
     public CategoryResponse update(String userRole, String prevName, String nextName, String description,
-                                   String content) {
+                                   String content, String iconKey) {
         validateAdminRole(userRole);
         CategoryEntity categoryEntity = categoryRepository.findByName(prevName)
                 .orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND));
         categoryEntity.updateName(nextName);
         categoryEntity.updateDescription(description);
         categoryEntity.updateContent(content);
+
+        if (iconKey != null && !iconKey.isBlank()) {
+            if (categoryEntity.getIconKey() != null) {
+                try {
+                    fileUploader.delete(categoryEntity.getIconKey());
+                } catch (Exception e) {
+                    // 기존 아이콘 삭제 실패 시 계속 진행
+                }
+            }
+            String targetDir = String.format("%s/%d", CATEGORY_ICON_DIR, categoryEntity.getId());
+            String finalKey = fileUploader.moveFile(iconKey, targetDir);
+            categoryEntity.updateIconKey(finalKey);
+        }
         return CategoryResponse.updateFrom(categoryEntity);
     }
 

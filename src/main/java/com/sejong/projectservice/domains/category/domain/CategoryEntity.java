@@ -41,6 +41,9 @@ public class CategoryEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "icon_key", length = 512)
+    private String iconKey;
+
     @OneToMany(mappedBy = "categoryEntity", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<ProjectCategoryEntity> projectCategories = new ArrayList<>();
@@ -59,6 +62,18 @@ public class CategoryEntity {
                 .name(name)
                 .description(description)
                 .content(content)
+                .iconKey(null)
+                .projectCategories(new ArrayList<>())
+                .build();
+    }
+
+    public static CategoryEntity of(String name, String description, String content, String iconKey) {
+        return CategoryEntity.builder()
+                .id(null)
+                .name(name)
+                .description(description)
+                .content(content)
+                .iconKey(iconKey)
                 .projectCategories(new ArrayList<>())
                 .build();
     }
@@ -77,6 +92,10 @@ public class CategoryEntity {
 
     public void updateContent(String content) {
         this.content= content;
+    }
+
+    public void updateIconKey(String iconKey) {
+        this.iconKey = iconKey;
     }
 
     @Override

@@ -18,4 +18,7 @@ public class CategoryAddRequest {
 
     private String content;
 
+    @io.swagger.v3.oas.annotations.media.Schema(description = "아이콘 이미지 key (presigned URL 업로드 후 받은 key)")
+    private String iconKey;
+
 }

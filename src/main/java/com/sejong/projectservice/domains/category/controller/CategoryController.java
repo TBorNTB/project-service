@@ -2,6 +2,9 @@ package com.sejong.projectservice.domains.category.controller;
 
 import com.sejong.projectservice.domains.category.service.CategoryService;
 import com.sejong.projectservice.domains.category.dto.*;
+import com.sejong.projectservice.support.common.file.FileUploadRequest;
+import com.sejong.projectservice.support.common.file.FileUploader;
+import com.sejong.projectservice.support.common.file.PreSignedUrl;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -17,7 +20,23 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/api/category")
 public class CategoryController {
+    private static final String CATEGORY_ICON_FILE_TYPE = "category-icon";
+
     private final CategoryService categoryService;
+    private final FileUploader fileUploader;
+
+    @PostMapping("/files/presigned-url")
+    @Operation(summary = "카테고리 아이콘 업로드용 Presigned URL 발급")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<PreSignedUrl> presignedUrl(
+            @RequestBody @Valid FileUploadRequest request) {
+        PreSignedUrl preSignedUrl = fileUploader.generatePreSignedUrl(
+                request.fileName(),
+                request.contentType(),
+                CATEGORY_ICON_FILE_TYPE
+        );
+        return ResponseEntity.ok(preSignedUrl);
+    }
 
     @PostMapping("")
     @Operation(summary = "카테고리 저장")
@@ -26,7 +45,7 @@ public class CategoryController {
             @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryAddRequest categoryAddRequest
     ) {
-        CategoryResponse response = categoryService.create(userRole, categoryAddRequest.getName(),categoryAddRequest.getDescription(),categoryAddRequest.getContent());
+        CategoryResponse response = categoryService.create(userRole, categoryAddRequest.getName(), categoryAddRequest.getDescription(), categoryAddRequest.getContent(), categoryAddRequest.getIconKey());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -49,7 +68,7 @@ public class CategoryController {
             @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryUpdateRequest categoryUpdateRequest
     ) {
-        CategoryResponse response = categoryService.update(userRole, categoryUpdateRequest.getPrevName(),categoryUpdateRequest.getNextName(), categoryUpdateRequest.getDescription(),categoryUpdateRequest.getContent());
+        CategoryResponse response = categoryService.update(userRole, categoryUpdateRequest.getPrevName(), categoryUpdateRequest.getNextName(), categoryUpdateRequest.getDescription(), categoryUpdateRequest.getContent(), categoryUpdateRequest.getIconKey());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

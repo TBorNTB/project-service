@@ -28,13 +28,12 @@ public class CategoryDto {
 
     public static List<CategoryDto> fromList(List<CategoryEntity> categoryEntities) {
         return categoryEntities.stream()
-                .map(it -> {
-                    return CategoryDto.builder()
-                            .id(it.getId())
-                            .name(it.getName())
-                            .description(it.getDescription())
-                            .content(it.getContent())
-                            .build();
-                }).toList();
+                .map(it -> CategoryDto.builder()
+                        .id(it.getId())
+                        .name(it.getName())
+                        .description(it.getDescription())
+                        .content(it.getContent())
+                        .build())
+                .toList();
     }
 }

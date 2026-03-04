@@ -16,15 +16,6 @@ public class CategoryAllResponse {
     List<CategoryDto> categories;
 
     public static CategoryAllResponse from(List<CategoryEntity> categories) {
-        List<CategoryDto> categoryDtoList = categories.stream()
-                .map(it -> {
-                    return CategoryDto.builder()
-                            .id(it.getId())
-                            .name(it.getName())
-                            .description(it.getDescription())
-                            .content(it.getContent())
-                            .build();
-                }).toList();
-        return new CategoryAllResponse(categoryDtoList);
+        return new CategoryAllResponse(CategoryDto.fromList(categories));
     }
 }
