@@ -1,5 +1,6 @@
 package com.sejong.projectservice.domains.category.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,16 +11,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class CategoryUpdateRequest {
+public class CategoryUpdateReq {
     @NotBlank
-    private String prevName;
-    @NotBlank
-    private String nextName;
+    private String name;
 
     private String description;
 
     private String content;
 
-    @io.swagger.v3.oas.annotations.media.Schema(description = "아이콘 이미지 key (presigned URL 업로드 후 받은 key)")
+    @Schema(description = "아이콘 이미지 key (presigned URL 업로드 후 받은 key)")
     private String iconKey;
 }

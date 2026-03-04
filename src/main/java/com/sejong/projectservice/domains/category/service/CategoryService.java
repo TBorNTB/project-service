@@ -23,12 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CategoryService {
 
+    private static final String CATEGORY_ICON_DIR = "project-service/category-icon";
     private final CategoryRepository categoryRepository;
     private final ProjectRepository projectRepository;
     private final OutboxService outboxService;
     private final FileUploader fileUploader;
-
-    private static final String CATEGORY_ICON_DIR = "project-service/category-icon";
 
     @Transactional
     public CategoryResponse create(String userRole, String name, String description, String content, String iconKey) {
@@ -46,12 +45,11 @@ public class CategoryService {
     }
 
     @Transactional
-    public CategoryResponse update(String userRole, String prevName, String nextName, String description,
+    public CategoryResponse update(String userRole, String name, String description,
                                    String content, String iconKey) {
         validateAdminRole(userRole);
-        CategoryEntity categoryEntity = categoryRepository.findByName(prevName)
+        CategoryEntity categoryEntity = categoryRepository.findByName(name)
                 .orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND));
-        categoryEntity.updateName(nextName);
         categoryEntity.updateDescription(description);
         categoryEntity.updateContent(content);
 

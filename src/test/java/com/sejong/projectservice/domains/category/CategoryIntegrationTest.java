@@ -1,12 +1,21 @@
 package com.sejong.projectservice.domains.category;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.dto.CategoryAddRequest;
 import com.sejong.projectservice.domains.category.dto.CategoryDeleteRequest;
 import com.sejong.projectservice.domains.category.dto.CategoryDescriptionRequest;
-import com.sejong.projectservice.domains.category.dto.CategoryUpdateRequest;
+import com.sejong.projectservice.domains.category.dto.CategoryUpdateReq;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,11 +26,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
-import org.hamcrest.Matchers;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 
 
 @SpringBootTest
@@ -41,11 +45,13 @@ public class CategoryIntegrationTest {
     private CategoryRepository categoryRepository;
 
     @BeforeEach
-    void setUp() { categoryRepository.deleteAll();}
+    void setUp() {
+        categoryRepository.deleteAll();
+    }
 
     @Test
     @DisplayName("관리자가 카테고리를 생성할 수 있다.")
-    void 관리자가_카테고리를_생성할_수_있다() throws Exception{
+    void 관리자가_카테고리를_생성할_수_있다() throws Exception {
         // given
         CategoryAddRequest request = CategoryAddRequest.builder()
                 .name("백엔드")
@@ -53,9 +59,9 @@ public class CategoryIntegrationTest {
 
         // when & then
         mockMvc.perform(post("/api/category")
-                .header("X-User-Role", "ADMIN")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .header("X-User-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("백엔드"))
                 .andExpect(jsonPath("$.message").value("카테고리 생성 완료"))
@@ -66,7 +72,7 @@ public class CategoryIntegrationTest {
 
     @Test
     @DisplayName("일반 사용자는 카테고리를 생성할 수 없다")
-    void 일반_사용자는_카테고리를_생성할_수_없다() throws Exception{
+    void 일반_사용자는_카테고리를_생성할_수_없다() throws Exception {
         //given
         CategoryAddRequest request = CategoryAddRequest.builder()
                 .name("백엔드")
@@ -74,16 +80,16 @@ public class CategoryIntegrationTest {
 
         //when && then
         mockMvc.perform(post("/api/category")
-                .header("X-User-Role", "GUEST")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+                        .header("X-User-Role", "GUEST")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("어드민만 가능한 요청입니다."));
     }
 
     @Test
     @DisplayName("카테고리 전체를 조회할 수 있다.")
-    void 카테고리_전체를_조회할_수_있다() throws Exception{
+    void 카테고리_전체를_조회할_수_있다() throws Exception {
         //given - Repository를 통해 직접 데이터 삽입 (조회 기능 테스트에 집중)
         CategoryEntity category1 = CategoryEntity.of("백엔드");
         CategoryEntity category2 = CategoryEntity.of("프론트엔드");
@@ -106,17 +112,16 @@ public class CategoryIntegrationTest {
         categoryRepository.save(category1);
 
         // when
-        CategoryUpdateRequest updateRequest = CategoryUpdateRequest.builder()
-                .prevName("백엔드")
-                .nextName("Backend")
+        CategoryUpdateReq updateRequest = CategoryUpdateReq.builder()
+                .name("백엔드")
                 .build();
 
         // then
 
         mockMvc.perform(put("/api/category")
-                .header("X-User-Role", "ADMIN")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(updateRequest)))
+                        .header("X-User-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(updateRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name").value("Backend"))
                 .andExpect(jsonPath("$.message").value("카테고리 수정 완료"));
@@ -141,10 +146,10 @@ public class CategoryIntegrationTest {
                 .build();
 
         // then
-        mockMvc.perform(patch("/api/category/description/{categoryId}",categoryId)
-                .header("X-User-Role", "ADMIN")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(descriptionRequest)))
+        mockMvc.perform(patch("/api/category/description/{categoryId}", categoryId)
+                        .header("X-User-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(descriptionRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("백엔드"))
                 .andExpect(jsonPath("$.message").value("카테고리 수정 완료"));
@@ -168,9 +173,9 @@ public class CategoryIntegrationTest {
 
         // then
         mockMvc.perform(delete("/api/category")
-                .header("X-User-Role", "ADMIN")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(deleteRequest)))
+                        .header("X-User-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(deleteRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value("백엔드"))
                 .andExpect(jsonPath("$.message").value("카테고리 삭제 완료"));
@@ -184,7 +189,7 @@ public class CategoryIntegrationTest {
 
     @Test
     @DisplayName("존재하지 않는 카테고리를 삭제하려고 하면 에러가 발생한다")
-    void 존재하지_않는_카테고리를_삭제하려고_하면_에러가_발생한다() throws Exception{
+    void 존재하지_않는_카테고리를_삭제하려고_하면_에러가_발생한다() throws Exception {
         //given
         CategoryDeleteRequest deleteRequest = CategoryDeleteRequest.builder()
                 .name("존재하지않는카테고리")
@@ -192,9 +197,9 @@ public class CategoryIntegrationTest {
 
         //when && then
         mockMvc.perform(delete("/api/category")
-                .header("X-User-Role", "ADMIN")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(deleteRequest)))
+                        .header("X-User-Role", "ADMIN")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(deleteRequest)))
                 .andExpect(status().isNotFound());
     }
 

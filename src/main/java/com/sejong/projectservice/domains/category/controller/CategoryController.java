@@ -1,7 +1,12 @@
 package com.sejong.projectservice.domains.category.controller;
 
+import com.sejong.projectservice.domains.category.dto.CategoryAddRequest;
+import com.sejong.projectservice.domains.category.dto.CategoryAllResponse;
+import com.sejong.projectservice.domains.category.dto.CategoryDeleteRequest;
+import com.sejong.projectservice.domains.category.dto.CategoryDescriptionRequest;
+import com.sejong.projectservice.domains.category.dto.CategoryResponse;
+import com.sejong.projectservice.domains.category.dto.CategoryUpdateReq;
 import com.sejong.projectservice.domains.category.service.CategoryService;
-import com.sejong.projectservice.domains.category.dto.*;
 import com.sejong.projectservice.support.common.file.FileUploadRequest;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.file.PreSignedUrl;
@@ -9,12 +14,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,10 +56,11 @@ public class CategoryController {
     @Operation(summary = "카테고리 저장")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<CategoryResponse> addCategory(
-            @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
+            @Parameter(hidden = true) @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryAddRequest categoryAddRequest
     ) {
-        CategoryResponse response = categoryService.create(userRole, categoryAddRequest.getName(), categoryAddRequest.getDescription(), categoryAddRequest.getContent(), categoryAddRequest.getIconKey());
+        CategoryResponse response = categoryService.create(userRole, categoryAddRequest.getName(),
+                categoryAddRequest.getDescription(), categoryAddRequest.getContent(), categoryAddRequest.getIconKey());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -53,11 +68,12 @@ public class CategoryController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "카테고리 관련 설명 추가")
     public ResponseEntity<CategoryResponse> updateCategoryDescription(
-            @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
-            @PathVariable(name="categoryId") Long categoryId,
+            @Parameter(hidden = true) @RequestHeader("X-User-Role") String userRole,
+            @PathVariable(name = "categoryId") Long categoryId,
             @RequestBody @Valid CategoryDescriptionRequest categoryDescriptionRequest
-    ){
-        CategoryResponse response = categoryService.updateDescription(userRole, categoryId,categoryDescriptionRequest.getDescription(), categoryDescriptionRequest.getContent());
+    ) {
+        CategoryResponse response = categoryService.updateDescription(userRole, categoryId,
+                categoryDescriptionRequest.getDescription(), categoryDescriptionRequest.getContent());
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
@@ -65,10 +81,11 @@ public class CategoryController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "카테고리 수정")
     public ResponseEntity<CategoryResponse> updateCategory(
-            @Parameter(hidden= true) @RequestHeader("X-User-Role") String userRole,
-            @RequestBody @Valid CategoryUpdateRequest categoryUpdateRequest
+            @Parameter(hidden = true) @RequestHeader("X-User-Role") String userRole,
+            @RequestBody @Valid CategoryUpdateReq req
     ) {
-        CategoryResponse response = categoryService.update(userRole, categoryUpdateRequest.getPrevName(), categoryUpdateRequest.getNextName(), categoryUpdateRequest.getDescription(), categoryUpdateRequest.getContent(), categoryUpdateRequest.getIconKey());
+        CategoryResponse response = categoryService.update(userRole, req.getName(),
+                req.getDescription(), req.getContent(), req.getIconKey());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -76,7 +93,7 @@ public class CategoryController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "카테고리 삭제")
     public ResponseEntity<CategoryResponse> deleteCategory(
-            @Parameter(hidden= true)  @RequestHeader("X-User-Role") String userRole,
+            @Parameter(hidden = true) @RequestHeader("X-User-Role") String userRole,
             @RequestBody @Valid CategoryDeleteRequest categoryDeleteRequest
     ) {
         CategoryResponse response = categoryService.remove(userRole, categoryDeleteRequest.getName());
@@ -85,7 +102,7 @@ public class CategoryController {
 
     @GetMapping("")
     @Operation(summary = "카테고리 전체 조회")
-    public ResponseEntity<CategoryAllResponse> getAllCategory(){
+    public ResponseEntity<CategoryAllResponse> getAllCategory() {
         CategoryAllResponse response = categoryService.getAll();
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -94,8 +111,8 @@ public class CategoryController {
     @SecurityRequirement(name = "bearerAuth")
     @Operation(summary = "프로젝트의 카테고리 수정")
     public ResponseEntity<CategoryAllResponse> updateProjectCategory(
-            @Parameter(hidden= true) @RequestHeader("X-User-Id") String username,
-            @PathVariable(name="postId") Long projectId,
+            @Parameter(hidden = true) @RequestHeader("X-User-Id") String username,
+            @PathVariable(name = "postId") Long projectId,
             @RequestParam List<String> categoryNames
     ) {
         CategoryAllResponse response = categoryService.updateProject(username, projectId, categoryNames);
