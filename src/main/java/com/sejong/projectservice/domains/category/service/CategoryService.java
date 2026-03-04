@@ -82,7 +82,7 @@ public class CategoryService {
     @Transactional(readOnly = true)
     public CategoryAllResponse getAll() {
         List<CategoryEntity> categories = categoryRepository.findAll();
-        return CategoryAllResponse.from(categories);
+        return CategoryAllResponse.from(categories, fileUploader);
     }
 
     @Transactional
@@ -98,7 +98,7 @@ public class CategoryService {
         projectEntity.updateCategory(categories);
         OutboxEventRequest outbox = OutboxEventRequest.of(projectEntity, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
-        return CategoryAllResponse.from(categories);
+        return CategoryAllResponse.from(categories, fileUploader);
     }
 
     private void validateAdminRole(String userRole) {
