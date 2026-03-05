@@ -2,6 +2,8 @@ package com.sejong.projectservice.support.outbox;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
+import com.sejong.projectservice.domains.category.dto.event.CategoryEvent;
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.csknowledge.dto.event.CsKnowledgeIndexEvent;
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
@@ -83,6 +85,20 @@ public class OutboxEventRequest {
         DocumentIndexEvent event = DocumentIndexEvent.of(document, fileUploader, type, System.currentTimeMillis());
         String aggregatedId = event.getAggregatedId();
         return new OutboxEventRequest(aggregateType.getAggregateType(), aggregatedId, toJsonString(event));
+    }
+
+    public static OutboxEventRequest remove(CategoryEntity category, Type type) {
+        CategoryEvent event = CategoryEvent.deleteOf(category.getId(), type, System.currentTimeMillis());
+        String aggregateType = OutboxAggregateType.CATEGORY.getAggregateType();
+        String aggregateId = event.getAggregateId().toString();
+        return new OutboxEventRequest(aggregateType, aggregateId, toJsonString(event));
+    }
+
+    public static OutboxEventRequest of(CategoryEntity category, FileUploader fu, Type type) {
+        CategoryEvent event = CategoryEvent.of(category, fu, type, System.currentTimeMillis());
+        String aggregateType = OutboxAggregateType.CATEGORY.getAggregateType();
+        String aggregateId = event.getAggregateId().toString();
+        return new OutboxEventRequest(aggregateType, aggregateId, toJsonString(event));
     }
 
     private static String toJsonString(Object object) {
