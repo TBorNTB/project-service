@@ -14,7 +14,10 @@ import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -63,14 +66,15 @@ public class OutboxEventRequest {
     public static OutboxEventRequest of(CsKnowledgeEntity csKnowledge, FileUploader fileUploader, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.CS_KNOWLEDGE;
         String csKnowledgeId = csKnowledge.getId().toString();
-        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledge, fileUploader, type, System.currentTimeMillis());
+        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledge, fileUploader, type,
+                System.currentTimeMillis());
         return new OutboxEventRequest(aggregateType.getAggregateType(), csKnowledgeId, toJsonString(event));
     }
 
     public static OutboxEventRequest remove(DocumentEntity document, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.DOCUMENT;
         String documentId = document.getId().toString();
-        DocumentIndexEvent event = DocumentIndexEvent.deleteOf(documentId, Type.DELETED, System.currentTimeMillis());
+        DocumentIndexEvent event = DocumentIndexEvent.deleteOf(documentId, type, System.currentTimeMillis());
         return new OutboxEventRequest(aggregateType.getAggregateType(), documentId, toJsonString(event));
     }
 
