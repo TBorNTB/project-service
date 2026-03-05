@@ -33,14 +33,17 @@ public class CategoryService {
     public CategoryResponse create(String userRole, String name, String description, String content, String iconKey) {
 
         validateAdminRole(userRole);
-        CategoryEntity categoryEntity = CategoryEntity.of(name, description, content, null);
-        CategoryEntity savedCategoryEntity = categoryRepository.save(categoryEntity);
+        CategoryEntity category = CategoryEntity.of(name, description, content, null);
+        CategoryEntity savedCategoryEntity = categoryRepository.save(category);
 
         if (iconKey != null && !iconKey.isBlank()) {
             String targetDir = String.format("%s/%d", CATEGORY_ICON_DIR, savedCategoryEntity.getId());
             String finalKey = fileUploader.moveFile(iconKey, targetDir);
             savedCategoryEntity.updateIconKey(finalKey);
         }
+
+        OutboxEventRequest outbox = OutboxEventRequest.of(category, fileUploader, Type.CREATED);
+        outboxService.enqueue(outbox);
         return CategoryResponse.from(savedCategoryEntity);
     }
 
@@ -48,33 +51,39 @@ public class CategoryService {
     public CategoryResponse update(String userRole, String name, String description,
                                    String content, String iconKey) {
         validateAdminRole(userRole);
-        CategoryEntity categoryEntity = categoryRepository.findByName(name)
+        CategoryEntity category = categoryRepository.findByName(name)
                 .orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND));
-        categoryEntity.updateDescription(description);
-        categoryEntity.updateContent(content);
+        category.updateDescription(description);
+        category.updateContent(content);
 
         if (iconKey != null && !iconKey.isBlank()) {
-            if (categoryEntity.getIconKey() != null) {
+            if (category.getIconKey() != null) {
                 try {
-                    fileUploader.delete(categoryEntity.getIconKey());
+                    fileUploader.delete(category.getIconKey());
                 } catch (Exception e) {
                     // 기존 아이콘 삭제 실패 시 계속 진행
                 }
             }
-            String targetDir = String.format("%s/%d", CATEGORY_ICON_DIR, categoryEntity.getId());
+            String targetDir = String.format("%s/%d", CATEGORY_ICON_DIR, category.getId());
             String finalKey = fileUploader.moveFile(iconKey, targetDir);
-            categoryEntity.updateIconKey(finalKey);
+            category.updateIconKey(finalKey);
         }
-        return CategoryResponse.updateFrom(categoryEntity);
+
+        OutboxEventRequest outbox = OutboxEventRequest.of(category, fileUploader, Type.UPDATED);
+        outboxService.enqueue(outbox);
+        return CategoryResponse.updateFrom(category);
     }
 
     @Transactional
     public CategoryResponse remove(String userRole, String name) {
         validateAdminRole(userRole);
-        CategoryEntity categoryEntity = categoryRepository.findByName(name)
+        CategoryEntity category = categoryRepository.findByName(name)
                 .orElseThrow(() -> new BaseException(CATEGORY_NOT_FOUND));
-        categoryRepository.deleteById(categoryEntity.getId());
-        return CategoryResponse.deleteFrom(categoryEntity);
+        categoryRepository.deleteById(category.getId());
+
+        OutboxEventRequest outbox = OutboxEventRequest.remove(category, Type.DELETED);
+        outboxService.enqueue(outbox);
+        return CategoryResponse.deleteFrom(category);
     }
 
     @Transactional(readOnly = true)
