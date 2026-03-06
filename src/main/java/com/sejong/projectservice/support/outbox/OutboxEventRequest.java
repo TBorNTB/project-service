@@ -2,6 +2,8 @@ package com.sejong.projectservice.support.outbox;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sejong.projectservice.domains.category.domain.CategoryEntity;
+import com.sejong.projectservice.domains.category.dto.event.CategoryEvent;
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.csknowledge.dto.event.CsKnowledgeIndexEvent;
 import com.sejong.projectservice.domains.document.domain.DocumentEntity;
@@ -14,7 +16,10 @@ import com.sejong.projectservice.support.common.constants.Type;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import com.sejong.projectservice.support.common.file.FileUploader;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -63,14 +68,15 @@ public class OutboxEventRequest {
     public static OutboxEventRequest of(CsKnowledgeEntity csKnowledge, FileUploader fileUploader, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.CS_KNOWLEDGE;
         String csKnowledgeId = csKnowledge.getId().toString();
-        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledge, fileUploader, type, System.currentTimeMillis());
+        CsKnowledgeIndexEvent event = CsKnowledgeIndexEvent.of(csKnowledge, fileUploader, type,
+                System.currentTimeMillis());
         return new OutboxEventRequest(aggregateType.getAggregateType(), csKnowledgeId, toJsonString(event));
     }
 
     public static OutboxEventRequest remove(DocumentEntity document, Type type) {
         OutboxAggregateType aggregateType = OutboxAggregateType.DOCUMENT;
         String documentId = document.getId().toString();
-        DocumentIndexEvent event = DocumentIndexEvent.deleteOf(documentId, Type.DELETED, System.currentTimeMillis());
+        DocumentIndexEvent event = DocumentIndexEvent.deleteOf(documentId, type, System.currentTimeMillis());
         return new OutboxEventRequest(aggregateType.getAggregateType(), documentId, toJsonString(event));
     }
 
@@ -79,6 +85,20 @@ public class OutboxEventRequest {
         DocumentIndexEvent event = DocumentIndexEvent.of(document, fileUploader, type, System.currentTimeMillis());
         String aggregatedId = event.getAggregatedId();
         return new OutboxEventRequest(aggregateType.getAggregateType(), aggregatedId, toJsonString(event));
+    }
+
+    public static OutboxEventRequest remove(CategoryEntity category, Type type) {
+        CategoryEvent event = CategoryEvent.deleteOf(category.getId(), type, System.currentTimeMillis());
+        String aggregateType = OutboxAggregateType.CATEGORY.getAggregateType();
+        String aggregateId = event.getAggregateId().toString();
+        return new OutboxEventRequest(aggregateType, aggregateId, toJsonString(event));
+    }
+
+    public static OutboxEventRequest of(CategoryEntity category, FileUploader fu, Type type) {
+        CategoryEvent event = CategoryEvent.of(category, fu, type, System.currentTimeMillis());
+        String aggregateType = OutboxAggregateType.CATEGORY.getAggregateType();
+        String aggregateId = event.getAggregateId().toString();
+        return new OutboxEventRequest(aggregateType, aggregateId, toJsonString(event));
     }
 
     private static String toJsonString(Object object) {
