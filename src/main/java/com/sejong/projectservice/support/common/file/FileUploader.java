@@ -14,4 +14,5 @@ public interface FileUploader {
     void delete(String keyOrUrl);
     String getFileUrl(String keyOrUrl);
     String extractKeyFromUrl(String url);
+    String generateDownloadPresignedUrl(String key, String originalFileName);
 }

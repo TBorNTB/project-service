@@ -16,6 +16,9 @@ import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
@@ -177,6 +180,32 @@ public class S3FileUploader implements FileUploader {
         } catch (Exception e) {
             log.error("S3 파일 이동 실패: {} -> {}", sourceKey, targetDirectory, e);
             throw new BaseException(ExceptionType.FILE_MOVE_FAIL);
+        }
+    }
+
+    /**
+     * 파일 다운로드용 Presigned GET URL 생성
+     * Content-Disposition: attachment 헤더로 브라우저 강제 다운로드 유도
+     */
+    @Override
+    public String generateDownloadPresignedUrl(String key, String originalFileName) {
+        try {
+            GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .responseContentDisposition("attachment; filename=\"" + originalFileName + "\"")
+                    .build();
+
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofMinutes(10))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+
+            PresignedGetObjectRequest presignedRequest = s3Presigner.presignGetObject(presignRequest);
+            return presignedRequest.url().toString();
+        } catch (Exception e) {
+            log.error("다운로드 Presigned URL 생성 실패: {}", key, e);
+            throw new BaseException(ExceptionType.FILE_UPLOAD_FAIL);
         }
     }
 
