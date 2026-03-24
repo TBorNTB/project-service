@@ -5,12 +5,15 @@ import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.support.common.exception.BaseException;
 import com.sejong.projectservice.support.common.exception.ExceptionType;
 import jakarta.persistence.*;
+import org.hibernate.annotations.BatchSize;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(
@@ -43,6 +46,11 @@ public class CsKnowledgeEntity {
 
     @Column(name = "thumbnail_key")
     private String thumbnailKey;
+
+    @ElementCollection
+    @CollectionTable(name = "cs_knowledge_attachment", joinColumns = @JoinColumn(name = "cs_knowledge_id"))
+    @BatchSize(size = 30)
+    private List<CsKnowledgeAttachment> attachments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
@@ -87,6 +95,14 @@ public class CsKnowledgeEntity {
 
     public void updateThumbnailKey(String thumbnailKey) {
         this.thumbnailKey = thumbnailKey;
+    }
+
+    public void addAttachment(CsKnowledgeAttachment attachment) {
+        this.attachments.add(attachment);
+    }
+
+    public void removeAttachmentByKey(String fileKey) {
+        this.attachments.removeIf(a -> a.getFileKey().equals(fileKey));
     }
 
     public void updateContent(String newContent) {
