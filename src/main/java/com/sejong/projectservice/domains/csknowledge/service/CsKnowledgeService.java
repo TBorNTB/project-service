@@ -3,6 +3,7 @@ package com.sejong.projectservice.domains.csknowledge.service;
 
 import com.sejong.projectservice.domains.category.domain.CategoryEntity;
 import com.sejong.projectservice.domains.category.repository.CategoryRepository;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeAttachment;
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
 import com.sejong.projectservice.domains.csknowledge.repository.CsKnowledgeRepository;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
@@ -87,6 +88,11 @@ public class CsKnowledgeService {
             savedEntity.updateContent(updatedContent);
         }
 
+        // 첨부파일 처리 (temp → 최종 위치)
+        if (csKnowledgeReqDto.attachments() != null && !csKnowledgeReqDto.attachments().isEmpty()) {
+            processAttachments(savedEntity, csKnowledgeReqDto.attachments());
+        }
+
         CsKnowledgeResDto response = resolveUsername(savedEntity);
         OutboxEventRequest outbox = OutboxEventRequest.of(csKnowledgeEntity, fileUploader, Type.CREATED);
         outboxService.enqueue(outbox);
@@ -137,6 +143,23 @@ public class CsKnowledgeService {
             csKnowledgeEntity.updateContent(updatedContent);
         }
 
+        // 첨부파일 삭제
+        if (csKnowledgeReqDto.attachmentKeysToDelete() != null && !csKnowledgeReqDto.attachmentKeysToDelete().isEmpty()) {
+            for (String fileKey : csKnowledgeReqDto.attachmentKeysToDelete()) {
+                try {
+                    fileUploader.delete(fileKey);
+                } catch (Exception e) {
+                    log.warn("첨부파일 삭제 실패, 계속 진행: {}", fileKey, e);
+                }
+                csKnowledgeEntity.removeAttachmentByKey(fileKey);
+            }
+        }
+
+        // 새 첨부파일 추가
+        if (csKnowledgeReqDto.attachments() != null && !csKnowledgeReqDto.attachments().isEmpty()) {
+            processAttachments(csKnowledgeEntity, csKnowledgeReqDto.attachments());
+        }
+
         CsKnowledgeResDto response = resolveUsername(csKnowledgeEntity);
         OutboxEventRequest outbox = OutboxEventRequest.of(csKnowledgeEntity, fileUploader, Type.UPDATED);
         outboxService.enqueue(outbox);
@@ -148,6 +171,16 @@ public class CsKnowledgeService {
         CsKnowledgeEntity csKnowledgeEntity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
         csKnowledgeEntity.validateOwnerPermission(username, userRole);
+
+        // 첨부파일 전체 삭제
+        csKnowledgeEntity.getAttachments().forEach(attachment -> {
+            try {
+                fileUploader.delete(attachment.getFileKey());
+            } catch (Exception e) {
+                log.warn("첨부파일 삭제 실패, 계속 진행: {}", attachment.getFileKey(), e);
+            }
+        });
+
         csKnowledgeRepository.deleteById(csKnowledgeEntity.getId());
         OutboxEventRequest outbox = OutboxEventRequest.remove(csKnowledgeEntity, Type.DELETED);
         outboxService.enqueue(outbox);
@@ -272,6 +305,31 @@ public class CsKnowledgeService {
     @Transactional(readOnly = true)
     public List<Long> getCsKnowledgeIdsByUsername(String username) {
         return csKnowledgeRepository.findCsKnowledgeIdsByUsername(username);
+    }
+
+    public String generateAttachmentDownloadUrl(Long csKnowledgeId, String fileKey) {
+        CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
+                .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
+
+        CsKnowledgeAttachment attachment = entity.getAttachments().stream()
+                .filter(a -> a.getFileKey().equals(fileKey))
+                .findFirst()
+                .orElseThrow(() -> new BaseException(ExceptionType.FILE_NOT_FOUND));
+
+        return fileUploader.generateDownloadPresignedUrl(attachment.getFileKey(), attachment.getOriginalFileName());
+    }
+
+    private void processAttachments(CsKnowledgeEntity entity, List<CsKnowledgeReqDto.AttachmentReq> attachmentReqs) {
+        String targetDir = String.format("project-service/cs-knowledge/%d/attachments", entity.getId());
+        for (CsKnowledgeReqDto.AttachmentReq req : attachmentReqs) {
+            if (req.tempKey() == null || req.tempKey().isEmpty()) continue;
+            try {
+                String finalKey = fileUploader.moveFile(req.tempKey(), targetDir);
+                entity.addAttachment(new CsKnowledgeAttachment(finalKey, req.originalFileName()));
+            } catch (Exception e) {
+                log.warn("첨부파일 이동 실패, 스킵: {}", req.tempKey(), e);
+            }
+        }
     }
 
     /**

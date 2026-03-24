@@ -4,6 +4,9 @@ package com.sejong.projectservice.domains.csknowledge.controller;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeReqDto;
 import com.sejong.projectservice.domains.csknowledge.dto.CsKnowledgeResDto;
 import com.sejong.projectservice.domains.csknowledge.service.CsKnowledgeService;
+import com.sejong.projectservice.support.common.file.FileUploadRequest;
+import com.sejong.projectservice.support.common.file.FileUploader;
+import com.sejong.projectservice.support.common.file.PreSignedUrl;
 import com.sejong.projectservice.support.common.util.RoleValidator;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
@@ -28,6 +31,32 @@ import java.util.Optional;
 public class CsKnowledgeController {
 
     private final CsKnowledgeService csKnowledgeService;
+    private final FileUploader fileUploader;
+
+    private static final String CS_KNOWLEDGE_FILE_TYPE = "cs-knowledge";
+
+    @PostMapping("/files/presigned-url")
+    @Operation(summary = "CS 지식 첨부파일 업로드용 Presigned URL 발급")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<PreSignedUrl> getAttachmentPresignedUrl(
+            @RequestBody FileUploadRequest request,
+            @Parameter(hidden = true) @RequestHeader(value = "X-User-Role", required = false) String userRole
+    ) {
+        RoleValidator.validateNotGuest(userRole);
+        PreSignedUrl preSignedUrl = fileUploader.generatePreSignedUrl(
+                request.fileName(), request.contentType(), CS_KNOWLEDGE_FILE_TYPE);
+        return ResponseEntity.ok(preSignedUrl);
+    }
+
+    @GetMapping("/{csKnowledgeId}/attachments/download")
+    @Operation(summary = "CS 지식 첨부파일 다운로드용 Presigned URL 발급")
+    public ResponseEntity<String> getAttachmentDownloadUrl(
+            @PathVariable Long csKnowledgeId,
+            @RequestParam String key
+    ) {
+        String downloadUrl = csKnowledgeService.generateAttachmentDownloadUrl(csKnowledgeId, key);
+        return ResponseEntity.ok(downloadUrl);
+    }
 
     @PostMapping
     @Operation(summary = "CS 지식 생성 ")
