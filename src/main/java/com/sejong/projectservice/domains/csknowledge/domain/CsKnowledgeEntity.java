@@ -47,6 +47,7 @@ public class CsKnowledgeEntity {
     @Column(name = "thumbnail_key")
     private String thumbnailKey;
 
+    @Builder.Default
     @ElementCollection
     @CollectionTable(name = "cs_knowledge_attachment", joinColumns = @JoinColumn(name = "cs_knowledge_id"))
     @BatchSize(size = 30)
