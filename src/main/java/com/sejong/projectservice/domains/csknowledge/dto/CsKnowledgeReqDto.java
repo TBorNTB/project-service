@@ -22,6 +22,18 @@ public record CsKnowledgeReqDto(
         String thumbnailKey,
 
         @Schema(description = "에디터 본문에 삽입된 이미지 key 목록")
-        List<String> contentImageKeys
+        List<String> contentImageKeys,
+
+        @Schema(description = "새로 첨부할 파일 목록 (presigned URL 업로드 후 받은 tempKey + 원본 파일명)")
+        List<AttachmentReq> attachments,
+
+        @Schema(description = "삭제할 첨부 파일 key 목록 (수정 시에만 사용)")
+        List<String> attachmentKeysToDelete
 ) {
+    public record AttachmentReq(
+            @Schema(description = "presigned URL 업로드 후 받은 temp key")
+            String tempKey,
+            @Schema(description = "원본 파일명 (예: report.pdf)")
+            String originalFileName
+    ) {}
 }
