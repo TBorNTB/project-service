@@ -307,7 +307,9 @@ public class CsKnowledgeService {
         return csKnowledgeRepository.findCsKnowledgeIdsByUsername(username);
     }
 
-    public String generateAttachmentDownloadUrl(Long csKnowledgeId, String fileKey) {
+    public record AttachmentFile(byte[] content, String originalFileName) {}
+
+    public AttachmentFile downloadAttachmentFile(Long csKnowledgeId, String fileKey) {
         CsKnowledgeEntity entity = csKnowledgeRepository.findById(csKnowledgeId)
                 .orElseThrow(() -> new BaseException(ExceptionType.CS_KNOWLEDGE_NOT_FOUND));
 
@@ -316,7 +318,8 @@ public class CsKnowledgeService {
                 .findFirst()
                 .orElseThrow(() -> new BaseException(ExceptionType.FILE_NOT_FOUND));
 
-        return fileUploader.generateDownloadPresignedUrl(attachment.getFileKey(), attachment.getOriginalFileName());
+        byte[] content = fileUploader.downloadFile(attachment.getFileKey());
+        return new AttachmentFile(content, attachment.getOriginalFileName());
     }
 
     private void processAttachments(CsKnowledgeEntity entity, List<CsKnowledgeReqDto.AttachmentReq> attachmentReqs) {

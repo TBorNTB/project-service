@@ -10,10 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.CopyObjectRequest;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
+import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
@@ -205,6 +207,25 @@ public class S3FileUploader implements FileUploader {
             return presignedRequest.url().toString();
         } catch (Exception e) {
             log.error("다운로드 Presigned URL 생성 실패: {}", key, e);
+            throw new BaseException(ExceptionType.FILE_UPLOAD_FAIL);
+        }
+    }
+
+    // ==================== 직접 다운로드 방식 ====================
+
+    /**
+     * S3에서 파일을 직접 다운로드하여 바이트 배열로 반환
+     */
+    @Override
+    public byte[] downloadFile(String key) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+        try (ResponseInputStream<GetObjectResponse> response = s3Client.getObject(getObjectRequest)) {
+            return response.readAllBytes();
+        } catch (IOException e) {
+            log.error("S3 파일 다운로드 실패: {}", key, e);
             throw new BaseException(ExceptionType.FILE_UPLOAD_FAIL);
         }
     }

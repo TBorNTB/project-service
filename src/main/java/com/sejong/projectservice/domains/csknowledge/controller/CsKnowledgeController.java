@@ -7,6 +7,7 @@ import com.sejong.projectservice.domains.csknowledge.service.CsKnowledgeService;
 import com.sejong.projectservice.support.common.file.FileUploadRequest;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.file.PreSignedUrl;
+import java.nio.charset.StandardCharsets;
 import com.sejong.projectservice.support.common.util.RoleValidator;
 import com.sejong.projectservice.support.common.pagination.CursorPageReqDto;
 import com.sejong.projectservice.support.common.pagination.OffsetPageReqDto;
@@ -18,7 +19,10 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,13 +53,18 @@ public class CsKnowledgeController {
     }
 
     @GetMapping("/{csKnowledgeId}/attachments/download")
-    @Operation(summary = "CS 지식 첨부파일 다운로드용 Presigned URL 발급")
-    public ResponseEntity<String> getAttachmentDownloadUrl(
+    @Operation(summary = "CS 지식 첨부파일 다운로드")
+    public ResponseEntity<byte[]> downloadAttachment(
             @PathVariable Long csKnowledgeId,
             @RequestParam String key
     ) {
-        String downloadUrl = csKnowledgeService.generateAttachmentDownloadUrl(csKnowledgeId, key);
-        return ResponseEntity.ok(downloadUrl);
+        CsKnowledgeService.AttachmentFile file = csKnowledgeService.downloadAttachmentFile(csKnowledgeId, key);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDisposition(
+                ContentDisposition.attachment().filename(file.originalFileName(), StandardCharsets.UTF_8).build()
+        );
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        return ResponseEntity.ok().headers(headers).body(file.content());
     }
 
     @PostMapping

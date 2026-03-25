@@ -15,4 +15,5 @@ public interface FileUploader {
     String getFileUrl(String keyOrUrl);
     String extractKeyFromUrl(String url);
     String generateDownloadPresignedUrl(String key, String originalFileName);
+    byte[] downloadFile(String key);
 }
