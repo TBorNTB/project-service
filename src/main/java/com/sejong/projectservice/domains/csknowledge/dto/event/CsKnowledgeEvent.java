@@ -26,7 +26,6 @@ public class CsKnowledgeEvent {
     private String content;
     private String writerId;
     private String description;
-    private List<String> referenceLinks;
     private String category;
     private String thumbnailUrl;
     private String createdAt;
@@ -41,9 +40,6 @@ public class CsKnowledgeEvent {
                 .title(csKnowledgeEntity.getTitle())
                 .writerId(csKnowledgeEntity.getWriterId())
                 .description(csKnowledgeEntity.getDescription())
-                .referenceLinks(csKnowledgeEntity.getReferenceLinks().stream()
-                        .map(CsKnowledgeReferenceLink::getUrl)
-                        .toList())
                 .content(csKnowledgeEntity.getContent())
                 .category(csKnowledgeEntity.getCategoryEntity().getName())
                 .thumbnailUrl(thumbnailUrl)
