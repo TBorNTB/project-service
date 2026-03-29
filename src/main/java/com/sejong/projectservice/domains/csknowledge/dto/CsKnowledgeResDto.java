@@ -2,6 +2,7 @@ package com.sejong.projectservice.domains.csknowledge.dto;
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeAttachment;
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeReferenceLink;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import com.sejong.projectservice.support.common.internal.response.UserProfileDto;
 
@@ -13,6 +14,7 @@ public record CsKnowledgeResDto(
         String title,
         String content,
         String description,
+        List<String> referenceLinks,
         UserProfileDto writerProfile,
         String category,
         String thumbnailUrl,
@@ -39,11 +41,16 @@ public record CsKnowledgeResDto(
                 .map(AttachmentInfo::from)
                 .toList();
 
+        List<String> referenceLinks = csKnowledgeEntity.getReferenceLinks().stream()
+                .map(CsKnowledgeReferenceLink::getUrl)
+                .toList();
+
         return new CsKnowledgeResDto(
                 csKnowledgeEntity.getId(),
                 csKnowledgeEntity.getTitle(),
                 csKnowledgeEntity.getContent(),
                 csKnowledgeEntity.getDescription(),
+                referenceLinks,
                 writerProfile,
                 csKnowledgeEntity.getCategoryEntity().getName(),
                 thumbnailUrl,

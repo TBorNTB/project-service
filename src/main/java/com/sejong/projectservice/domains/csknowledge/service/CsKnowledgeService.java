@@ -65,6 +65,7 @@ public class CsKnowledgeService {
                 sanitized.title(),
                 sanitized.content(),
                 sanitized.description(),
+                sanitized.referenceLinks(),
                 username,
                 categoryEntity,
                 LocalDateTime.now()
@@ -112,6 +113,7 @@ public class CsKnowledgeService {
                 sanitized.title(),
                 sanitized.content(),
                 sanitized.description(),
+                sanitized.referenceLinks(),
                 username,
                 categoryEntity,
                 LocalDateTime.now()

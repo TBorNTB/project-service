@@ -2,6 +2,7 @@ package com.sejong.projectservice.domains.csknowledge.dto.event;
 
 
 import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeEntity;
+import com.sejong.projectservice.domains.csknowledge.domain.CsKnowledgeReferenceLink;
 import com.sejong.projectservice.support.common.file.FileUploader;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
@@ -24,6 +26,7 @@ public class CsKnowledgeEvent {
     private String content;
     private String writerId;
     private String description;
+    private List<String> referenceLinks;
     private String category;
     private String thumbnailUrl;
     private String createdAt;
@@ -38,6 +41,9 @@ public class CsKnowledgeEvent {
                 .title(csKnowledgeEntity.getTitle())
                 .writerId(csKnowledgeEntity.getWriterId())
                 .description(csKnowledgeEntity.getDescription())
+                .referenceLinks(csKnowledgeEntity.getReferenceLinks().stream()
+                        .map(CsKnowledgeReferenceLink::getUrl)
+                        .toList())
                 .content(csKnowledgeEntity.getContent())
                 .category(csKnowledgeEntity.getCategoryEntity().getName())
                 .thumbnailUrl(thumbnailUrl)

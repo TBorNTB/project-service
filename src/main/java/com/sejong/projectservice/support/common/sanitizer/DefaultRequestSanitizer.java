@@ -10,6 +10,7 @@ import com.sejong.projectservice.support.common.util.XssSanitizer;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * XSS 방어 정책의 기본 구현.
@@ -38,11 +39,17 @@ public class DefaultRequestSanitizer implements RequestSanitizer {
 
     @Override
     public SanitizedCsKnowledge sanitize(CsKnowledgeReqDto request) {
+        List<String> refs = request.referenceLinks() == null ? List.of() : request.referenceLinks().stream()
+                .filter(Objects::nonNull)
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
         return new SanitizedCsKnowledge(
                 XssSanitizer.escape(request.title()),
                 XssSanitizer.sanitizeHtml(request.content()),
                 XssSanitizer.escape(request.description()),
-                XssSanitizer.escape(request.category())
+                XssSanitizer.escape(request.category()),
+                refs
         );
     }
 

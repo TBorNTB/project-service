@@ -18,6 +18,9 @@ public record CsKnowledgeReqDto(
         @NotNull(message = "카테고리는 필수입니다")
         String category,
 
+        @Schema(description = "참고 링크 URL 목록 (선택, 순서 유지)")
+        List<String> referenceLinks,
+
         @Schema(description = "썸네일 이미지 key (presigned URL 업로드 후 받은 key)")
         String thumbnailKey,
 

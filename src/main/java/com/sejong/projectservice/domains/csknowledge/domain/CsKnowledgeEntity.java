@@ -49,6 +49,13 @@ public class CsKnowledgeEntity {
 
     @Builder.Default
     @ElementCollection
+    @CollectionTable(name = "cs_knowledge_reference_link", joinColumns = @JoinColumn(name = "cs_knowledge_id"))
+    @OrderColumn(name = "sort_order")
+    @BatchSize(size = 30)
+    private List<CsKnowledgeReferenceLink> referenceLinks = new ArrayList<>();
+
+    @Builder.Default
+    @ElementCollection
     @CollectionTable(name = "cs_knowledge_attachment", joinColumns = @JoinColumn(name = "cs_knowledge_id"))
     @BatchSize(size = 30)
     private List<CsKnowledgeAttachment> attachments = new ArrayList<>();
@@ -60,26 +67,44 @@ public class CsKnowledgeEntity {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static CsKnowledgeEntity of(String title, String content, String description, String username, CategoryEntity categoryEntity, LocalDateTime time) {
+    public static CsKnowledgeEntity of(String title, String content, String description, List<String> referenceLinkUrls,
+                                         String username, CategoryEntity categoryEntity, LocalDateTime time) {
         return CsKnowledgeEntity.builder()
                 .id(null)
                 .title(title)
                 .writerId(username)
                 .content(content)
                 .description(description)
+                .referenceLinks(toReferenceLinkEmbeddables(referenceLinkUrls))
                 .categoryEntity(categoryEntity)
                 .createdAt(time)
                 .updatedAt(time)
                 .build();
     }
 
-    public void update(String title, String content, String description ,String username, CategoryEntity categoryEntity, LocalDateTime updatedAt) {
+    public void update(String title, String content, String description, List<String> referenceLinkUrls, String username,
+                       CategoryEntity categoryEntity, LocalDateTime updatedAt) {
         this.title = title;
         this.writerId = username;
         this.content = content;
         this.description = description;
+        this.referenceLinks.clear();
+        this.referenceLinks.addAll(toReferenceLinkEmbeddables(referenceLinkUrls));
         this.categoryEntity = categoryEntity;
         this.updatedAt = updatedAt;
+    }
+
+    private static List<CsKnowledgeReferenceLink> toReferenceLinkEmbeddables(List<String> urls) {
+        if (urls == null || urls.isEmpty()) {
+            return new ArrayList<>();
+        }
+        List<CsKnowledgeReferenceLink> out = new ArrayList<>();
+        for (String u : urls) {
+            if (u != null && !u.isBlank()) {
+                out.add(new CsKnowledgeReferenceLink(u.trim()));
+            }
+        }
+        return out;
     }
 
     public void validateOwnerPermission(String username) {
